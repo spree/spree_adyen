@@ -17,7 +17,7 @@ module SpreeAdyen
         },
         reference: reference,
         merchantAccount: payment_method.preferred_merchant_account
-      }
+      }.merge!(SpreeAdyen::ApplicationInfoPresenter.new.to_h)
     end
 
     private

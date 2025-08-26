@@ -9,7 +9,7 @@ VCR.configure do |c|
   c.hook_into :webmock
   c.ignore_localhost = true
   c.configure_rspec_metadata!
-  c.default_cassette_options = { record: :new_episodes }
+  c.default_cassette_options = { record: :once }
   c.filter_sensitive_data('ADYEN_API_KEY') { |i| i.request.headers['X-Api-Key']&.first }
   c.filter_sensitive_data('ADYEN_HMAC_KEY') do |i|
     body = i.response&.body.to_s

@@ -94,6 +94,10 @@ RSpec.describe SpreeAdyen::Gateway do
     end
   end
 
+  before do
+    allow(Spree).to receive(:version).and_return('42.0.0')
+  end
+
   describe '#payment_session_result' do
     subject { gateway.payment_session_result(payment_session_id, session_result) }
 
@@ -165,7 +169,7 @@ RSpec.describe SpreeAdyen::Gateway do
     let(:amount) { 100 }
     let(:channel) { 'Web' }
     let(:return_url) { 'http://www.example.com/adyen/payment_sessions/redirect' }
-    let(:payment_session_id) { 'CS6B11058E72127704' }
+    let(:payment_session_id) { 'CS2BD6B9B093D32284D8EB223' }
 
     context 'with valid params' do
       it 'returns proper (successful) ActiveMerchant::Billing::Response instance' do
@@ -249,6 +253,36 @@ RSpec.describe SpreeAdyen::Gateway do
         VCR.use_cassette("management_api/test_webhook/failure") do
           expect(subject.success?).to be(false)
         end
+      end
+    end
+  end
+
+  describe '#purchase' do
+    subject { gateway.purchase(amount_in_cents, payment_source, gateway_options) }
+
+    let(:order) { create(:order_with_line_items, total: 100) }
+    let(:payment) { create(:payment, state: 'pending', order: order, payment_method: gateway, amount: 100.0, response_code: nil, source: payment_source) }
+
+    let(:payment_source) do
+      create(:credit_card,
+        gateway_payment_profile_id: 'stored_cc_id',
+        payment_method: gateway,
+        cc_type: "master",
+        last_digits: "1115",
+        month: 3,
+        year: 2030,
+      )
+    end
+
+    let(:amount_in_cents) { 100_00 }
+    let(:currency) { 'USD' }
+    let(:gateway_options) { { order_id: "#{order.number}-#{payment.id}" } }
+
+    it 'returns proper (successful) ActiveMerchant::Billing::Response instance' do
+      VCR.use_cassette('payment_api/payments/success') do
+        expect(subject).to be_a(ActiveMerchant::Billing::Response)
+        expect(subject.success?).to be_truthy
+        expect(subject.authorization).to eq('ADYEN_PSP_REFERENCE')
       end
     end
   end

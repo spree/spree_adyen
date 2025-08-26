@@ -27,6 +27,10 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
   let(:channel) { 'Web' }
   let(:return_url) { 'http://www.example.com/adyen/payment_sessions/redirect' }
 
+  before do
+    allow(Spree).to receive(:version).and_return('42.0.0')
+  end
+
   context 'with valid params' do
     let(:expected_payload) do
       {
@@ -63,7 +67,14 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
           lastName: 'Doe'
         },
         shopperEmail: order.email,
-        shopperReference: "customer_#{user.id}"
+        shopperReference: "customer_#{user.id}",
+        applicationInfo: {
+          externalPlatform: {
+            name: 'Spree Commerce',
+            version: '42.0.0',
+            integrator: 'Spree Adyen'
+          }
+        }
       }
     end
 

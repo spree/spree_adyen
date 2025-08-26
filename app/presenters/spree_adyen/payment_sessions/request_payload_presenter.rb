@@ -34,7 +34,7 @@ module SpreeAdyen
           merchantAccount: merchant_account,
           merchantOrderReference: order_number,
           expiresAt: expires_at
-        }.merge!(shopper_details, DEFAULT_PARAMS, channel_params)
+        }.merge!(shopper_details, DEFAULT_PARAMS, channel_params, SpreeAdyen::ApplicationInfoPresenter.new.to_h)
       end
 
       private

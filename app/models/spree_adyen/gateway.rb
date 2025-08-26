@@ -239,7 +239,8 @@ module SpreeAdyen
     end
 
     def test_webhook
-      response = client.management.webhooks_merchant_level_api.test_webhook({ types: ['AUTHORISATION'] }, preferred_merchant_account, preferred_webhook_id)
+      response = client.management.webhooks_merchant_level_api.test_webhook({ types: ['AUTHORISATION'] }, preferred_merchant_account,
+                                                                            preferred_webhook_id)
 
       if response.status.to_i == 200 && response.response.dig('data', 0, 'status') == 'success'
         success(nil, response.response)
