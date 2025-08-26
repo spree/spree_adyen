@@ -382,8 +382,8 @@ RSpec.describe SpreeAdyen::Gateway do
     subject { gateway.set_up_webhook(url) }
     let(:url) { "https://9866bd85ee50.ngrok-free.app/adyen/webhooks" }
 
-    before do
-      Timecop.freeze(Time.zone.local(2025, 1, 1, 13, 12, 0))
+    around do |example|
+      Timecop.freeze(Time.zone.local(2025, 1, 1, 13, 12, 0)) { example.run }
     end
 
     it 'creates a webhook' do
