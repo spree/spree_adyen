@@ -58,7 +58,7 @@ RSpec.describe SpreeAdyen::Gateway do
   end
 
   describe 'callbacks' do
-    describe 'before_save' do
+    describe 'after_save' do
       describe 'auto configuration' do
         let(:configure_double) { double(call: true) }
   

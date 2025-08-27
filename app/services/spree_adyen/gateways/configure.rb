@@ -13,7 +13,8 @@ module SpreeAdyen
 
         set_up_webhook_with_hmac_key unless current_webhook_is_valid?
 
-        gateway
+        gateway.skip_auto_configuration = true
+        gateway.save!
       end
 
       private

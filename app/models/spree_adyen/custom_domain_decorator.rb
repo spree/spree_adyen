@@ -1,13 +1,10 @@
 module SpreeAdyen
   module CustomDomainDecorator
     def self.prepended(base)
-      base.after_commit :add_allowed_origin
-
-      base.store_accessor :private_metadata, :adyen_allowed_origin_id
-      base.store_accessor :private_metadata, :adyen_allowed_origin_url
+      base.after_commit :add_adyen_allowed_origin
     end
 
-    def add_allowed_origin
+    def add_adyen_allowed_origin
       return if store.adyen_gateway.blank?
 
       SpreeAdyen::AddAllowedOriginJob.perform_later(id, store.adyen_gateway.id, 'custom_domain')

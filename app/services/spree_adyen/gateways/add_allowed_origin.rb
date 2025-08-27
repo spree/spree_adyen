@@ -13,9 +13,7 @@ module SpreeAdyen
 
         if response.success?
           log("added to gateway #{gateway.id}")
-          record.update!(adyen_allowed_origin_id: response.authorization, adyen_allowed_origin_url: allowed_origin)
         elsif response.message['errorCode'] == ALREADY_EXISTS_ERROR_CODE
-          record.update!(adyen_allowed_origin_url: allowed_origin)
           log('already exists', :warn)
         else
           Rails.error.unexpected('Cannot create allowed origin', context: { url: allowed_origin, gateway_id: gateway.id }, source: 'spree_adyen')
