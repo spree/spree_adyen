@@ -23,7 +23,7 @@ module SpreeAdyen
     #
     # Callbacks
     #
-    after_save :configure, unless: :skip_auto_configuration
+    after_save :configure, if: :preferred_api_key_previously_changed?, unless: :skip_auto_configuration
 
     #
     # Associations
@@ -284,7 +284,7 @@ module SpreeAdyen
     end
 
     def configure
-      return if preferred_api_key.blank? || previous_changes['preferences'].pluck('api_key').uniq.size == 1
+      return if preferred_api_key.blank?
 
       SpreeAdyen::Gateways::Configure.new(self).call
     end
