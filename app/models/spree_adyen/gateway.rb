@@ -23,7 +23,7 @@ module SpreeAdyen
     #
     # Callbacks
     #
-    after_save :configure, if: :preferred_api_key_previously_changed?, unless: :skip_auto_configuration
+    after_commit :configure, if: :preferred_api_key_previously_changed?, unless: :skip_auto_configuration
 
     #
     # Associations
