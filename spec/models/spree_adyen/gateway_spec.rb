@@ -3,12 +3,96 @@ require 'spec_helper'
 RSpec.describe SpreeAdyen::Gateway do
   subject(:gateway) do
     create(:adyen_gateway,
+      stores: [store],
       preferred_api_key: 'secret',
       preferred_merchant_account: 'SpreeCommerceECOM',
-      preferred_test_mode: test_mode)
+      preferred_test_mode: test_mode,
+      preferred_webhook_id: webhook_id,
+      preferred_hmac_key: hmac_key
+    )
+  end
+  let(:store) { Spree::Store.default }
+  let(:amount) { 100 }
+  let(:test_mode) { true }
+  let(:webhook_id) { '1234567890' }
+  let(:hmac_key) { '1234567890' }
+
+  describe 'validations' do
+    describe 'api key validation' do
+      before do
+        gateway.preferred_api_key = 'new_api_key'
+      end
+
+      context 'when skip_api_key_validation is false' do
+        before do
+          gateway.skip_api_key_validation = false
+        end
+
+        context 'with valid api key' do
+          it 'does not validate the api key' do
+            VCR.use_cassette('management_api/get_api_credential_details/success') do
+              expect(gateway).to be_valid
+            end
+          end
+        end
+        
+        context 'with invalid api key (401)' do
+          it 'is invalid' do
+            VCR.use_cassette('management_api/get_api_credential_details/failure_401') do
+              expect(gateway).to be_invalid
+              expect(gateway.errors.full_messages).to include(a_string_matching(/Preferred api key is invalid. Response: Adyen::AuthenticationError code:401/))
+            end
+          end
+        end
+
+        context 'without required permissions (403)' do
+          it 'is invalid' do
+            VCR.use_cassette('management_api/get_api_credential_details/failure_403') do
+              expect(gateway).to be_invalid
+              expect(gateway.errors.full_messages).to include(a_string_matching(/Preferred api key has insufficient permissions. Add missing roles to API credential. Response: Adyen::PermissionError code:403/))
+            end
+          end
+        end
+      end
+    end
   end
 
-  let(:test_mode) { true }
+  describe 'callbacks' do
+    describe 'after_commit' do
+      describe 'auto configuration' do
+        let(:configure_double) { double(call: true) }
+  
+        before do
+          allow(SpreeAdyen::Gateways::Configure).to receive(:new).with(gateway).and_return(configure_double)
+          gateway.preferred_api_key = 'new_api_key'
+        end
+
+        context 'when skip_auto_configuration is true' do
+          before do
+            gateway.skip_auto_configuration = true
+          end
+  
+          it 'does not configure the gateway' do
+            expect(configure_double).to_not receive(:call)
+  
+            gateway.save
+          end
+        end
+  
+        context 'when skip_auto_configuration is false' do
+          before do
+            gateway.skip_auto_configuration = false
+          end
+  
+          it 'configures the gateway' do
+            expect(configure_double).to receive(:call).once
+  
+            gateway.save
+          end
+        end
+      end
+    end
+  end
 
   before do
     allow(Spree).to receive(:version).and_return('42.0.0')
@@ -37,7 +121,7 @@ RSpec.describe SpreeAdyen::Gateway do
         VCR.use_cassette('payment_session_results/failure') do
           expect(subject).to be_a(ActiveMerchant::Billing::Response)
           expect(subject.success?).to be_falsey
-          expect(subject.message).to eq('F7CHQBP9MCWNRQT5 - server could not process request')
+          expect(subject.message).to eq('ADYEN_PSP_REFERENCE - server could not process request')
         end
       end
     end
@@ -106,8 +190,19 @@ RSpec.describe SpreeAdyen::Gateway do
         VCR.use_cassette('payment_sessions/failure') do
           expect(subject).to be_a(ActiveMerchant::Billing::Response)
           expect(subject.success?).to be_falsey
-          expect(subject.message).to eq("N3FFD9KVFQ85K5V5 - Field 'countryCode' is not valid.")
+          expect(subject.message).to eq("ADYEN_PSP_REFERENCE - Field 'countryCode' is not valid.")
         end
+      end
+    end
+  end
+
+  describe '#generate_client_key' do
+    subject { gateway.generate_client_key }
+
+    it 'returns proper (successful) ActiveMerchant::Billing::Response instance' do
+      VCR.use_cassette('management_api/generate_client_key/success') do
+        expect(subject).to be_a(ActiveMerchant::Billing::Response)
+        expect(subject.success?).to be_truthy
       end
     end
   end
@@ -123,6 +218,42 @@ RSpec.describe SpreeAdyen::Gateway do
       let(:gateway) { create(:adyen_gateway, preferred_test_mode: false) }
 
       it { is_expected.to eq(:live) }
+    end
+  end
+
+  describe '#test_webhook' do
+    subject { gateway.test_webhook }
+
+    let(:hmac_key) { 'HMAC_KEY' }
+
+    context 'when webhook is valid' do
+      let(:webhook_id) { 'WBHK42CLH22322975N3464F9TP0000' }
+
+      it 'returns success' do
+        VCR.use_cassette("management_api/test_webhook/success") do
+          expect(subject.success?).to be(true)
+        end
+      end
+    end
+
+    context 'when webhook ID is invalid' do
+      let(:webhook_id) { '1234567890' }
+
+      it 'returns failure' do
+        VCR.use_cassette("management_api/test_webhook/bad_request") do
+          expect(subject.success?).to be(false)
+        end
+      end
+    end
+
+    context 'when webhook does not respond with 2xx' do
+      let(:webhook_id) { 'WBHK42CLH22322975N3464F9TP0000' }
+
+      it 'returns failure' do
+        VCR.use_cassette("management_api/test_webhook/failure") do
+          expect(subject.success?).to be(false)
+        end
+      end
     end
   end
 
@@ -163,7 +294,7 @@ RSpec.describe SpreeAdyen::Gateway do
 
     context 'when payment is completed' do
       let(:order) { create(:order, total: 10, number: 'R142767632') }
-      let(:payment) { create(:payment, state: 'completed', order: order, payment_method: gateway, amount: 10.0, response_code: 'X4G6K4DDZ46B8ZV5') }
+      let(:payment) { create(:payment, state: 'completed', order: order, payment_method: gateway, amount: 10.0, response_code: 'ADYEN_PAYMENT_PSP_REFERENCE') }
 
       it 'creates a refund with credit_allowed_amount' do
         VCR.use_cassette("payment_api/create_refund/success") do
@@ -203,7 +334,7 @@ RSpec.describe SpreeAdyen::Gateway do
 
       it 'should raises Spree::Core::GatewayError with the error message' do
         VCR.use_cassette("payment_api/create_refund/failure/invalid_payment_id") do
-          expect { subject }.to raise_error(Spree::Core::GatewayError, 'X4NZMCHN86JCNP65 - Original pspReference required for this operation')
+          expect { subject }.to raise_error(Spree::Core::GatewayError, 'ADYEN_PSP_REFERENCE - Original pspReference required for this operation')
         end
       end
     end
@@ -213,7 +344,7 @@ RSpec.describe SpreeAdyen::Gateway do
     subject { gateway.credit(amount_in_cents, payment.source, passed_response_code, {}) }
 
     let(:order) { create(:order, total: 10, number: 'R142767632') }
-    let(:payment) { create(:payment, state: 'completed', order: order, payment_method: gateway, amount: 10.0, response_code: 'X4G6K4DDZ46B8ZV5') }
+    let(:payment) { create(:payment, state: 'completed', order: order, payment_method: gateway, amount: 10.0, response_code: 'ADYEN_PAYMENT_PSP_REFERENCE') }
     let(:amount_in_cents) { 800 }
     let(:passed_response_code) { payment.response_code }
 
@@ -225,14 +356,14 @@ RSpec.describe SpreeAdyen::Gateway do
     end
 
     context 'when response is not successful' do
-      let(:payment) { create(:payment, state: 'completed', order: order, payment_method: gateway, amount: 10.0, response_code: 'X4G6K4DDZ46B8ZV5') }
+      let(:payment) { create(:payment, state: 'completed', order: order, payment_method: gateway, amount: 10.0, response_code: 'ADYEN_PAYMENT_PSP_REFERENCE') }
       let(:order) { create(:order, total: 10, number: 'R142767632') }
       let(:amount_in_cents) { 0 }
 
       it 'should return failure response' do
         VCR.use_cassette("payment_api/create_refund/failure/invalid_amount") do
           expect(subject.success?).to eq(false)
-          expect(subject.message).to eq("SQLBC925DFMK8B75 - Field 'amount' is not valid.")
+          expect(subject.message).to eq("ADYEN_PSP_REFERENCE - Field 'amount' is not valid.")
         end
       end
     end
@@ -243,6 +374,21 @@ RSpec.describe SpreeAdyen::Gateway do
       it 'should return failure response' do
         expect(subject.success?).to eq(false)
         expect(subject.message).to eq("foobar - Payment not found")
+      end
+    end
+  end
+
+  describe '#set_up_webhook' do
+    subject { gateway.set_up_webhook(url) }
+    let(:url) { "https://9866bd85ee50.ngrok-free.app/adyen/webhooks" }
+
+    around do |example|
+      Timecop.freeze(Time.zone.local(2025, 1, 1, 13, 12, 0)) { example.run }
+    end
+
+    it 'creates a webhook' do
+      VCR.use_cassette("management_api/create_webhook/success") do
+        expect(subject.success?).to be(true)
       end
     end
   end

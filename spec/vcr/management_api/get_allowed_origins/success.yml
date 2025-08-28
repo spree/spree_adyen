@@ -1,0 +1,41 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://management-test.adyen.com/v3/me/allowedOrigins
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.3.0
+      X-Api-Key:
+      - secret
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Wed, 06 Aug 2025 13:56:08 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"data":[{"id":"S2-40576D57412A48584B296C396D6D68355069696A68536A2B5D4A727B447333683B3B49793D53466E794E33","domain":"http:\/\/some-domain.dev","_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/me\/allowedOrigins\/S2-40576D57412A48584B296C396D6D68355069696A68536A2B5D4A727B447333683B3B49793D53466E794E33"}}},{"id":"S2-35212A513A474C57714D243F50256D68752E65526F684C6E75226A3E6B","domain":"http:\/\/localhost:3000","_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/me\/allowedOrigins\/S2-35212A513A474C57714D243F50256D68752E65526F684C6E75226A3E6B"}}},{"id":"S2-2C234C4B5721345B2B665A5C2D3D707C58295F5C584B27735F4E625620","domain":"http:\/\/localhost:8080","_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/me\/allowedOrigins\/S2-2C234C4B5721345B2B665A5C2D3D707C58295F5C584B27735F4E625620"}}},{"id":"S2-7C6D5960743A4C5E323A6F577D6D34456A4E473B216E33662D5F6C5344687E60476A6D602E2869712F4A3F6F","domain":"https:\/\/some-domain.dev","_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/me\/allowedOrigins\/S2-7C6D5960743A4C5E323A6F577D6D34456A4E473B216E33662D5F6C5344687E60476A6D602E2869712F4A3F6F"}}}]}'
+  recorded_at: Wed, 06 Aug 2025 13:56:08 GMT
+recorded_with: VCR 6.3.1

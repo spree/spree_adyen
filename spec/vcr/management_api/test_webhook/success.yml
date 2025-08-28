@@ -1,0 +1,41 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://management-test.adyen.com/v3/merchants/SpreeCommerceECOM/webhooks/WBHK42CLH22322975N3464F9TP0000/test
+    body:
+      encoding: UTF-8
+      string: '{"types":["AUTHORISATION"]}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Mon, 25 Aug 2025 11:02:54 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"data":[{"output":"Event delivered successfully!","requestSent":"{\"live\":\"false\",\"notificationItems\":[{\"NotificationRequestItem\":{\"additionalData\":{\"expiryDate\":\"12\\/2012\",\"authCode\":\"1234\",\"cardSummary\":\"7777\",\"totalFraudScore\":\"10\",\"hmacSignature\":\"ZmFrZV9zaWduYXR1cmU=\",\"NAME2\":\"VALUE2\",\"NAME1\":\"VALUE1\",\"fraudCheck-6-ShopperIpUsage\":\"10\"},\"amount\":{\"currency\":\"EUR\",\"value\":10100},\"eventCode\":\"AUTHORISATION\",\"eventDate\":\"2025-08-25T13:41:59+02:00\",\"merchantAccountCode\":\"SpreeCommerceECOM\",\"merchantReference\":\"8313842560770001\",\"operations\":[\"CANCEL\",\"CAPTURE\",\"REFUND\"],\"paymentMethod\":\"visa\",\"pspReference\":\"ADYEN_PSP_REFERENCE\",\"reason\":\"1234:7777:12\\/2012\",\"success\":\"true\"}}]}","responseCode":"200","responseTime":"5139 ms","status":"success"}]}'
+  recorded_at: Mon, 25 Aug 2025 11:02:54 GMT
+recorded_with: VCR 6.3.1

@@ -1,0 +1,46 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://management-test.adyen.com/v3/me
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - "ADYEN_API_KEY"
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Traceparent:
+      - 00-c9b030ccf1a41dbfbd8cf13fc81b5957-d276908fa40b4a26-01
+      Set-Cookie:
+      - JSESSIONID=9876640c6f8e9e36~C94012327E514B22E6795B42A506697E; Path=/configurationapi;
+        Secure; HttpOnly
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Thu, 14 Aug 2025 09:23:38 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"type":"https:\/\/docs.adyen.com\/errors\/unauthorized","title":"Unauthorized","status":401,"errorCode":"00_401"}'
+  recorded_at: Thu, 14 Aug 2025 09:23:38 GMT
+recorded_with: VCR 6.3.1

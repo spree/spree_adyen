@@ -8,7 +8,7 @@
           "authCode": "1234",
           "cardSummary": "7777",
           "totalFraudScore": "10",
-          "hmacSignature": "8XYK/YLak7UP3gA2MPdXuaS51JK6OrP/FMwA/UwXdIs=",
+          "hmacSignature": "ZmFrZV9zaWduYXR1cmU=",
           "NAME2": "VALUE2",
           "NAME1": "VALUE1",
           "storedPaymentMethodId": "webhooks_authorisation_success_stored_payment_method_id",

@@ -12,7 +12,7 @@ http_interactions:
       User-Agent:
       - adyen-ruby-api-library/10.3.0
       X-Api-Key:
-      - "<ADYEN_API_KEY>"
+      - "ADYEN_API_KEY"
       Idempotency-Key:
       - 95271443-35c2-41c8-8e53-e540722b5527
       Adyen-Library-Name:
@@ -28,8 +28,6 @@ http_interactions:
       code: 422
       message: Unprocessable Content
     headers:
-      Traceparent:
-      - 00-094c940de264d90e4a4b0a99a5b47b4e-49f3ff3acd669549-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -40,16 +38,8 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=3335F340C997C70399F741B24ADD82C3; Path=/checkout; Secure; HttpOnly
-      Idempotency-Key:
-      - 95271443-35c2-41c8-8e53-e540722b5527
-      Pspreference:
-      - X4NZMCHN86JCNP65
       Content-Type:
       - application/json;charset=UTF-8
-      Content-Length:
-      - '153'
       Date:
       - Wed, 06 Aug 2025 10:45:56 GMT
       Strict-Transport-Security:
@@ -57,6 +47,6 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"status":422,"errorCode":"167","message":"Original pspReference required
-        for this operation","errorType":"validation","pspReference":"X4NZMCHN86JCNP65"}'
+        for this operation","errorType":"validation","pspReference":"ADYEN_PSP_REFERENCE"}'
   recorded_at: Wed, 06 Aug 2025 10:45:56 GMT
 recorded_with: VCR 6.3.1

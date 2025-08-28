@@ -5,7 +5,7 @@
       "NotificationRequestItem": {
         "additionalData": {
           "totalFraudScore": "10",
-          "hmacSignature": "8XYK/YLak7UP3gA2MPdXuaS51JK6OrP/FMwA/UwXdIs=",
+          "hmacSignature=": "ZmFrZV9zaWduYXR1cmU=",
           "NAME2": "VALUE2",
           "NAME1": "VALUE1",
           "checkoutSessionId": "webhooks_authorisation_success_checkout_session_id",

@@ -9,9 +9,12 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
   let(:payment_method) { create(:adyen_gateway, preferred_hmac_key: 'hmac_key') }
   let(:order) { create(:order_with_line_items, number: '1234567890', state: 'payment') }
   let(:valid_hmac) { true }
+  let(:valid_previous_hmac) { false }
 
   before do
     allow_any_instance_of(Adyen::Utils::HmacValidator).to receive(:valid_webhook_hmac?).and_return(valid_hmac)
+    allow_any_instance_of(Adyen::Utils::HmacValidator).to receive(:valid_webhook_hmac?).with(kind_of(String), 'hmac_key').and_return(valid_hmac)
+    allow_any_instance_of(Adyen::Utils::HmacValidator).to receive(:valid_webhook_hmac?).with(kind_of(String), 'previous_hmac_key').and_return(valid_previous_hmac)
     allow_any_instance_of(SpreeAdyen::Webhooks::Event).to receive(:payment_method_id).and_return(payment_method.id)
     allow_any_instance_of(SpreeAdyen::Webhooks::Event).to receive(:amount).and_return(Spree::Money.new(order.total_minus_store_credits, currency: order.currency))
   end
@@ -39,6 +42,15 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
           subject
 
           expect(response).to have_http_status(:unauthorized)
+        end
+      end
+
+      context 'with valid previous hmac' do
+        let(:valid_previous_hmac) { true }
+        let(:valid_hmac) { false }
+
+        it 'returns ok' do
+          subject
         end
       end
     end

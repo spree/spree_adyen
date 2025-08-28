@@ -30,12 +30,8 @@ http_interactions:
       - Mon, 07 Jul 2025 14:09:31 GMT
       Content-Type:
       - application/json;charset=UTF-8
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Traceparent:
-      - 00-1fcf9ea3fb420c647e0c167bdff4b4db-8d5d9c694d39995f-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -46,26 +42,15 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=3D76A0B7AD9D600C7F74D6D608CC7332; Path=/checkout; Secure; HttpOnly
-      - __cf_bm=ToNadPDc8oda0ka6GHjMFXauT.VdvnohaGForym696k-1751897371-1.0.1.1-n57Ox78KVZJzNsb0x5KuhTztqC5qrL4n_rMCVeypRPHF7xvKgMkZARcrgh72fvk3mHQVVD8sJFQoQahpUrBS__x_ct82QdSPuhDpWIwww7o;
-        path=/; expires=Mon, 07-Jul-25 14:39:31 GMT; domain=.adyen.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=M4LZvwAV9zeVv1AtEcGvqF4I7z8c.zm.UV6jD1Cmhk8-1751897371921-0.0.1.1-604800000;
-        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
-      Pspreference:
-      - PSVRSDCNVS2S2LV5
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Cf-Cache-Status:
       - DYNAMIC
       Server:
       - cloudflare
-      Cf-Ray:
-      - 95b7eb8dd9b2ee47-WAW
     body:
       encoding: ASCII-8BIT
-      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"VMLWMSBWZZSBJWT5","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"canceled"}'
+      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"ADYEN_PSP_REFERENCE","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"canceled"}'
   recorded_at: Mon, 07 Jul 2025 14:09:31 GMT
 - request:
     method: get
@@ -97,12 +82,8 @@ http_interactions:
       - Tue, 08 Jul 2025 07:35:37 GMT
       Content-Type:
       - application/json;charset=UTF-8
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Traceparent:
-      - 00-f232a9c11cde0c2e043c8b677cddea1c-614a03d36adc1f26-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -113,15 +94,6 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=976B823E0D464D66E9E52989B699535B; Path=/checkout; Secure; HttpOnly
-      - __cf_bm=N3M49mVEAalFr60WnWISM6qL99lpkoEwMUeNulZMcRM-1751960137-1.0.1.1-kBpFmXbYjT6N8WAHSaQi3qK9j4tW4OoXMvucLjDSu6OL4Px3ve6Ul.6lITiyVsILmoj9kG8sgDmSKjUlpkfgtacDuHNRsQFNNvgJFyWD4z0;
-        path=/; expires=Tue, 08-Jul-25 08:05:37 GMT; domain=.adyen.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=Rz7qv7.vmtzc_56.dp_5DEsyGpPc85_q1c.NiViIAx4-1751960137165-0.0.1.1-604800000;
-        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
-      Pspreference:
-      - ZXV42HCBMCWNRQT5
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Cf-Cache-Status:
@@ -132,7 +104,7 @@ http_interactions:
       - 95bde7e87d5e21e1-WAW
     body:
       encoding: ASCII-8BIT
-      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"VMLWMSBWZZSBJWT5","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"completed"}'
+      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"ADYEN_PSP_REFERENCE","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"completed"}'
   recorded_at: Tue, 08 Jul 2025 07:35:37 GMT
 - request:
     method: get
@@ -164,12 +136,8 @@ http_interactions:
       - Tue, 08 Jul 2025 07:35:40 GMT
       Content-Type:
       - application/json;charset=UTF-8
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Traceparent:
-      - 00-29ce5c1df99b679b74890cde4c60af1f-381f7778407c0e6b-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -180,15 +148,6 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=5122233604F16509F3ED57D7827D1106; Path=/checkout; Secure; HttpOnly
-      - __cf_bm=rRvINoE0SEJHvNu9umuIjWMmPcC4MfIjm_.hwzXKys0-1751960140-1.0.1.1-vNVrajCso3Uuq0aB1dsUvl50pSte9YMcjjob1RGq3E18gIM6vGs09LhISyNrQjnPWyUbT2eMvklKtl4cryl2U2N6F.H_XgJxnO61ygfRAmY;
-        path=/; expires=Tue, 08-Jul-25 08:05:40 GMT; domain=.adyen.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=QxKyIyrNnOOrT1eV1uRwszs9YehOwkThl3henqwVHOY-1751960140772-0.0.1.1-604800000;
-        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
-      Pspreference:
-      - XX6MFMZNVS2S2LV5
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Cf-Cache-Status:
@@ -199,7 +158,7 @@ http_interactions:
       - 95bde7ff09c4eec2-WAW
     body:
       encoding: ASCII-8BIT
-      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"VMLWMSBWZZSBJWT5","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"completed"}'
+      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"ADYEN_PSP_REFERENCE","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"completed"}'
   recorded_at: Tue, 08 Jul 2025 07:35:40 GMT
 - request:
     method: get
@@ -231,12 +190,8 @@ http_interactions:
       - Tue, 08 Jul 2025 07:35:51 GMT
       Content-Type:
       - application/json;charset=UTF-8
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Traceparent:
-      - 00-9a5af81da3240a0cc0fca2bba9d09cfa-fe9267d074cc7835-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -247,15 +202,6 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=63D83BF1D990CEB441F706018E51952E; Path=/checkout; Secure; HttpOnly
-      - __cf_bm=wqnmZ8E8B0ebIS.KWJ720.4bFFCumZQavGskawKLwHQ-1751960151-1.0.1.1-JqsGWMrZvnAmOGvLfW2s8x3.RJRyGvC8QU9TZbj9.ljuArWoNih_VN_3oR0ZLIrWdfomghGrpiEGQlPxS_oha7a6dhM7rcfZIKINGjNH6vo;
-        path=/; expires=Tue, 08-Jul-25 08:05:51 GMT; domain=.adyen.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=XnLDtLcbtiziysjQ2WtHWc3YRQtTrz7pIKnetbTZf7k-1751960151440-0.0.1.1-604800000;
-        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
-      Pspreference:
-      - KK8Z2G7WFQ85K5V5
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Cf-Cache-Status:
@@ -266,7 +212,7 @@ http_interactions:
       - 95bde841a82f34cd-WAW
     body:
       encoding: ASCII-8BIT
-      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"VMLWMSBWZZSBJWT5","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"completed"}'
+      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"ADYEN_PSP_REFERENCE","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"completed"}'
   recorded_at: Tue, 08 Jul 2025 07:35:51 GMT
 - request:
     method: get
@@ -298,12 +244,8 @@ http_interactions:
       - Tue, 08 Jul 2025 07:35:53 GMT
       Content-Type:
       - application/json;charset=UTF-8
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Traceparent:
-      - 00-911fac5e885284a784bd98cbf75168a0-0ba13f560f9b53d4-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -314,15 +256,6 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=F821F48E52985E41E416A3AE66DD73C2; Path=/checkout; Secure; HttpOnly
-      - __cf_bm=asOSKXTG5a3jY3dFy48xDxwfOk_1GA6G3QfEw79c9gM-1751960153-1.0.1.1-kt8aOlU_GRDgtnyoLroLGJl4sEbNleT9f_NK4D1zfpdBi2WN7M3XDQ_40UX3czmnJ3VPIEs5cGIqFqaO0LNeJza15niTua.GBfLizoSkD_k;
-        path=/; expires=Tue, 08-Jul-25 08:05:53 GMT; domain=.adyen.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=7jUlm9V2eELrFS6qMxnWzo.04CxCj7Kws2Ad9erzITE-1751960153439-0.0.1.1-604800000;
-        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
-      Pspreference:
-      - NZ5LJMZNVS2S2LV5
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Cf-Cache-Status:
@@ -333,7 +266,7 @@ http_interactions:
       - 95bde84e3b05bf2d-WAW
     body:
       encoding: ASCII-8BIT
-      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"VMLWMSBWZZSBJWT5","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"completed"}'
+      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"ADYEN_PSP_REFERENCE","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"completed"}'
   recorded_at: Tue, 08 Jul 2025 07:35:53 GMT
 - request:
     method: get
@@ -365,12 +298,8 @@ http_interactions:
       - Tue, 08 Jul 2025 07:36:05 GMT
       Content-Type:
       - application/json;charset=UTF-8
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Traceparent:
-      - 00-bfcb8ae1281f8e9ed5d5d9cf5176e376-4ce4d80b0ff48418-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -381,15 +310,6 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=C79CDF3A5B8FDBFCB4AC861FC9BB9D81; Path=/checkout; Secure; HttpOnly
-      - __cf_bm=HS43kPEP1ObHn4TaFT2TEXAfzYoI77BwsRrBzcHRutU-1751960165-1.0.1.1-3evu0yMuxIud34gbHL9tdZrKMofWFqqMZg4TG2HsxVAEp7lKV8cxT2__7Q5I_g6fMa_cDQtz883q6v0r2GGWc2ywNdH3YI0Z.6tFrq4YQMs;
-        path=/; expires=Tue, 08-Jul-25 08:06:05 GMT; domain=.adyen.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=.cR4pkKNTgt6dAp_IFZ6A6hhSZ_30aTi8rBRFrCZDkc-1751960165624-0.0.1.1-604800000;
-        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
-      Pspreference:
-      - BNQBMMZNVS2S2LV5
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Cf-Cache-Status:
@@ -400,6 +320,6 @@ http_interactions:
       - 95bde89a7d5d6cdc-WAW
     body:
       encoding: ASCII-8BIT
-      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"VMLWMSBWZZSBJWT5","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"completed"}'
+      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"ADYEN_PSP_REFERENCE","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"completed"}'
   recorded_at: Tue, 08 Jul 2025 07:36:05 GMT
 recorded_with: VCR 6.3.1

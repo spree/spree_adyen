@@ -33,12 +33,8 @@ http_interactions:
       - Mon, 07 Jul 2025 14:13:40 GMT
       Content-Type:
       - application/json;charset=UTF-8
-      Content-Length:
-      - '137'
       Connection:
       - keep-alive
-      Traceparent:
-      - 00-44474c5565f3061b68de966eeea00fbf-b33d1c2b38068723-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -49,28 +45,15 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=AE3553255F33BCA3856C6644FB958552; Path=/checkout; Secure; HttpOnly
-      - __cf_bm=ux.8PJlDBX_YQwtPudgOllmCUpzWa2Hu3.Tia71Xs0U-1751897620-1.0.1.1-pdR8XrnU2WPppgKAvl0BPVJ2oNdX4zFfdYFmqocfryFtWNeNZ5MRbZUHnZurCl6Yi6lO73ZsoIlJoEYAx4DwcaEIiQmo4GSLahvjF4OfuGM;
-        path=/; expires=Mon, 07-Jul-25 14:43:40 GMT; domain=.adyen.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=V1erVPDENLhIY0l_5YxmD0_gDgs0MXbLMHRLtPOjafk-1751897620647-0.0.1.1-604800000;
-        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
-      Idempotency-Key:
-      - 868e08b6-172c-4533-939d-0f57736a7340
-      Pspreference:
-      - N3FFD9KVFQ85K5V5
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Cf-Cache-Status:
       - DYNAMIC
       Server:
       - cloudflare
-      Cf-Ray:
-      - 95b7f1a039e534e8-WAW
     body:
       encoding: UTF-8
       string: '{"status":422,"errorCode":"200","message":"Field ''countryCode'' is
-        not valid.","errorType":"validation","pspReference":"N3FFD9KVFQ85K5V5"}'
+        not valid.","errorType":"validation","pspReference":"ADYEN_PSP_REFERENCE"}'
   recorded_at: Mon, 07 Jul 2025 14:13:40 GMT
 recorded_with: VCR 6.3.1

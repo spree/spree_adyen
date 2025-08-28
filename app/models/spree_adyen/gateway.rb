@@ -1,11 +1,33 @@
 module SpreeAdyen
   class Gateway < ::Spree::Gateway
-    preference :merchant_account, :string
+    #
+    # Attributes
+    #
+    attribute :skip_auto_configuration, :boolean, default: false
+    attribute :skip_api_key_validation, :boolean, default: false
+
     preference :api_key, :password
+    preference :merchant_account, :string
     preference :client_key, :password
     preference :hmac_key, :password
     preference :test_mode, :boolean, default: true
+    preference :webhook_id, :string
 
+    store_accessor :private_metadata, :previous_hmac_key
+    #
+    # Validations
+    #
+    validates :preferred_api_key, presence: true
+    validate :validate_api_key, if: -> { preferred_api_key_changed? }, unless: :skip_api_key_validation
+
+    #
+    # Callbacks
+    #
+    after_commit :configure, if: :preferred_api_key_previously_changed?, unless: :skip_auto_configuration
+
+    #
+    # Associations
+    #
     has_many :payment_sessions, class_name: 'SpreeAdyen::PaymentSession',
                                 foreign_key: 'payment_method_id',
                                 dependent: :delete_all,
@@ -185,7 +207,87 @@ module SpreeAdyen
       end
     end
 
+    def get_api_credential_details
+      response = client.management.my_api_credential_api.get_api_credential_details
+
+      if response.status.to_i == 200
+        success(response.response.id, response.response)
+      else
+        failure(response.response.message)
+      end
+    end
+
+    def add_allowed_origin(domain)
+      response = client.management.my_api_credential_api.add_allowed_origin({ domain: domain })
+
+      if response.status.to_i == 200
+        success(response.response.id, response.response)
+      else
+        failure(response.response)
+      end
+    end
+
+    def set_up_webhook(url)
+      payload = SpreeAdyen::WebhookPayloadPresenter.new(url).to_h
+      response = client.management.webhooks_merchant_level_api.set_up_webhook(payload, preferred_merchant_account)
+
+      if response.status.to_i == 200
+        success(response.response.id, response.response)
+      else
+        failure(response.response)
+      end
+    end
+
+    def test_webhook
+      response = client.management.webhooks_merchant_level_api.test_webhook({ types: ['AUTHORISATION'] }, preferred_merchant_account,
+                                                                            preferred_webhook_id)
+
+      if response.status.to_i == 200 && response.response.dig('data', 0, 'status') == 'success'
+        success(nil, response.response)
+      else
+        failure(response.response)
+      end
+    end
+
+    def generate_hmac_key
+      response = client.management.webhooks_merchant_level_api.generate_hmac_key(preferred_merchant_account, preferred_webhook_id)
+
+      if response.status.to_i == 200
+        success(response.response.hmacKey, response.response)
+      else
+        failure(response.response)
+      end
+    end
+
+    def generate_client_key
+      response = client.management.my_api_credential_api.generate_client_key
+
+      if response.status.to_i == 200
+        success(response.response.clientKey, response.response)
+      else
+        failure(response.response.message)
+      end
+    end
+
     private
+
+    def validate_api_key
+      return if preferred_api_key.blank?
+
+      get_api_credential_details
+    rescue Adyen::AuthenticationError => e
+      errors.add(:preferred_api_key, "is invalid. Response: #{e.message}")
+    rescue Adyen::PermissionError => e
+      errors.add(:preferred_api_key, "has insufficient permissions. Add missing roles to API credential. Response: #{e.message}")
+    rescue Adyen::AdyenError => e
+      errors.add(:preferred_api_key, "An error occurred. Response: #{e.message}")
+    end
+
+    def configure
+      return if preferred_api_key.blank?
+
+      SpreeAdyen::Gateways::Configure.new(self).call
+    end
 
     def client
       @client ||= Adyen::Client.new.tap do |client|

@@ -2,17 +2,17 @@
 http_interactions:
 - request:
     method: post
-    uri: https://checkout-test.adyen.com/v71/payments/X4G6K4DDZ46B8ZV5/refunds
+    uri: https://checkout-test.adyen.com/v71/payments/ADYEN_PAYMENT_PSP_REFERENCE/refunds
     body:
       encoding: UTF-8
-      string: '{"amount":{"value":0,"currency":"USD"},"reference":"R142767632_1_X4G6K4DDZ46B8ZV5_refund","merchantAccount":"SpreeCommerceECOM"}'
+      string: '{"amount":{"value":0,"currency":"USD"},"reference":"R142767632_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","merchantAccount":"SpreeCommerceECOM"}'
     headers:
       Content-Type:
       - application/json
       User-Agent:
       - adyen-ruby-api-library/10.3.0
       X-Api-Key:
-      - "<ADYEN_API_KEY>"
+      - "ADYEN_API_KEY"
       Idempotency-Key:
       - 0d8ea548-0abc-407c-a60b-7553a0e542fe
       Adyen-Library-Name:
@@ -28,8 +28,6 @@ http_interactions:
       code: 422
       message: Unprocessable Content
     headers:
-      Traceparent:
-      - 00-b59fbee7419b6bc6419e345143efd18c-8bbfea9083306098-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -40,16 +38,8 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=215429793FBFEE64F817C4A0F68870B8; Path=/checkout; Secure; HttpOnly
-      Idempotency-Key:
-      - 0d8ea548-0abc-407c-a60b-7553a0e542fe
-      Pspreference:
-      - SQLBC925DFMK8B75
       Content-Type:
       - application/json;charset=UTF-8
-      Content-Length:
-      - '132'
       Date:
       - Wed, 06 Aug 2025 11:09:51 GMT
       Strict-Transport-Security:
@@ -57,6 +47,6 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"status":422,"errorCode":"137","message":"Field ''amount'' is not
-        valid.","errorType":"validation","pspReference":"SQLBC925DFMK8B75"}'
+        valid.","errorType":"validation","pspReference":"ADYEN_PSP_REFERENCE"}'
   recorded_at: Wed, 06 Aug 2025 11:09:51 GMT
 recorded_with: VCR 6.3.1

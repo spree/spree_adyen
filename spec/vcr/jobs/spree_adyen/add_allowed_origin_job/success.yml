@@ -1,0 +1,41 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://management-test.adyen.com/v3/me/allowedOrigins
+    body:
+      encoding: UTF-8
+      string: '{"domain":"https://example.com"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.3.0
+      X-Api-Key:
+      - "ADYEN_API_KEY"
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Fri, 08 Aug 2025 15:47:10 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"S2-3D2236432D4F5D5F7F68793D456E5C2F68733E282A7353396E322F","domain":"https:\/\/example.com","_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/me\/allowedOrigins\/S2-3D2236432D4F5D5F7F68793D456E5C2F68733E282A7353396E322F"}}}'
+  recorded_at: Fri, 08 Aug 2025 15:47:10 GMT
+recorded_with: VCR 6.3.1

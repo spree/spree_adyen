@@ -1,0 +1,43 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://management-test.adyen.com/v3/me
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - "ADYEN_API_KEY"
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Thu, 14 Aug 2025 10:34:50 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"CRED42CLS22322945MZF5ZNDQ26BBP","username":"ADYEN_USERNAME","description":"testing
+        auto-configure","clientKey":"ADYEN_CLIENT_KEY","allowedIpAddresses":[],"roles":["Merchant
+        PAL Webservice role"],"active":true,"_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/me"},"allowedOrigins":{"href":"https:\/\/management-test.adyen.com\/v3\/me\/allowedOrigins"}},"associatedMerchantAccounts":["SpreeCommerceECOM"],"companyName":"SpreeCommerce"}'
+  recorded_at: Thu, 14 Aug 2025 10:34:50 GMT
+recorded_with: VCR 6.3.1

@@ -1,0 +1,43 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://management-test.adyen.com/v3/merchants/SpreeCommerceECOM/webhooks
+    body:
+      encoding: UTF-8
+      string: '{"url":"https://9866bd85ee50.ngrok-free.app/adyen/webhooks","description":"Webhook
+        created by SpreeAdyen on 2025-01-01 13:12:00","active":true,"communicationFormat":"json","type":"standard"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Tue, 26 Aug 2025 08:43:04 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"WBHK42CNX22322975N37Q7G8SD3W2P","type":"standard","url":"https:\/\/9866bd85ee50.ngrok-free.app\/adyen\/webhooks","description":"Webhook
+        created by SpreeAdyen on 2025-01-01 13:12:00","username":"","hasPassword":false,"active":true,"hasError":false,"encryptionProtocol":"TLSv1.3","communicationFormat":"json","acceptsExpiredCertificate":false,"acceptsSelfSignedCertificate":false,"acceptsUntrustedRootCertificate":false,"certificateAlias":"signed-test.adyen.com_2025","populateSoapActionHeader":false,"additionalSettings":{"properties":{"includePosTerminalInfo":false,"includeARN":false,"includeExtraCostsSurcharge":false,"includePaymentAccountOwnerDetails":false,"includePosDetails":false,"includeCardInfoForRecurringContractNotification":false,"includeRiskData":false,"includeRiskExperimentReference":false,"includeSoapSecurityHeader":false,"includeContactlessWalletTokenInformation":false,"includeExtraCostsGratuity":false,"includeAdjustAuthorisationData":false,"includeAcquirerReference":false,"includeRiskProfileReference":false,"includeOriginalMerchantReferenceCancelOrRefundNotification":false,"includeNfcTokenInformation":false,"includeSubvariant":false,"includeThreeDSVersion":false,"includeInstallmentsInfo":false,"includeAliasInfo":false,"includeShopperCountry":false,"includeRawThreeDSecureResult":false,"includeAirlineData":false,"includeGrossCurrencyChargebackDetails":false,"includeSwishPayerAlias":false,"includeThreeDSecureResult":false,"includeUpiMetadata":false,"includeMetadataIn3DSecurePaymentNotification":false,"includeCashAppCashtag":false,"includeGiftCardNumber":false,"includeOriginalReferenceForChargebackReversed":false,"includeMerchantAdviceCode":false,"addAcquirerResult":false,"includeDeliveryAddress":false,"includeRetryAttempts":false,"includeVisaRdrDisputeIndicator":false,"includeExtraCosts":false,"includeCardHolderName":false,"includeShopperDetail":false,"includeBankAccountDetails":false,"includeMandateDetails":false,"includeAuthAmountForDynamicZeroAuth":false,"includeIssuerCountry":false,"includeAcquirerErrorDetails":false,"includeCoBrandedWith":false,"includeShopperInteraction":false,"includeDeviceAndBrowserInfo":false,"includeUpiVpa":false,"includePixEndToEndId":false,"addRawAcquirerResult":false,"includeCardBin":false,"includeFundingSource":false,"includeThreeDS2ChallengeInformation":false,"includeRiskProfile":false,"includeRealtimeAccountUpdaterStatus":false,"includePixPayerInfo":false,"includeDunningProjectData":false,"includePaymentResultInOrderClosedNotification":false,"includeCardBinDetails":false,"includeNotesInManualReviewNotifications":false,"includeZeroAuthFlag":false,"oAuthSupported":false,"addCaptureReferenceToDisputeNotification":false,"includeAfterPayTouchConsumerReference":false,"includePayPalDetails":false,"includeRawThreeDSecureDetailsResult":false,"includeBankVerificationResults":false,"includeCaptureDelayHours":false,"addPaymentAccountReference":false,"includePayULatamDetails":false,"includeStore":false,"returnAvsData":false,"includeApplicationIdentifier":false,"includeWeChatPayOpenid":false,"includeCustomRoutingFlagging":false,"includeGoPayDetails":false,"includeTokenisedPaymentMetaData":false},"includeEventCodes":["CAPTURE_FAILED","CHARGEBACK_REVERSED","REQUEST_FOR_INFORMATION","MANUAL_REVIEW_REJECT","PAIDOUT_REVERSED","PAYOUT_THIRDPARTY","NOTIFICATION_OF_CHARGEBACK","CANCELLATION","REFUNDED_REVERSED","MANUAL_REVIEW_ACCEPT","TECHNICAL_CANCEL","NOTIFICATION_OF_FRAUD","PREARBITRATION_OPEN","RECURRING_CONTRACT","PAYOUT_EXPIRE","CANCEL_AUTORESCUE","POSTPONED_REFUND","CANCEL_OR_REFUND","CAPTURE","ORDER_CLOSED","REFUND","REFUND_WITH_DATA","AUTHORISATION_ADJUSTMENT","HANDLED_EXTERNALLY","PENDING","AUTORESCUE","REFUND_FAILED","CHARGEBACK","VOID_PENDING_REFUND","PREARBITRATION_WON","ORDER_OPENED","PAYOUT_DECLINE","SECOND_CHARGEBACK","AUTHORISATION","REPORT_AVAILABLE","PREARBITRATION_LOST"],"excludeEventCodes":["DISPUTE_OPENED_WITH_CHARGEBACK","DONATION","EXPIRE","AUTHENTICATION","ISSUER_COMMENTS","OFFER_CLOSED","DISPUTE_DEFENSE_PERIOD_ENDED","ADVICE_OF_DEBIT","INFORMATION_SUPPLIED","ISSUER_RESPONSE_TIMEFRAME_EXPIRED","DISABLE_RECURRING"]},"_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/merchants\/SpreeCommerceECOM\/webhooks\/WBHK42CNX22322975N37Q7G8SD3W2P"},"generateHmac":{"href":"https:\/\/management-test.adyen.com\/v3\/merchants\/SpreeCommerceECOM\/webhooks\/WBHK42CNX22322975N37Q7G8SD3W2P\/generateHmac"},"merchant":{"href":"https:\/\/management-test.adyen.com\/v3\/merchants\/SpreeCommerceECOM"},"testWebhook":{"href":"https:\/\/management-test.adyen.com\/v3\/merchants\/SpreeCommerceECOM\/webhooks\/WBHK42CNX22322975N37Q7G8SD3W2P\/test"}}}'
+  recorded_at: Wed, 01 Jan 2025 13:12:00 GMT
+recorded_with: VCR 6.3.1
