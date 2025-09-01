@@ -21,6 +21,7 @@ RSpec.describe SpreeAdyen::RefundPayloadPresenter do
 
   before do
     allow(Spree).to receive(:version).and_return('42.0.0')
+    allow(SpreeAdyen).to receive(:version).and_return('0.0.1')
   end
 
   context 'with valid params' do
@@ -36,7 +37,11 @@ RSpec.describe SpreeAdyen::RefundPayloadPresenter do
           externalPlatform: {
             name: 'Spree Commerce',
             version: '42.0.0',
-            integrator: 'Spree Adyen'
+            integrator: 'Vendo Connect Inc.'
+          },
+          merchantApplication: {
+            name: 'Community Edition',
+            version: '0.0.1'
           }
         }
       }
