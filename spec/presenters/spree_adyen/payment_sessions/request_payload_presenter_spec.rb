@@ -29,6 +29,7 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
 
   before do
     allow(Spree).to receive(:version).and_return('42.0.0')
+    allow(SpreeAdyen).to receive(:version).and_return('0.0.1')
   end
 
   context 'with valid params' do
@@ -72,7 +73,11 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
           externalPlatform: {
             name: 'Spree Commerce',
             version: '42.0.0',
-            integrator: 'Spree Adyen'
+            integrator: 'Vendo Connect Inc.'
+          },
+          merchantApplication: {
+            name: 'Community Edition',
+            version: '0.0.1'
           }
         }
       }
@@ -97,7 +102,7 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
 
       context 'with iOS channel' do
         let(:channel) { 'iOS' }
-        
+
         it 'blocks google pay' do
           expect(payload).to include(blockedPaymentMethods: ['googlepay'])
         end
@@ -105,7 +110,7 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
 
       context 'with Android channel' do
         let(:channel) { 'Android' }
-        
+
         it 'blocks apple pay' do
           expect(payload).to include(blockedPaymentMethods: ['applepay'])
         end
