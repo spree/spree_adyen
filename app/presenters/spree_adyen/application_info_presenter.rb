@@ -8,7 +8,7 @@ module SpreeAdyen
           externalPlatform: {
             name: 'Spree Commerce',
             version: Spree.version,
-            integrator: 'Vendo Connect Inc.'
+            integrator: 'Vendo Sp. z o.o.'
           },
           merchantApplication: {
             name: defined?(SpreeEnterprise) ? 'Enterprise Edition' : 'Community Edition',
