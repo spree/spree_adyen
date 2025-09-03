@@ -73,7 +73,7 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
           externalPlatform: {
             name: 'Spree Commerce',
             version: '42.0.0',
-            integrator: 'Vendo Connect Inc.'
+            integrator: 'Vendo Sp. z o.o.'
           },
           merchantApplication: {
             name: 'Community Edition',
