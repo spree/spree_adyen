@@ -35,12 +35,38 @@ RSpec.describe SpreeAdyen::Gateway do
             end
           end
         end
-        
+
         context 'with invalid api key (401)' do
           it 'is invalid' do
             VCR.use_cassette('management_api/get_api_credential_details/failure_401') do
               expect(gateway).to be_invalid
               expect(gateway.errors.full_messages).to include(a_string_matching(/Preferred api key is invalid. Response: Adyen::AuthenticationError code:401/))
+            end
+          end
+        end
+
+        context 'with production env and test_mode is true' do
+          before do
+            allow(Rails.env).to receive(:production?).and_return(true)
+          end
+
+          it 'sends requests to test environment' do
+            VCR.use_cassette('management_api/get_api_credential_details/success') do
+              expect(gateway).to be_valid
+            end
+          end
+        end
+
+        context 'with production env and test_mode is false' do
+          let(:test_mode) { false }
+
+          before do
+            allow(Rails.env).to receive(:production?).and_return(true)
+          end
+
+          it 'sends requests to live environment' do
+            VCR.use_cassette('management_api/get_api_credential_details/success_production') do
+              expect(gateway).to be_valid
             end
           end
         end
@@ -61,7 +87,7 @@ RSpec.describe SpreeAdyen::Gateway do
     describe 'after_commit' do
       describe 'auto configuration' do
         let(:configure_double) { double(call: true) }
-  
+
         before do
           allow(SpreeAdyen::Gateways::Configure).to receive(:new).with(gateway).and_return(configure_double)
           gateway.preferred_api_key = 'new_api_key'
@@ -71,22 +97,22 @@ RSpec.describe SpreeAdyen::Gateway do
           before do
             gateway.skip_auto_configuration = true
           end
-  
+
           it 'does not configure the gateway' do
             expect(configure_double).to_not receive(:call)
-  
+
             gateway.save
           end
         end
-  
+
         context 'when skip_auto_configuration is false' do
           before do
             gateway.skip_auto_configuration = false
           end
-  
+
           it 'configures the gateway' do
             expect(configure_double).to receive(:call).once
-  
+
             gateway.save
           end
         end
@@ -129,7 +155,7 @@ RSpec.describe SpreeAdyen::Gateway do
 
   describe '#gateway_dashboard_payment_url' do
     subject { gateway.gateway_dashboard_payment_url(payment) }
-    
+
     let(:payment) { create(:payment, transaction_id: transaction_id) }
 
     context 'when payment has a transaction_id' do
@@ -154,7 +180,7 @@ RSpec.describe SpreeAdyen::Gateway do
 
     context 'when payment has no transaction_id' do
       let(:payment) { create(:payment, transaction_id: nil) }
-      
+
       it 'returns nil' do
         expect(subject).to be_nil
       end
@@ -352,7 +378,7 @@ RSpec.describe SpreeAdyen::Gateway do
       VCR.use_cassette("payment_api/create_refund/success_partial") do
         expect(subject.success?).to be(true)
         expect(subject.params['response']['amount']['value']).to eq(amount_in_cents)
-      end 
+      end
     end
 
     context 'when response is not successful' do
