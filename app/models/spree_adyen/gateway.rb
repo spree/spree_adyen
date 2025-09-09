@@ -292,7 +292,7 @@ module SpreeAdyen
     def client
       @client ||= Adyen::Client.new.tap do |client|
         client.api_key = preferred_api_key
-        client.env = Rails.env.production? ? :live : :test
+        client.env = environment
       end
     end
 
