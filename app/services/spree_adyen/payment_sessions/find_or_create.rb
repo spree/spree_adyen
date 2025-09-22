@@ -1,6 +1,8 @@
 module SpreeAdyen
   module PaymentSessions
     class FindOrCreate
+      REQUIRED_ORDER_STATE = 'payment'.freeze
+
       def initialize(order:, user:, amount:, payment_method:)
         @order = order
         @amount = amount
@@ -9,6 +11,7 @@ module SpreeAdyen
       end
 
       def call
+        return unless order.state == REQUIRED_ORDER_STATE
         return payment_session if payment_session.present?
 
         SpreeAdyen::PaymentSession.create!(
