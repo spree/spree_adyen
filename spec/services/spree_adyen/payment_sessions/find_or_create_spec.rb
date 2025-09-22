@@ -144,9 +144,7 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
       end
 
       it 'does not create a new payment session' do
-        VCR.use_cassette('payment_sessions/success') do
-          expect { subject }.to_not change(SpreeAdyen::PaymentSession, :count)
-        end
+        expect { subject }.to_not change(SpreeAdyen::PaymentSession, :count)
       end
     end
   end
