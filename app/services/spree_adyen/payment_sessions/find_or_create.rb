@@ -1,8 +1,6 @@
 module SpreeAdyen
   module PaymentSessions
     class FindOrCreate
-      REQUIRED_ORDER_STATE = 'payment'.freeze
-
       def initialize(order:, user:, amount:, payment_method:)
         @order = order
         @amount = amount
