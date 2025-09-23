@@ -136,7 +136,18 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
       end
     end
 
-    context 'when order is not in payment state' do
+
+    context 'when order is in confirm state' do
+      let(:order_state) { 'confirm' }
+
+      it 'creates a new payment session' do
+        VCR.use_cassette('payment_sessions/success') do
+          expect { subject }.to change(SpreeAdyen::PaymentSession, :count).by(1)
+        end
+      end
+    end
+
+    context 'when order is in incorrect state' do
       let(:order_state) { 'address' }
 
       it 'returns nil' do

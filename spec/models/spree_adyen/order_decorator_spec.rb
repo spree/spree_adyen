@@ -37,4 +37,23 @@ RSpec.describe SpreeAdyen::OrderDecorator do
       expect { outdate_payment_sessions }.to change { SpreeAdyen::PaymentSession.count }.by(-4)
     end
   end
+
+  describe '#can_create_adyen_payment_session?' do
+    incorrect_states = %w[cart delivery complete address canceled returned partially_canceled]
+    correct_states = %w[confirm payment]
+
+    incorrect_states.each do |state|
+      it "returns false for #{state} state" do
+        order.state = state
+        expect(order.can_create_adyen_payment_session?).to be_falsey
+      end
+    end
+
+    correct_states.each do |state|
+      it "returns true for #{state} state" do
+        order.state = state
+        expect(order.can_create_adyen_payment_session?).to be_truthy
+      end
+    end
+  end
 end

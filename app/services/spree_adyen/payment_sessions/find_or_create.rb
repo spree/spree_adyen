@@ -11,7 +11,7 @@ module SpreeAdyen
       end
 
       def call
-        return unless order.state == REQUIRED_ORDER_STATE
+        return unless order.can_create_adyen_payment_session?
         return payment_session if payment_session.present?
 
         SpreeAdyen::PaymentSession.create!(
