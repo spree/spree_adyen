@@ -8,7 +8,8 @@ RSpec.describe SpreeAdyen::RefundPayloadPresenter do
       amount_in_cents: amount,
       currency: currency,
       payment_method: payment_method,
-      payment: payment
+      payment: payment,
+      refund: refund
     }
   end
 
@@ -18,6 +19,7 @@ RSpec.describe SpreeAdyen::RefundPayloadPresenter do
   let(:payment) { create(:payment, amount: 100.00, payment_method: payment_method, order: order, response_code: '123456789') }
   let(:order) { create(:order_with_line_items, number: 'R123456789', total: 100, user: user, currency: 'USD') }
   let(:user) { create(:user) }
+  let(:refund) { create(:refund, payment: payment) }
 
   before do
     allow(Spree).to receive(:version).and_return('42.0.0')
@@ -31,7 +33,7 @@ RSpec.describe SpreeAdyen::RefundPayloadPresenter do
           value: amount,
           currency: currency
         },
-        reference: "R123456789_#{payment_method.id}_#{payment.response_code}_refund",
+        reference: expected_reference,
         merchantAccount: payment_method.preferred_merchant_account,
         applicationInfo: {
           externalPlatform: {
@@ -46,6 +48,8 @@ RSpec.describe SpreeAdyen::RefundPayloadPresenter do
         }
       }
     end
+
+    let(:expected_reference) { "R123456789_#{payment_method.id}_#{payment.response_code}_refund_#{refund.id}" }
 
     describe '#to_h' do
       subject(:payload) { serializer.to_h }

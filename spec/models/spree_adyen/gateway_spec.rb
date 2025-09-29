@@ -367,12 +367,13 @@ RSpec.describe SpreeAdyen::Gateway do
   end
 
   describe '#credit' do
-    subject { gateway.credit(amount_in_cents, payment.source, passed_response_code, {}) }
+    subject { gateway.credit(amount_in_cents, payment.source, passed_response_code, { originator: refund }) }
 
     let(:order) { create(:order, total: 10, number: 'R142767632') }
     let(:payment) { create(:payment, state: 'completed', order: order, payment_method: gateway, amount: 10.0, response_code: 'ADYEN_PAYMENT_PSP_REFERENCE') }
     let(:amount_in_cents) { 800 }
     let(:passed_response_code) { payment.response_code }
+    let(:refund) { create(:refund, payment: payment, amount: payment.amount) }
 
     it 'refunds some of the payment amount' do
       VCR.use_cassette("payment_api/create_refund/success_partial") do

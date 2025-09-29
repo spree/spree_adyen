@@ -80,7 +80,7 @@ module SpreeAdyen
       end
     end
 
-    def credit(amount_in_cents, _source, payment_id, _gateway_options = {})
+    def credit(amount_in_cents, _source, payment_id, gateway_options = {})
       payment = Spree::Payment.find_by(response_code: payment_id)
       return failure("#{payment_id} - Payment not found") unless payment
 
@@ -88,7 +88,8 @@ module SpreeAdyen
         payment: payment,
         amount_in_cents: amount_in_cents,
         payment_method: self,
-        currency: payment.currency
+        currency: payment.currency,
+        refund: gateway_options[:originator]
       ).to_h
 
       response = send_request do
