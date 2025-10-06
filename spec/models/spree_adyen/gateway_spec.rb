@@ -367,13 +367,14 @@ RSpec.describe SpreeAdyen::Gateway do
   end
 
   describe '#credit' do
-    subject { gateway.credit(amount_in_cents, payment.source, passed_response_code, { originator: refund }) }
+    subject { gateway.credit(amount_in_cents, payment.source, passed_response_code, gateway_options) }
 
     let(:order) { create(:order, total: 10, number: 'R142767632') }
     let(:payment) { create(:payment, state: 'completed', order: order, payment_method: gateway, amount: 10.0, response_code: 'ADYEN_PAYMENT_PSP_REFERENCE') }
     let(:amount_in_cents) { 800 }
     let(:passed_response_code) { payment.response_code }
     let(:refund) { create(:refund, payment: payment, amount: payment.amount) }
+    let(:gateway_options) { { originator: refund } }
 
     it 'refunds some of the payment amount' do
       VCR.use_cassette("payment_api/create_refund/success_partial") do
@@ -395,7 +396,19 @@ RSpec.describe SpreeAdyen::Gateway do
       end
     end
 
+    context 'when originator is not present' do
+      let(:gateway_options) { {} }
+
+      it 'finds payment by response code and refunds the payment' do
+        VCR.use_cassette("payment_api/create_refund/success_partial") do
+          expect(subject.success?).to be(true)
+          expect(subject.params['response']['amount']['value']).to eq(amount_in_cents)
+        end
+      end
+    end
+
     context 'when payment is not found' do
+      let(:gateway_options) { {} }
       let(:passed_response_code) { 'foobar' }
 
       it 'should return failure response' do

@@ -57,6 +57,15 @@ RSpec.describe SpreeAdyen::RefundPayloadPresenter do
       it 'returns the correct payload' do
         expect(payload).to eq(expected_payload)
       end
+
+      context 'when refund is not present' do
+        let(:refund) { nil }
+        let(:expected_reference) { "R123456789_#{payment_method.id}_#{payment.response_code}_refund" }
+
+        it 'returns the correct payload' do
+          expect(payload).to eq(expected_payload)
+        end
+      end
     end
   end
 end

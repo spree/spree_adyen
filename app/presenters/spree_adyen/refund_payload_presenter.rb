@@ -31,8 +31,8 @@ module SpreeAdyen
         payment_method.id,
         payment.response_code,
         REFERENCE_SUFFIX,
-        refund.id
-      ].join('_')
+        refund&.id
+      ].compact_blank.join('_')
     end
   end
 end
