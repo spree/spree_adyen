@@ -95,7 +95,7 @@ module SpreeAdyen
       ).to_h
 
       response = send_request do
-        client.checkout.modifications_api.refund_captured_payment(payload, payment_id, headers: { 'Idempotency-Key' => SecureRandom.uuid })
+        client.checkout.modifications_api.refund_captured_payment(payload, payment.transaction_id, headers: { 'Idempotency-Key' => SecureRandom.uuid })
       end
 
       if response.status.to_i == 201
