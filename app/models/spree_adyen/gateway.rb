@@ -80,19 +80,22 @@ module SpreeAdyen
       end
     end
 
-    def credit(amount_in_cents, _source, payment_id, _gateway_options = {})
-      payment = Spree::Payment.find_by(response_code: payment_id)
+    def credit(amount_in_cents, _source, payment_id, gateway_options = {})
+      refund = gateway_options[:originator]
+      payment = refund.present? ? refund.payment : Spree::Payment.find_by(response_code: payment_id)
+
       return failure("#{payment_id} - Payment not found") unless payment
 
       payload = SpreeAdyen::RefundPayloadPresenter.new(
         payment: payment,
         amount_in_cents: amount_in_cents,
         payment_method: self,
-        currency: payment.currency
+        currency: payment.currency,
+        refund: refund
       ).to_h
 
       response = send_request do
-        client.checkout.modifications_api.refund_captured_payment(payload, payment_id, headers: { 'Idempotency-Key' => SecureRandom.uuid })
+        client.checkout.modifications_api.refund_captured_payment(payload, payment.transaction_id, headers: { 'Idempotency-Key' => SecureRandom.uuid })
       end
 
       if response.status.to_i == 201
