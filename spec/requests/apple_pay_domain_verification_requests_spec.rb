@@ -41,7 +41,7 @@ RSpec.describe 'Apple Pay domain verification requests' do
       end
     end
 
-    context 'for a store without the Stripe gateway' do
+    context 'for a store without the Adyen gateway' do
       let!(:adyen_gateway) { create(:adyen_gateway, stores: [create(:store)]) }
 
       it 'raises a not found error' do
