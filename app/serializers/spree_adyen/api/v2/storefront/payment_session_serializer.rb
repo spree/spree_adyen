@@ -5,7 +5,7 @@ module SpreeAdyen
         class PaymentSessionSerializer < ::Spree::Api::V2::BaseSerializer
           set_type :adyen_payment_session
 
-          attributes :adyen_id, :amount, :currency, :adyen_data, :status, :expires_at
+          attributes :adyen_id, :amount, :currency, :adyen_data, :status, :expires_at, :channel, :return_url
 
           attribute :client_key do |object|
             object.payment_method.preferred_client_key

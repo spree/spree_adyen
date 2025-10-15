@@ -1,0 +1,43 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/sessions
+    body:
+      encoding: UTF-8
+      string: '{"metadata":{"spree_payment_method_id":1,"spree_order_id":"R898011108"},"amount":{"value":11000,"currency":"USD"},"returnUrl":"http://www.example.com/adyen/payment_sessions/redirect","reference":"R898011108_1_1","countryCode":"US","lineItems":[{"amountExcludingTax":1000,"amountIncludingTax":1000,"description":"Product
+        19227","id":1,"sku":"SKU-1","quantity":1}],"merchantAccount":"SpreeCommerceECOM","merchantOrderReference":"R898011108","expiresAt":"2025-08-14T15:00:00Z","shopperName":{"firstName":"John","lastName":"Doe"},"shopperEmail":null,"shopperReference":"guest_R898011108","recurringProcessingModel":"UnscheduledCardOnFile","shopperInteraction":"Ecommerce","storePaymentMethodMode":"enabled","blockedPaymentMethods":["googlepay"],"channel":"iOS"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - "<ADYEN_API_KEY>"
+      Idempotency-Key:
+      - 3690a76c-be87-4804-b2ad-f7e0e03b9e8e
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Thu, 14 Aug 2025 14:46:39 GMT
+      Content-Type:
+      - application/json;charset=UTF-8
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"currency":"USD","value":11000},"blockedPaymentMethods":["googlepay"],"channel":"iOS","countryCode":"US","expiresAt":"2025-08-14T17:00:00+02:00","id":"CSB78B355E3A733614539B2B3","lineItems":[{"amountExcludingTax":1000,"amountIncludingTax":1000,"description":"Product
+        19227","id":"1","quantity":1,"sku":"SKU-1","taxAmount":0,"taxPercentage":0}],"merchantAccount":"SpreeCommerceECOM","merchantOrderReference":"R898011108","metadata":{"spree_payment_method_id":"1","spree_order_id":"R898011108"},"recurringProcessingModel":"UnscheduledCardOnFile","reference":"R898011108_1_1","returnUrl":"http:\/\/www.example.com\/adyen\/payment_sessions\/redirect","shopperInteraction":"Ecommerce","shopperLocale":"en-US","shopperName":{"firstName":"John","lastName":"Doe"},"shopperReference":"guest_R898011108","storePaymentMethodMode":"enabled","mode":"embedded","sessionData":"Ab02b4c0!BQABAgCNC9uoQy1MAnJ+w+cX9vAiXq1iOBynENYApDyLrKWRu1PJDHHcgsXvtKojklfhqL4api5+D0UdsrkJIgkyCdrAC9mYaVFfmvulrta6fy6mOG8mpsfAWvsOR3sFs99Kq3mOxrbrn1C0cxAYXDz+jqTqoHyZorinPv9G\/OCf43WrCWnGdzZqwLIXXZ3B4usEblrnp+iZ4KzpbdMkmfUiwmCurBDoYHn\/XAuUds3nOf06LuYii+OPYU5cb5mryK16fJtRno4nimMDrYTQdlzxo7XfORBR+Wt3x+\/b5+nQzHKnZ+iGhn\/b4xKfJw+F1eyukGaK4Lg6XGB42adrvoxeEQkzkLpxONIOYjft41HuQHwXiYPRQbtCGEtBlo4TosAZN0X00XXOliFlx2Do1XCpNAoRofW9sD1+9yHRQc17RHF7D8PP2BdP39QMNQIW1GhZOfhiiAZtyPjDRHC5SqtMG06pTvBZhZL4ul\/xuidNekAfkBK1YrgEAZekbQ+2rId3WVepMxreCVmV82BwEUUc6IYhmxZWANVaobp1diS+F1ab1kUIODcz3dBxoheRWH1hR5bhj6\/mrOYIBqjOeyX\/CiWMODacS7CDjPdNjx3BCZqDa2Cz2afw8PHlcU7RklkVAkfbBUFoI3oYee0nH+IoFLaa+Z3WErpN3QyDqfBK8\/BnCwwEcV9u2kpXcpz8WvMASnsia2V5IjoiQUYwQUFBMTAzQ0E1MzdFQUVEODdDMjRERDUzOTA5QjgwQTc4QTkyM0UzODIzRDY4REFDQzk0QjlGRjgzMDVEQyJ9XLRCtLdiLWPBn2vKKg9UFm6+XtTwKKj65ply9VgcBYDVKFK7c\/bmJ3VatzGXlbtTs3V6wNimg5uXu3GhapFkAISYKBD56rs+bFGrioSrTI9zNFwtUK7LvdCgjTI2z741m3atjFeKz6kfzJJEmsaUAjQOILh9jLqSdnEPZxhao3ia2+U0AvOWfV3N4y6w9AkuLChx6geBoyiAQ27sIeex2awPIjtiQ08zRoh9ew+8WKetnqmqBU92N\/ilzS9SUGf4MiSEaVccZTVA+FjfC8OmkMQ9oH7ENKCLn7C9JpXSwkJ4r9PcCLKH7PNB62yQWbIktqnH7Je3NpNupChk2o+tUmdY0VJ\/o0PwmbXBKFEvd2PqtIJCTanFxXBUl21BvwjSofMuyODNirqjK6fc87pwxu77l5WBFBbIuYYlu\/RIiLxOH\/o+06uJHyqvifLqiu\/nSjJsqUw8HkXJDqvuMPe6sfNxLH31R0uBskrMR9IXJWbLmzh9ptyN3vpi+d25OjpPjhMpc\/4gkVaJmw1Bf0maLNIOOja5Tyme3KCrg5aS9uBC2Sgop1BLvou8s9dvA0EB7bWEoMEbeMSVSGoFyEBfFNCtoiO7TzJg6zpy8sOQ0tuXYbq+P9jZ5j+nQuyoflvAawA2ackQiSQLErYuOlZLjj3Ce3cM5Mm0KEuCJhcxZRArgGEEqwAz6cy0uchxFeBzvBnhxQ+\/5hNIMVcWlYteZsYkHJ\/Pz0+YnxgrP4UEnKmLwU7WIB2qjBbEnIl9FHmjji4iXjotVBxEhuMEnApYNo0ItSRmRq7uC03FrsLMhPvNWy5osqdRrSO4+SHKea9JKDyUWeWGTsmJQ7z+aDFaLVQ87MB0r7H7uT3EZs61tSvePLctwsn9gZdL40n\/FM4GR5CnSN3Va\/NuuO5klHHOjTC0Ca99m6hq04uT\/oNuSqcBUmyKuVYgZzr7RW15FCf4fuoFWHe552idqqHA0\/ngwvP0tUbaJc6uRKyZGCYzH3vYHGXZwLaIrrYddOSr0FY0wPpM\/lyGCKrXEkbdqlhZiO272E1nuOvIsF3wNNMR0LZ2st+EOmO4VXnnP5dpC4ErOpDaCPGcCWPN4mjR6GOuhk65yi9aBHgQqHDsGMKUuy4B5Kl9WGRuFkxMTgd3CjVYzvXa47ml7D1MUR\/TfLQI6YcAPYzCMgcz+i1Pgs+JcM0pCPM="}'
+  recorded_at: Thu, 14 Aug 2025 14:00:00 GMT
+recorded_with: VCR 6.3.1

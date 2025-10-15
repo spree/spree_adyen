@@ -9,4 +9,8 @@ module SpreeAdyen
   def self.queue
     'default'
   end
+
+  def self.version
+    VERSION
+  end
 end

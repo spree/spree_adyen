@@ -1,0 +1,71 @@
+require 'spec_helper'
+
+RSpec.describe SpreeAdyen::RefundPayloadPresenter do
+  subject(:serializer) { described_class.new(**params) }
+
+  let(:params) do
+    {
+      amount_in_cents: amount,
+      currency: currency,
+      payment_method: payment_method,
+      payment: payment,
+      refund: refund
+    }
+  end
+
+  let(:amount) { 100_00 }
+  let(:currency) { 'USD' }
+  let(:payment_method) { create(:adyen_gateway, preferred_merchant_account: 'SpreeCommerceECOM') }
+  let(:payment) { create(:payment, amount: 100.00, payment_method: payment_method, order: order, response_code: '123456789') }
+  let(:order) { create(:order_with_line_items, number: 'R123456789', total: 100, user: user, currency: 'USD') }
+  let(:user) { create(:user) }
+  let(:refund) { create(:refund, payment: payment) }
+
+  before do
+    allow(Spree).to receive(:version).and_return('42.0.0')
+    allow(SpreeAdyen).to receive(:version).and_return('0.0.1')
+  end
+
+  context 'with valid params' do
+    let(:expected_payload) do
+      {
+        amount: {
+          value: amount,
+          currency: currency
+        },
+        reference: expected_reference,
+        merchantAccount: payment_method.preferred_merchant_account,
+        applicationInfo: {
+          externalPlatform: {
+            name: 'Spree Commerce',
+            version: '42.0.0',
+            integrator: 'Vendo Sp. z o.o.'
+          },
+          merchantApplication: {
+            name: 'Community Edition',
+            version: '0.0.1'
+          }
+        }
+      }
+    end
+
+    let(:expected_reference) { "R123456789_#{payment_method.id}_#{payment.response_code}_refund_#{refund.id}" }
+
+    describe '#to_h' do
+      subject(:payload) { serializer.to_h }
+
+      it 'returns the correct payload' do
+        expect(payload).to eq(expected_payload)
+      end
+
+      context 'when refund is not present' do
+        let(:refund) { nil }
+        let(:expected_reference) { "R123456789_#{payment_method.id}_#{payment.response_code}_refund" }
+
+        it 'returns the correct payload' do
+          expect(payload).to eq(expected_payload)
+        end
+      end
+    end
+  end
+end

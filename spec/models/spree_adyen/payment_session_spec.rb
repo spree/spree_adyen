@@ -1,9 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe SpreeAdyen::PaymentSession do
-  subject(:payment_session) { create(:payment_session, order: order) }
+  subject(:payment_session) { build(:payment_session, order: order, return_url: nil, channel: nil) }
 
-  let(:order) { create(:order_with_line_items) }
+  let(:order) { create(:order_with_line_items, store: store) }
+  let(:store) { create(:store, url: 'www.example.com') }
 
   describe 'state machine' do
     describe 'initial state' do
@@ -46,6 +47,8 @@ RSpec.describe SpreeAdyen::PaymentSession do
   end
 
   describe 'scopes' do
+    subject(:payment_session) { create(:payment_session, order: order, return_url: nil, channel: nil) }
+
     describe 'not_expired' do
       subject(:not_expired_scope) { described_class.not_expired }
 
@@ -61,8 +64,6 @@ RSpec.describe SpreeAdyen::PaymentSession do
   end
 
   describe 'validations' do
-    subject(:validation) { build(:payment_session) }
-
     describe 'expiration_date_cannot_be_in_the_past_or_later_than_24_hours' do
       subject(:validation) { payment_session.valid? }
 
@@ -94,6 +95,24 @@ RSpec.describe SpreeAdyen::PaymentSession do
 
           it { is_expected.to be_valid }
         end
+      end
+    end
+  end
+
+  describe 'callbacks' do
+    describe 'set_default_channel' do
+      it 'sets the default channel' do
+        expect { payment_session.validate }.to change(payment_session, :channel).to('Web')
+      end
+    end
+
+    describe 'set_return_url' do
+      before do
+        allow(store).to receive(:url_or_custom_domain).and_return('url-or-custom-domain.com')
+      end
+
+      it 'sets the redirect url' do
+        expect { payment_session.validate }.to change(payment_session, :return_url).to('http://url-or-custom-domain.com/adyen/payment_sessions/redirect')
       end
     end
   end

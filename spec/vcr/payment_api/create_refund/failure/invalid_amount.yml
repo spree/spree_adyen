@@ -1,0 +1,52 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/payments/ADYEN_PAYMENT_PSP_REFERENCE/refunds
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"value":0,"currency":"USD"},"reference":"R142767632_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","merchantAccount":"SpreeCommerceECOM"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.3.0
+      X-Api-Key:
+      - "ADYEN_API_KEY"
+      Idempotency-Key:
+      - 0d8ea548-0abc-407c-a60b-7553a0e542fe
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 422
+      message: Unprocessable Content
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      Content-Type:
+      - application/json;charset=UTF-8
+      Date:
+      - Wed, 06 Aug 2025 11:09:51 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"status":422,"errorCode":"137","message":"Field ''amount'' is not
+        valid.","errorType":"validation","pspReference":"ADYEN_PSP_REFERENCE"}'
+  recorded_at: Wed, 06 Aug 2025 11:09:51 GMT
+recorded_with: VCR 6.3.1

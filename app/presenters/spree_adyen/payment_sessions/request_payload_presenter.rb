@@ -7,12 +7,14 @@ module SpreeAdyen
         storePaymentMethodMode: 'enabled'
       }.freeze
 
-      def initialize(order:, amount:, user:, merchant_account:, payment_method:)
+      def initialize(order:, amount:, user:, merchant_account:, payment_method:, channel:, return_url:)
         @order = order
         @amount = amount
         @user = user
         @merchant_account = merchant_account
         @payment_method = payment_method
+        @channel = channel
+        @return_url = return_url
       end
 
       def to_h
@@ -26,19 +28,18 @@ module SpreeAdyen
             currency: currency
           },
           returnUrl: return_url,
-          channel: SpreeAdyen::Config.channel,
           reference: reference,
           countryCode: address.country_iso,
           lineItems: line_items,
           merchantAccount: merchant_account,
           merchantOrderReference: order_number,
           expiresAt: expires_at
-        }.merge!(shopper_details, DEFAULT_PARAMS)
+        }.merge!(shopper_details, DEFAULT_PARAMS, channel_params, SpreeAdyen::ApplicationInfoPresenter.new.to_h)
       end
 
       private
 
-      attr_reader :order, :amount, :user, :merchant_account, :payment_method
+      attr_reader :order, :amount, :user, :merchant_account, :payment_method, :channel, :return_url
 
       delegate :number, to: :order, prefix: true
       delegate :currency, to: :order
@@ -51,6 +52,19 @@ module SpreeAdyen
           payment_method.id,
           order.adyen_payment_sessions.with_deleted.count + 1
         ].join('_')
+      end
+
+      def channel_params
+        case channel
+        when 'iOS'
+          { blockedPaymentMethods: ['googlepay'], channel: 'iOS' }
+        when 'Android'
+          { blockedPaymentMethods: ['applepay'], channel: 'Android' }
+        when 'Web'
+          { channel: 'Web' }
+        else
+          {}
+        end
       end
 
       def shopper_details
@@ -88,10 +102,6 @@ module SpreeAdyen
             quantity: line_item.quantity
           }
         end
-      end
-
-      def return_url
-        Spree::Core::Engine.routes.url_helpers.redirect_adyen_payment_session_url(host: order.store.url)
       end
 
       def expires_at

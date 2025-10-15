@@ -57,6 +57,15 @@ module SpreeAdyen
         @card_details ||= additional_data.slice('expiryDate', 'cardSummary', 'type')
       end
 
+      def amount
+        @amount ||= begin
+          amount_data = body['amount']
+          return nil unless amount_data&.key?('value') && amount_data.key?('currency')
+
+          Spree::Money.new(amount_data['value'] / 100.0, currency: amount_data['currency'])
+        end
+      end
+
       def merchant_reference
         @merchant_reference ||= body['merchantReference']
       end

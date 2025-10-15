@@ -3,8 +3,9 @@ require 'spec_helper'
 RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
   subject(:service) { described_class.new(order: order, user: user, amount: amount, payment_method: payment_method).call }
 
-  let(:order) { create(:order_with_line_items, currency: 'USD') }
+  let(:order) { create(:order_with_line_items, state: order_state, currency: 'USD') }
   let(:user) { create(:user) }
+  let(:order_state) { 'payment' }
   let(:amount) { order.total_minus_store_credits }
   let(:payment_method) { create(:adyen_gateway) }
   let(:payment_currency) { order.currency }
@@ -23,7 +24,8 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
 
   before do
     # we use expires_at from the cassette, so we need to freeze the time
-    Timecop.freeze('2025-07-07T0:00:00+02:00')
+    Timecop.freeze('2025-08-25T16:00:00+02:00')
+    allow(Spree).to receive(:version).and_return('42.0.0')
   end
 
   after do
@@ -131,6 +133,29 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
         VCR.use_cassette('payment_sessions/success') do
           expect { subject }.to change(SpreeAdyen::PaymentSession, :count).by(1)
         end
+      end
+    end
+
+
+    context 'when order is in confirm state' do
+      let(:order_state) { 'confirm' }
+
+      it 'creates a new payment session' do
+        VCR.use_cassette('payment_sessions/success') do
+          expect { subject }.to change(SpreeAdyen::PaymentSession, :count).by(1)
+        end
+      end
+    end
+
+    context 'when order is in incorrect state' do
+      let(:order_state) { 'address' }
+
+      it 'returns nil' do
+        expect(subject).to be_nil
+      end
+
+      it 'does not create a new payment session' do
+        expect { subject }.to_not change(SpreeAdyen::PaymentSession, :count)
       end
     end
   end

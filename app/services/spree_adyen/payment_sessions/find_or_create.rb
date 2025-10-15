@@ -9,6 +9,7 @@ module SpreeAdyen
       end
 
       def call
+        return unless order.can_create_adyen_payment_session?
         return payment_session if payment_session.present?
 
         SpreeAdyen::PaymentSession.create!(
@@ -16,7 +17,8 @@ module SpreeAdyen
           amount: amount,
           currency: order.currency,
           user: user,
-          payment_method: payment_method
+          payment_method: payment_method,
+          channel: SpreeAdyen::PaymentSession::AVAILABLE_CHANNELS[:web]
         )
       end
 
@@ -30,7 +32,8 @@ module SpreeAdyen
           order: order,
           currency: order.currency,
           user: user,
-          amount: amount
+          amount: amount,
+          channel: SpreeAdyen::PaymentSession::AVAILABLE_CHANNELS[:web]
         )
       end
     end

@@ -4,6 +4,7 @@ FactoryBot.define do
     adyen_data { 'a very long string' }
     amount { order.total_minus_store_credits }
     currency { order.currency }
+    channel { 'Web' }
     status { 'initial' }
     expires_at { 1.hour.from_now }
     payment_method { create(:adyen_gateway) }

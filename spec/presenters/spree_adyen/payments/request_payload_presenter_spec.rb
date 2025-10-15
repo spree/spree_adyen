@@ -21,6 +21,11 @@ RSpec.describe SpreeAdyen::Payments::RequestPayloadPresenter do
   let(:user) { create(:user) }
   let(:payment_method) { create(:adyen_gateway, preferred_merchant_account: 'SpreeCommerceECOM') }
 
+  before do
+    allow(Spree).to receive(:version).and_return('42.0.0')
+    allow(SpreeAdyen).to receive(:version).and_return('0.0.1')
+  end
+
   context 'with valid params' do
     let(:expected_payload) do
       {
@@ -40,8 +45,18 @@ RSpec.describe SpreeAdyen::Payments::RequestPayloadPresenter do
           storedPaymentMethodId: '12345',
           type: 'scheme'
         },
-        channel: 'Web',
-        shopperReference: "customer_#{user.id}"
+        shopperReference: "customer_#{user.id}",
+        applicationInfo: {
+          externalPlatform: {
+            name: 'Spree Commerce',
+            version: '42.0.0',
+            integrator: 'Vendo Sp. z o.o.'
+          },
+          merchantApplication: {
+            name: 'Community Edition',
+            version: '0.0.1'
+          }
+        }
       }
     end
 

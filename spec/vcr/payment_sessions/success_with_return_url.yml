@@ -1,0 +1,43 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/sessions
+    body:
+      encoding: UTF-8
+      string: '{"metadata":{"spree_payment_method_id":1,"spree_order_id":"R585208937"},"amount":{"value":11000,"currency":"USD"},"returnUrl":"http://valid-url.com/redirect","reference":"R585208937_1_1","countryCode":"US","lineItems":[{"amountExcludingTax":1000,"amountIncludingTax":1000,"description":"Product
+        36801","id":1,"sku":"SKU-3","quantity":1}],"merchantAccount":"SpreeCommerceECOM","merchantOrderReference":"R585208937","expiresAt":"2025-08-14T15:00:00Z","shopperName":{"firstName":"John","lastName":"Doe"},"shopperEmail":null,"shopperReference":"guest_R585208937","recurringProcessingModel":"UnscheduledCardOnFile","shopperInteraction":"Ecommerce","storePaymentMethodMode":"enabled","channel":"Web"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - "<ADYEN_API_KEY>"
+      Idempotency-Key:
+      - 21bc5189-099c-46a9-86b6-943aa4bc3ff2
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Thu, 14 Aug 2025 14:32:55 GMT
+      Content-Type:
+      - application/json;charset=UTF-8
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"currency":"USD","value":11000},"channel":"Web","countryCode":"US","expiresAt":"2025-08-14T17:00:00+02:00","id":"CSA8ABF258FC9AB239E0E52A7","lineItems":[{"amountExcludingTax":1000,"amountIncludingTax":1000,"description":"Product
+        36801","id":"1","quantity":1,"sku":"SKU-3","taxAmount":0,"taxPercentage":0}],"merchantAccount":"SpreeCommerceECOM","merchantOrderReference":"R585208937","metadata":{"spree_payment_method_id":"1","spree_order_id":"R585208937"},"recurringProcessingModel":"UnscheduledCardOnFile","reference":"R585208937_1_1","returnUrl":"http:\/\/valid-url.com\/redirect","shopperInteraction":"Ecommerce","shopperLocale":"en-US","shopperName":{"firstName":"John","lastName":"Doe"},"shopperReference":"guest_R585208937","storePaymentMethodMode":"enabled","mode":"embedded","sessionData":"Ab02b4c0!BQABAgAbrKN15a6toU5Ew6vUjjKfVVykBe4NPAXT5rHMHdMUjQw4bHuvgSwCCrZKxMjLW4MeYFGiH7eAMAs8bZhyqayb+VjcfSeiG5TKaB+5jnjsT6s1owKpTw+9dzzEngeL5t67vzEAPx+HfkKoyte+zbWhzZaDFghZyO5R0S2z7iQYL8RgZ97i5Hq2X\/+bUP1q+WOylRxn0957jG+9Nm3nHdzDc1TmGj9x927djX\/1XoUbnr2hk9KrYuV1bjPikF40ONhvUY9Hs576k3mwpgRZc3F1rxy6pDZl9h1Pbo+DRhzqAKHGs8tn9K20ehPRHv1ekjUgUmu8qabzfNwCFTnYOx+0h2zDIzsi2UQzFQk6SMDetK2gjPyiAt4GOUBki4LleMMdqVqy4hk7h9\/nM2hwae4CMKeQ1g2f+OEcmkJXmgylmYIuOjA6ZOIxsVdlT3XfAgRvWIqatLCsTqK0e5qFiONbGs7AszwtvPwl3XFAlf9JnUcWHP7xulDnME8rsJq3XKuPax8BsszJ1RKmOmVHKND7dAKoKzcItFaeYKMwNpKtI5wDglGKkXbX94UX3RzO99o0dvUYhUzPYEgeeBqxD7HV4TZV09X7Knb49Ed2V3BfomTiBaUm3ShmqVBXkPL8eGRiXmlHrdH+\/+zyXXi720KahcmKnsD7aLKdNm4eseyNfQyAreQawTIAXa1rQLgASnsia2V5IjoiQUYwQUFBMTAzQ0E1MzdFQUVEODdDMjRERDUzOTA5QjgwQTc4QTkyM0UzODIzRDY4REFDQzk0QjlGRjgzMDVEQyJ9UFzOfQ4pZzsOo5TTXRDfuGsV9CSIxqUAGK+yYEklbShhR\/c+jLDdXVkul4zh933sCSKliwcV3huv4SuRefj23P4rd3umuRfPfvbpwjXfI4aQeqFf2wLokrzHCG\/0ITxVE7x\/x\/czog30\/zyzXT3g0ks7n+xGoO0IpgikM19rxEzIa\/bYUJBMNBWbxxEuzedGS0YF8OsojIrAtqOQv5C0AcI\/vDw6XCg3\/yCr\/WMohjoGC+hiZLNbsmZ\/Az6qZlBH+tMCSDg6uqT8GnKQktjGXHN+2JJbS2yjzWoamV2Vziz+FpAzZq0cy9thnt4EapfesFtu\/4oC+Jnb8e3mAz6Er4sROWdIo9UOoMQFYPIFXEAS1U7nhkwDnjiOcBVgfhF3Q\/apwRm5mI0cq+OmFANI07ULsn8EJ0jdfyQFniR5X+jwjs6OdWkd6jIPUdtrt43NxJZ9NLdMcb17ebJk8r4S3tfGWcJ+hiA6F5Z2m3nc2RDICSkMP5inpOtnMuq4Pihn67NDY5tVo1gosjqLDSS1yai8IKQmhNEAcJSV288m9\/HzAM642uamHWEfsaVwL9mOdvub5lZ2LYQfRt8sGhd+qOmeSKro2o8wfrIYxajaq1TQfNIEYkkFzrcmyrNFrEIvsm1OFx9nD7JXfKwexHZvd9heoENxQ7nktAZYcZERXYLvh\/Qrqz\/s2mx8hloNaY48wt5cMboMbTJ116iUekhkoRr5kW4LNeyIce0UKi8Bc4BjsQH1l38Ci\/K\/MYSyyU1d+tcmCKl8scO8mHWC1J+4vz1ZqXepbHeKVU75gd1YdLr2D36LCZs\/kSu7fKjl1WIn1OEmNcmXTQpduzlrksUb15gRCmNO9KVJ1HVK8etnrF2RkhMWz9fvcndMxea9k8MbNaGSnZCE29\/OoePpYdqg4O1PWKXwTzDjt98qigbzzEUkkJWZ9hdfXdFpFew8Qg4pEY8FKV9AkxQfi9GSjfIu7rBXh1BNJNi5xWTFFW1GtfN8qRir3rzxPnY\/LleUDUfkVZwuyhzV+3dBWiTrWqEkbZXtuF85kUHEjQhRQPQTBNx3DtodhiF82U3U3OE5a13i1VTDrJvKARBRry\/NzkgerPmq9hVMBxPX3MAWZeqY8r4="}'
+  recorded_at: Thu, 14 Aug 2025 14:00:00 GMT
+recorded_with: VCR 6.3.1

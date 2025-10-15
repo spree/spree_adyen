@@ -1,6 +1,6 @@
 # LICENSE
 
-Copyright (c) 2025 Vendo Connect Inc.
+Copyright (c) 2025 Vendo Connect Inc., Vendo Sp. z o.o.
 All rights reserved.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

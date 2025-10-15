@@ -1,0 +1,353 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/payments/ADYEN_PAYMENT_PSP_REFERENCE/refunds
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"value":800,"currency":"USD"},"reference":"R142767632_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","merchantAccount":"SpreeCommerceECOM"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.3.0
+      X-Api-Key:
+      - secret
+      Idempotency-Key:
+      - d1b738f4-715d-4ddd-bbee-0a8e5fcfe343
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Tue, 05 Aug 2025 13:55:41 GMT
+      Content-Type:
+      - application/json;charset=UTF-8
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 96a6cb252fbaecbc-WAW
+    body:
+      encoding: UTF-8
+      string: '{"merchantAccount":"SpreeCommerceECOM","paymentPspReference":"ADYEN_PAYMENT_PSP_REFERENCE","pspReference":"ADYEN_PSP_REFERENCE","reference":"R598258713_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","status":"received","amount":{"currency":"USD","value":800}}'
+  recorded_at: Tue, 05 Aug 2025 13:55:41 GMT
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/payments/ADYEN_PAYMENT_PSP_REFERENCE/refunds
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"value":800,"currency":"USD"},"reference":"R954573265_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","merchantAccount":"SpreeCommerceECOM"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.3.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Idempotency-Key:
+      - 88c6b07d-662e-4ca1-a5e4-325951fb02d6
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Tue, 05 Aug 2025 13:55:59 GMT
+      Content-Type:
+      - application/json;charset=UTF-8
+      Connection:
+      - keep-alive
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 96a6cb9ada14e199-WAW
+    body:
+      encoding: UTF-8
+      string: '{"merchantAccount":"SpreeCommerceECOM","paymentPspReference":"ADYEN_PAYMENT_PSP_REFERENCE","pspReference":"ADYEN_PSP_REFERENCE","reference":"R954573265_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","status":"received","amount":{"currency":"USD","value":800}}'
+  recorded_at: Tue, 05 Aug 2025 13:55:59 GMT
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/payments/ADYEN_PAYMENT_PSP_REFERENCE/refunds
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"value":800,"currency":"USD"},"reference":"R037959619_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","merchantAccount":"SpreeCommerceECOM"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.3.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Idempotency-Key:
+      - bfb37f07-763a-4328-9463-8070a80966ad
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Tue, 05 Aug 2025 13:56:21 GMT
+      Content-Type:
+      - application/json;charset=UTF-8
+      Connection:
+      - keep-alive
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 96a6cc22292abf21-WAW
+    body:
+      encoding: UTF-8
+      string: '{"merchantAccount":"SpreeCommerceECOM","paymentPspReference":"ADYEN_PAYMENT_PSP_REFERENCE","pspReference":"ADYEN_PSP_REFERENCE","reference":"R037959619_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","status":"received","amount":{"currency":"USD","value":800}}'
+  recorded_at: Tue, 05 Aug 2025 13:56:21 GMT
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/payments/ADYEN_PAYMENT_PSP_REFERENCE/refunds
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"value":800,"currency":"USD"},"reference":"R034530046_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","merchantAccount":"SpreeCommerceECOM"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.3.0
+      X-Api-Key:
+      - secret
+      Idempotency-Key:
+      - d9592c70-1732-480c-b40a-96618c837a12
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Tue, 05 Aug 2025 14:02:43 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Traceparent:
+      - 00-366f713baa631a02958175ee7cb547f6-c1c517307fdcfe99-01
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      Set-Cookie:
+      - JSESSIONID=D1AFA0472F490D3BCBAACEA942BE1389; Path=/checkout; Secure; HttpOnly
+      - __cf_bm=LuHxqdNVEbIxYBHM2v_pEnuH9P665ZCXMMTBZPZQJxQ-1754402563-1.0.1.1-7L_Xc5PmLgtihfvRMP_LE9Nnc.VewXJc7SMIomzIFkKCfUrkSGGbhW8v8TyEW.rXf4efgVR2SWf.0a3Qh8B_gmXii5_rM.2EVCK7kPfJNYo;
+        path=/; expires=Tue, 05-Aug-25 14:32:43 GMT; domain=.adyen.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=p1frleJ0Z96WgPMnItUxgB9oHJg6BBo5cwfI55N8d_o-1754402563474-0.0.1.1-604800000;
+        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
+      Www-Authenticate:
+      - BASIC realm="Adyen PAL Service Authentication"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 96a6d5751bce0282-WAW
+    body:
+      encoding: UTF-8
+      string: '{"status":401,"errorCode":"000","message":"HTTP Status Response - Unauthorized","errorType":"security"}'
+  recorded_at: Tue, 05 Aug 2025 14:02:43 GMT
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/payments/ADYEN_PAYMENT_PSP_REFERENCE/refunds
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"value":800,"currency":"USD"},"reference":"R505116120_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","merchantAccount":"SpreeCommerceECOM"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.3.0
+      X-Api-Key:
+      - secret
+      Idempotency-Key:
+      - da3d4eaf-7937-4c04-82ad-a9fb2ed91225
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Tue, 05 Aug 2025 14:03:40 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Traceparent:
+      - 00-b8d776c8a0a2f0acd7eabfe417ba2692-9c326cc7333a239d-01
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      Set-Cookie:
+      - JSESSIONID=9F30652CC745815F91857A3252EDC57B; Path=/checkout; Secure; HttpOnly
+      - __cf_bm=Ntp7dcOEhLja7BAFNk.RCGOSmS.L9FiE5YQDZYFyqu0-1754402620-1.0.1.1-dAQ_vo4m33zBFV1ClEugSgDbwc4bcY_O_6YIraXlDYxGczNZQd_i2nBkZAzUX_NFD6MmnIhcCE5KfyF8GA9Muw2KqLmy8KSNXQUfOzimCIw;
+        path=/; expires=Tue, 05-Aug-25 14:33:40 GMT; domain=.adyen.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=os391v8P9IMT3nM4FbdiYZEXGIvO_J4TOmj1IUzgOhA-1754402620828-0.0.1.1-604800000;
+        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
+      Www-Authenticate:
+      - BASIC realm="Adyen PAL Service Authentication"
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 96a6d6db9fc8c419-WAW
+    body:
+      encoding: UTF-8
+      string: '{"status":401,"errorCode":"000","message":"HTTP Status Response - Unauthorized","errorType":"security"}'
+  recorded_at: Tue, 05 Aug 2025 14:03:40 GMT
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/payments/ADYEN_PAYMENT_PSP_REFERENCE/refunds
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"value":800,"currency":"USD"},"reference":"R179259576_1_ADYEN_PAYMENT_PSP_REFERENCE_refund","merchantAccount":"SpreeCommerceECOM"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.3.0
+      X-Api-Key:
+      - secret
+      Idempotency-Key:
+      - fe680a01-cd0f-4adc-a5ad-d9ad2a99fc04
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Traceparent:
+      - 00-b57e617d7dbf58673a2ce8667f39d063-42c260f4ccf9d4a1-01
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      Set-Cookie:
+      - JSESSIONID=4912B7C7FCFA9A0420A3C2D868158463; Path=/checkout; Secure; HttpOnly
+      Www-Authenticate:
+      - BASIC realm="Adyen PAL Service Authentication"
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Tue, 05 Aug 2025 14:03:53 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"status":401,"errorCode":"000","message":"HTTP Status Response - Unauthorized","errorType":"security"}'
+  recorded_at: Tue, 05 Aug 2025 14:03:53 GMT
+recorded_with: VCR 6.3.1

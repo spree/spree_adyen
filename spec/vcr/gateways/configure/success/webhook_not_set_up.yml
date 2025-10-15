@@ -1,0 +1,242 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://management-test.adyen.com/v3/me
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Thu, 14 Aug 2025 11:03:41 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"CRED42CLS22322945MZF5ZNDQ26BBP","username":"ADYEN_USERNAME","description":"testing
+        auto-configure","clientKey":"ADYEN_CLIENT_KEY","allowedIpAddresses":[],"roles":["Management
+        API - Accounts read","Management API - Webhooks read","Cloud Device API role","Management
+        API - API credentials read and write","Management API - Stores read","Management
+        API — Payment methods read","Allow SDK download for POS developers","API Clientside
+        Encryption Payments role","Management API - Stores read and write","Management
+        API - Webhooks read and write","Checkout encrypted cardholder data","Merchant
+        Recurring role","Data Protection API","Management API - Payout Account Settings
+        Read","Checkout webservice role","Management API - Accounts read and write","Merchant
+        PAL Webservice role"],"active":true,"_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/me"},"allowedOrigins":{"href":"https:\/\/management-test.adyen.com\/v3\/me\/allowedOrigins"}},"associatedMerchantAccounts":["SpreeCommerceECOM"],"companyName":"SpreeCommerce"}'
+  recorded_at: Thu, 14 Aug 2025 11:03:41 GMT
+- request:
+    method: post
+    uri: https://management-test.adyen.com/v3/merchants/SpreeCommerceECOM/webhooks
+    body:
+      encoding: UTF-8
+      string: '{"url":"https://c33e96aee20a.ngrok-free.app/adyen/webhooks","description":"Webhook
+        created by SpreeAdyen on 2025-08-14 11:03:41","active":true,"communicationFormat":"json","type":"standard"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Thu, 14 Aug 2025 11:03:41 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"WBHK4294F22322975MZJVJ773G3KX7","type":"standard","url":"https:\/\/c33e96aee20a.ngrok-free.app\/adyen\/webhooks","description":"Webhook
+        created by SpreeAdyen on 2025-08-14 11:03:41","username":"","hasPassword":false,"active":true,"hasError":false,"encryptionProtocol":"TLSv1.3","communicationFormat":"json","acceptsExpiredCertificate":false,"acceptsSelfSignedCertificate":false,"acceptsUntrustedRootCertificate":false,"certificateAlias":"signed-test.adyen.com_2025","populateSoapActionHeader":false,"additionalSettings":{"properties":{"includePosTerminalInfo":false,"includeARN":false,"includeExtraCostsSurcharge":false,"includePaymentAccountOwnerDetails":false,"includePosDetails":false,"includeCardInfoForRecurringContractNotification":false,"includeRiskData":false,"includeRiskExperimentReference":false,"includeSoapSecurityHeader":false,"includeContactlessWalletTokenInformation":false,"includeExtraCostsGratuity":false,"includeAdjustAuthorisationData":false,"includeAcquirerReference":false,"includeRiskProfileReference":false,"includeOriginalMerchantReferenceCancelOrRefundNotification":false,"includeNfcTokenInformation":false,"includeSubvariant":false,"includeThreeDSVersion":false,"includeInstallmentsInfo":false,"includeAliasInfo":false,"includeShopperCountry":false,"includeRawThreeDSecureResult":false,"includeAirlineData":false,"includeGrossCurrencyChargebackDetails":false,"includeSwishPayerAlias":false,"includeThreeDSecureResult":false,"includeUpiMetadata":false,"includeMetadataIn3DSecurePaymentNotification":false,"includeCashAppCashtag":false,"includeGiftCardNumber":false,"includeOriginalReferenceForChargebackReversed":false,"includeMerchantAdviceCode":false,"addAcquirerResult":false,"includeDeliveryAddress":false,"includeRetryAttempts":false,"includeVisaRdrDisputeIndicator":false,"includeExtraCosts":false,"includeCardHolderName":false,"includeShopperDetail":false,"includeBankAccountDetails":false,"includeMandateDetails":false,"includeAuthAmountForDynamicZeroAuth":false,"includeIssuerCountry":false,"includeAcquirerErrorDetails":false,"includeCoBrandedWith":false,"includeShopperInteraction":false,"includeDeviceAndBrowserInfo":false,"includeUpiVpa":false,"includePixEndToEndId":false,"addRawAcquirerResult":false,"includeCardBin":false,"includeFundingSource":false,"includeThreeDS2ChallengeInformation":false,"includeRiskProfile":false,"includeRealtimeAccountUpdaterStatus":false,"includePixPayerInfo":false,"includeDunningProjectData":false,"includePaymentResultInOrderClosedNotification":false,"includeCardBinDetails":false,"includeNotesInManualReviewNotifications":false,"includeZeroAuthFlag":false,"oAuthSupported":false,"addCaptureReferenceToDisputeNotification":false,"includeAfterPayTouchConsumerReference":false,"includePayPalDetails":false,"includeRawThreeDSecureDetailsResult":false,"includeBankVerificationResults":false,"includeCaptureDelayHours":false,"addPaymentAccountReference":false,"includePayULatamDetails":false,"includeStore":false,"returnAvsData":false,"includeApplicationIdentifier":false,"includeWeChatPayOpenid":false,"includeCustomRoutingFlagging":false,"includeGoPayDetails":false,"includeTokenisedPaymentMetaData":false},"includeEventCodes":["CAPTURE_FAILED","CHARGEBACK_REVERSED","REQUEST_FOR_INFORMATION","MANUAL_REVIEW_REJECT","PAIDOUT_REVERSED","PAYOUT_THIRDPARTY","NOTIFICATION_OF_CHARGEBACK","CANCELLATION","REFUNDED_REVERSED","MANUAL_REVIEW_ACCEPT","TECHNICAL_CANCEL","NOTIFICATION_OF_FRAUD","PREARBITRATION_OPEN","RECURRING_CONTRACT","PAYOUT_EXPIRE","CANCEL_AUTORESCUE","POSTPONED_REFUND","CANCEL_OR_REFUND","CAPTURE","ORDER_CLOSED","REFUND","REFUND_WITH_DATA","AUTHORISATION_ADJUSTMENT","HANDLED_EXTERNALLY","PENDING","AUTORESCUE","REFUND_FAILED","CHARGEBACK","VOID_PENDING_REFUND","PREARBITRATION_WON","ORDER_OPENED","PAYOUT_DECLINE","SECOND_CHARGEBACK","AUTHORISATION","REPORT_AVAILABLE","PREARBITRATION_LOST"],"excludeEventCodes":["DISPUTE_OPENED_WITH_CHARGEBACK","DONATION","ISSUER_COMMENTS","EXPIRE","AUTHENTICATION","OFFER_CLOSED","DISPUTE_DEFENSE_PERIOD_ENDED","ADVICE_OF_DEBIT","INFORMATION_SUPPLIED","ISSUER_RESPONSE_TIMEFRAME_EXPIRED","DISABLE_RECURRING"]},"_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/merchants\/SpreeCommerceECOM\/webhooks\/WBHK4294F22322975MZJVJ773G3KX7"},"generateHmac":{"href":"https:\/\/management-test.adyen.com\/v3\/merchants\/SpreeCommerceECOM\/webhooks\/WBHK4294F22322975MZJVJ773G3KX7\/generateHmac"},"merchant":{"href":"https:\/\/management-test.adyen.com\/v3\/merchants\/SpreeCommerceECOM"},"testWebhook":{"href":"https:\/\/management-test.adyen.com\/v3\/merchants\/SpreeCommerceECOM\/webhooks\/WBHK4294F22322975MZJVJ773G3KX7\/test"}}}'
+  recorded_at: Thu, 14 Aug 2025 11:03:41 GMT
+- request:
+    method: post
+    uri: https://management-test.adyen.com/v3/merchants/SpreeCommerceECOM/webhooks/WBHK4294F22322975MZJVJ773G3KX7/generateHmac
+    body:
+      encoding: UTF-8
+      string: "{}"
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Thu, 14 Aug 2025 11:03:42 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"hmacKey":"ADYEN_HMAC_KEY"}'
+  recorded_at: Thu, 14 Aug 2025 11:03:42 GMT
+- request:
+    method: post
+    uri: https://management-test.adyen.com/v3/me/allowedOrigins
+    body:
+      encoding: UTF-8
+      string: '{"domain":"https://c33e96aee20a.ngrok-free.app"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Fri, 22 Aug 2025 14:22:02 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"S2-73203828494D4E6A6269573D7C763A4074476E304E2B40663F664628423C662A717C70453F385F31256C72","domain":"https:\/\/c33e96aee20a.ngrok-free.app","_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/me\/allowedOrigins\/S2-73203828494D4E6A6269573D7C763A4074476E304E2B40663F664628423C662A717C70453F385F31256C72"}}}'
+  recorded_at: Fri, 22 Aug 2025 14:22:02 GMT
+- request:
+    method: post
+    uri: https://management-test.adyen.com/v3/me/allowedOrigins
+    body:
+      encoding: UTF-8
+      string: '{"domain":"https://foo.store.example.com"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Fri, 22 Aug 2025 14:22:02 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"S2-24596C2E5250734B552661215D244A6F696C7F66744D2E7975234E4232266F464162414C27","domain":"https:\/\/foo.store.example.com","_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/me\/allowedOrigins\/S2-24596C2E5250734B552661215D244A6F696C7F66744D2E7975234E4232266F464162414C27"}}}'
+  recorded_at: Fri, 22 Aug 2025 14:22:02 GMT
+- request:
+    method: post
+    uri: https://management-test.adyen.com/v3/me/allowedOrigins
+    body:
+      encoding: UTF-8
+      string: '{"domain":"https://bar.store.example.com"}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Date:
+      - Fri, 22 Aug 2025 14:22:02 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"id":"S2-245B3E5476305D377C3B5C5E2C67235C626C4F7F534C2C6A6D66512F5D7A4D426739732C58","domain":"https:\/\/bar.store.example.com","_links":{"self":{"href":"https:\/\/management-test.adyen.com\/v3\/me\/allowedOrigins\/S2-245B3E5476305D377C3B5C5E2C67235C626C4F7F534C2C6A6D66512F5D7A4D426739732C58"}}}'
+  recorded_at: Fri, 22 Aug 2025 14:22:02 GMT
+recorded_with: VCR 6.3.1

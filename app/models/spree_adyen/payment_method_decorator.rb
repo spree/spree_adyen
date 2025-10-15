@@ -7,7 +7,7 @@ module SpreeAdyen
     end
 
     def adyen?
-      type == STRIPE_TYPE
+      type == ADYEN_TYPE
     end
   end
 end

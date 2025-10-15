@@ -28,9 +28,8 @@ module SpreeAdyen
           },
           reference: reference,
           shopperReference: shopper_reference,
-          channel: SpreeAdyen::Config.channel,
           merchantAccount: source.payment_method.preferred_merchant_account
-        }.merge!(DEFAULT_PARAMS)
+        }.merge!(DEFAULT_PARAMS, SpreeAdyen::ApplicationInfoPresenter.new.to_h)
       end
 
       private

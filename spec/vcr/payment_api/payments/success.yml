@@ -1,0 +1,42 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/payments
+    body:
+      encoding: UTF-8
+      string: '{"metadata":{"spree_payment_method_id":1,"spree_order_id":"R937260641"},"amount":{"value":10000,"currency":"USD"},"paymentMethod":{"type":"scheme","storedPaymentMethodId":"stored_cc_id"},"reference":"R937260641_1_1","shopperReference":"customer_3402","merchantAccount":"SpreeCommerceECOM","recurringProcessingModel":"UnscheduledCardOnFile","shopperInteraction":"ContAuth","applicationInfo":{"externalPlatform":{"name":"Spree
+        Commerce","version":"42.0.0","integrator":"Spree Adyen"}}}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - "<ADYEN_API_KEY>"
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      Content-Type:
+      - application/json;charset=UTF-8
+      Content-Length:
+      - '361'
+      Date:
+      - Mon, 25 Aug 2025 14:47:06 GMT
+    body:
+      encoding: UTF-8
+      string: '{"additionalData":{"recurringProcessingModel":"UnscheduledCardOnFile","tokenization.shopperReference":"customer_3402","tokenization.storedPaymentMethodId":"stored_cc_id"},"pspReference":"ADYEN_PSP_REFERENCE","resultCode":"Authorised","amount":{"currency":"USD","value":10000},"merchantReference":"R937260641_1_1","paymentMethod":{"brand":"mc","type":"scheme"}}'
+  recorded_at: Mon, 25 Aug 2025 14:47:06 GMT
+recorded_with: VCR 6.3.1

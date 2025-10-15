@@ -30,12 +30,8 @@ http_interactions:
       - Mon, 07 Jul 2025 14:09:31 GMT
       Content-Type:
       - application/json;charset=UTF-8
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Traceparent:
-      - 00-1fcf9ea3fb420c647e0c167bdff4b4db-8d5d9c694d39995f-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -46,15 +42,6 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=3D76A0B7AD9D600C7F74D6D608CC7332; Path=/checkout; Secure; HttpOnly
-      - __cf_bm=ToNadPDc8oda0ka6GHjMFXauT.VdvnohaGForym696k-1751897371-1.0.1.1-n57Ox78KVZJzNsb0x5KuhTztqC5qrL4n_rMCVeypRPHF7xvKgMkZARcrgh72fvk3mHQVVD8sJFQoQahpUrBS__x_ct82QdSPuhDpWIwww7o;
-        path=/; expires=Mon, 07-Jul-25 14:39:31 GMT; domain=.adyen.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=M4LZvwAV9zeVv1AtEcGvqF4I7z8c.zm.UV6jD1Cmhk8-1751897371921-0.0.1.1-604800000;
-        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
-      Pspreference:
-      - PSVRSDCNVS2S2LV5
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Cf-Cache-Status:
@@ -65,5 +52,5 @@ http_interactions:
       - 95b7eb8dd9b2ee47-WAW
     body:
       encoding: ASCII-8BIT
-      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"VMLWMSBWZZSBJWT5","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"expired"}'
+      string: '{"additionalData":{"isCardCommercial":"unknown","recurringProcessingModel":"CardOnFile","paymentMethod":"mc","tokenization.shopperReference":"foobar","tokenization.storedPaymentMethodId":"LH9XQ2ZBCFVJPPT5"},"id":"CS4FBB6F827EC53AC7","payments":[{"amount":{"currency":"EUR","value":1000},"paymentMethod":{"brand":"mc","type":"scheme"},"pspReference":"ADYEN_PSP_REFERENCE","resultCode":"Authorised"}],"reference":"d84f20d9-4a06-4173-96ca-02486188e192","status":"expired"}'
   recorded_at: Mon, 07 Jul 2025 14:09:31 GMT

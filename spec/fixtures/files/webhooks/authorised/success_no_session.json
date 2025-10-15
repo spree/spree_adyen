@@ -1,0 +1,31 @@
+{
+  "live": "false",
+  "notificationItems": [
+    {
+      "NotificationRequestItem": {
+        "additionalData": {
+          "totalFraudScore": "10",
+          "hmacSignature": "ZmFrZV9zaWduYXR1cmU=",
+          "NAME2": "VALUE2",
+          "NAME1": "VALUE1",
+          "fraudCheck-6-ShopperIpUsage": "10"
+        },
+        "amount": {
+          "currency": "EUR",
+          "value": 10100
+        },
+        "eventCode": "AUTHORISATION",
+        "eventDate": "2025-07-25T15:40:40+02:00",
+        "merchantAccountCode": "SpreeCommerceECOM",
+        "merchantReference": "1234567890_1_uniq",
+        "operations": [
+          "REFUND"
+        ],
+        "paymentMethod": "blik",
+        "pspReference": "webhooks_psp_reference",
+        "reason": "1234:7777:12/2012",
+        "success": "true"
+      }
+    }
+  ]
+}

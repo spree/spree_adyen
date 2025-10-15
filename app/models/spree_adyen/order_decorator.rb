@@ -10,6 +10,10 @@ module SpreeAdyen
         .with_status(:initial)
         .each(&:destroy)
     end
+
+    def can_create_adyen_payment_session?
+      state.in?(%w[confirm payment])
+    end
   end
 end
 

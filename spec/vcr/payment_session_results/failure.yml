@@ -30,12 +30,8 @@ http_interactions:
       - Mon, 07 Jul 2025 14:14:14 GMT
       Content-Type:
       - application/json;charset=UTF-8
-      Transfer-Encoding:
-      - chunked
       Connection:
       - keep-alive
-      Traceparent:
-      - 00-77c0edf20f2cdb0e23fe3b001c362933-75a4befa4228b1b1-01
       X-Frame-Options:
       - SAMEORIGIN
       X-Content-Type-Options:
@@ -46,15 +42,7 @@ http_interactions:
       - no-cache
       Expires:
       - '0'
-      Set-Cookie:
-      - JSESSIONID=834F9524ECA8093958FFEBCA15C0741D; Path=/checkout; Secure; HttpOnly
-      - __cf_bm=Nu4S08dqd5oy.iBUF_r5uZMWdIvuS_09c9i6udzQkCc-1751897654-1.0.1.1-iWHgpjif.tjneS_2yn_s4yAVVelr5uKQhWviiKhoIhYRvHum.zLwPv1Jb5WVDOSbyJxFNDzLtx08gUO05o.pBHCNeFx2mDA7hgT2VHDhnCw;
-        path=/; expires=Mon, 07-Jul-25 14:44:14 GMT; domain=.adyen.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=oJo.AcpWvwd7vQUQBa_CWCuv0VNSNm3G6._giNlN.bA-1751897654756-0.0.1.1-604800000;
-        path=/; domain=.adyen.com; HttpOnly; Secure; SameSite=None
-      Pspreference:
-      - F7CHQBP9MCWNRQT5
+      - ADYEN_PSP_REFERENCE
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Cf-Cache-Status:
@@ -66,6 +54,6 @@ http_interactions:
     body:
       encoding: UTF-8
       string: '{"status":500,"errorCode":"701","message":"server could not process
-        request","errorType":"internal","pspReference":"F7CHQBP9MCWNRQT5"}'
+        request","errorType":"internal","pspReference":"ADYEN_PSP_REFERENCE"}'
   recorded_at: Mon, 07 Jul 2025 14:14:14 GMT
 recorded_with: VCR 6.3.1
