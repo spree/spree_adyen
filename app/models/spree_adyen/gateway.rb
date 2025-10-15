@@ -196,6 +196,10 @@ module SpreeAdyen
       'spree_adyen'
     end
 
+    def custom_form_fields_partial_name
+      'spree_adyen'
+    end
+
     def gateway_dashboard_payment_url(payment)
       return if payment.transaction_id.blank?
 
