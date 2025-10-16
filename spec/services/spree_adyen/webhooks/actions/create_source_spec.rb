@@ -102,7 +102,7 @@ RSpec.describe SpreeAdyen::Webhooks::Actions::CreateSource do
                 "CAPTURE",
                 "REFUND"
               ],
-              "paymentMethod": "klarna",
+              "paymentMethod": payment_method_reference,
               "pspReference": "123432123",
               "reason": "null",
               "success": "true"
@@ -112,8 +112,20 @@ RSpec.describe SpreeAdyen::Webhooks::Actions::CreateSource do
       }
     end
 
-    it 'creates a custom payment source' do
-      expect { service }.to change(SpreeAdyen::PaymentSources::Klarna, :count).by(1)
+    context 'for a known payment method' do
+      let(:payment_method_reference) { 'klarna' }
+
+      it 'creates a custom payment source' do
+        expect { service }.to change(SpreeAdyen::PaymentSources::Klarna, :count).by(1)
+      end
+    end
+
+    context 'for an unknown payment method' do
+      let(:payment_method_reference) { 'unknown' }
+
+      it 'creates a custom payment source' do
+        expect { service }.to change(SpreeAdyen::PaymentSources::Unknown, :count).by(1)
+      end
     end
   end
 end

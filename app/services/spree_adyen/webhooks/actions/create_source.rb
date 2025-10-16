@@ -2,24 +2,6 @@ module SpreeAdyen
   module Webhooks
     module Actions
       class CreateSource
-        CREDIT_CARD_SOURCES = %i[
-          accel
-          amex
-          jcb
-          carnet
-          cartebancaire
-          cup
-          diners
-          discover
-          eftpos_australia
-          elo
-          googlepay
-          maestro
-          maestro_usa
-          mc
-          visa
-        ].freeze
-
         SOURCE_KLASS_MAP = {
           affirm: SpreeAdyen::PaymentSources::Affirm,
           alipay: SpreeAdyen::PaymentSources::Alipay,
@@ -91,7 +73,7 @@ module SpreeAdyen
         end
 
         def call
-          if event.payment_method_reference.in?(CREDIT_CARD_SOURCES)
+          if event.payment_method_reference.in?(SpreeAdyen::Config.credit_card_sources)
             find_or_create_credit_card
           else
             find_or_create_source
@@ -117,7 +99,7 @@ module SpreeAdyen
         delegate :payment_method_reference, to: :event
 
         def source_klass_factory
-          SOURCE_KLASS_MAP[event.payment_method_reference] ||= SpreeAdyen::PaymentSources::Unknown
+          SOURCE_KLASS_MAP[event.payment_method_reference] || SpreeAdyen::PaymentSources::Unknown
         end
       end
     end

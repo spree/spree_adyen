@@ -3,12 +3,16 @@ module SpreeAdyen
     class CreditCardPresenter
       CREDIT_CARD_BRANDS = {
         'mc' => 'master',
+        'mc_googlepay' => 'master',
         'maestro' => 'master',
+        'maestro_googlepay' => 'master',
         'amex' => 'american_express',
+        'amex_googlepay' => 'american_express',
         'cartebancaire' => 'cartes_bancaires',
         'diners' => 'diners_club',
         'eftpos_australia' => 'eftpos_au',
-        'googlepay' => 'google_pay'
+        'googlepay' => 'google_pay',
+        'visa_googlepay' => 'visa'
       }.freeze
 
       def initialize(event)
