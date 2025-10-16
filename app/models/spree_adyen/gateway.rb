@@ -13,6 +13,8 @@ module SpreeAdyen
     preference :test_mode, :boolean, default: true
     preference :webhook_id, :string
 
+    has_one_attached :apple_developer_merchantid_domain_association, service: Spree.private_storage_service_name
+
     store_accessor :private_metadata, :previous_hmac_key
     #
     # Validations
@@ -194,6 +196,10 @@ module SpreeAdyen
       'spree_adyen'
     end
 
+    def custom_form_fields_partial_name
+      'spree_adyen'
+    end
+
     def gateway_dashboard_payment_url(payment)
       return if payment.transaction_id.blank?
 
@@ -270,6 +276,10 @@ module SpreeAdyen
       else
         failure(response.response.message)
       end
+    end
+
+    def apple_domain_association_file_content
+      @apple_domain_association_file_content ||= apple_developer_merchantid_domain_association&.download
     end
 
     private

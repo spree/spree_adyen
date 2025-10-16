@@ -1,4 +1,7 @@
 Spree::Core::Engine.add_routes do
+  # Apple Pay domain verification certificate for Apple Pay
+  get '/.well-known/apple-developer-merchantid-domain-association' => '/spree_adyen/apple_pay_domain_verification#show'
+
   # redirection after redirect flow payment (f.e. klarna)
   # checking the redirect result status in frontend
   get '/adyen/payment_sessions/redirect', to: '/spree_adyen/payment_sessions#redirect',
