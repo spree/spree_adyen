@@ -20,20 +20,17 @@ module SpreeAdyen
             # for web channel payment response code is updated from session_id to psp_reference
             # psp_reference is required for refund flow but is not available before this event
             payment_session&.lock!
-            payment = Spree::Payment.find_or_initialize_by(
-              response_code: event.session_id || event.psp_reference,
-              payment_method: payment_method
-            ).tap do |payment|
-              payment.assign_attributes(
-                skip_source_requirement: true,
-                response_code: event.psp_reference,
-                amount: event.amount.to_d,
-                order: order,
-                source: source,
-                state: 'processing'
-              )
-              payment.save!
-            end
+
+            payment = find_or_initialize_payment(payment_method)
+            payment.assign_attributes(
+              skip_source_requirement: true,
+              response_code: event.psp_reference,
+              amount: event.amount.to_d,
+              order: order,
+              source: source,
+              state: 'processing'
+            )
+            payment.save!
 
             if event.success?
               payment.complete! if payment.processing?
@@ -56,6 +53,16 @@ module SpreeAdyen
         attr_reader :event
 
         delegate :id, to: :event, prefix: true
+
+        def find_or_initialize_payment(payment_method)
+          if event.session_id.present?
+            Spree::Payment.where(response_code: event.session_id, payment_method: payment_method).or(
+              Spree::Payment.where(response_code: event.psp_reference, payment_method: payment_method)
+            ).first_or_initialize
+          else
+            Spree::Payment.where(response_code: event.psp_reference, payment_method: payment_method).first_or_initialize
+          end
+        end
       end
     end
   end

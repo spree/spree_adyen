@@ -21,7 +21,7 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
 
   describe 'POST #create' do
     subject { post :create, params: params, as: :json }
-    
+
     describe 'hmac validation' do
       let(:params) { JSON.parse(file_fixture('webhooks/authorised/success.json').read) }
 
@@ -57,7 +57,9 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
 
     describe 'full webhook flow' do
       describe 'authorisation event' do
-        let(:payment) { create(:payment, state: 'processing', skip_source_requirement: true, payment_method: payment_method, source: nil, order: order, amount: order.total_minus_store_credits, response_code: 'webhooks_authorisation_success_checkout_session_id') }
+        let(:payment) { create(:payment, state: 'processing', skip_source_requirement: true, payment_method: payment_method, source: nil, order: order, amount: order.total_minus_store_credits, response_code: response_code) }
+        let(:response_code) { 'webhooks_authorisation_success_checkout_session_id' }
+
         let!(:payment_session) { create(:payment_session, amount: order.total_minus_store_credits, currency: order.currency, payment_method: payment_method, order: order, adyen_id: 'webhooks_authorisation_success_checkout_session_id') }
 
         before do
@@ -176,6 +178,60 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
                 perform_enqueued_jobs do
                   expect { subject }.to change { order.payments.count }.by(1)
                 end
+              end
+            end
+          end
+
+          context 'when the payment response code is the PSP reference' do
+            let(:response_code) { 'webhooks_psp_reference' }
+            let(:params) { JSON.parse(file_fixture('webhooks/authorised/success_with_cc_details.json').read) }
+
+            it 'completes the order' do
+              perform_enqueued_jobs do
+                expect { subject }.to change { order.reload.completed? }.from(false).to(true)
+              end
+
+              expect(response).to have_http_status(:ok)
+            end
+
+            it 'completes the payment' do
+              perform_enqueued_jobs do
+                expect { subject }.to change { payment.reload.state }.from('processing').to('completed')
+              end
+
+              expect(response).to have_http_status(:ok)
+            end
+
+            context 'when payment is completed' do
+              before do
+                payment.source = create(:payment_source, payment_method: payment_method)
+                payment.save!
+                payment.complete!
+              end
+
+              it 'processes the webhook without errors' do
+                perform_enqueued_jobs { subject }
+                expect(response).to have_http_status(:ok)
+              end
+            end
+
+            context 'when there is no session id' do
+              let(:params) { JSON.parse(file_fixture('webhooks/authorised/success_no_session.json').read) }
+
+              it 'completes the order' do
+                perform_enqueued_jobs do
+                  expect { subject }.to change { order.reload.completed? }.from(false).to(true)
+                end
+
+                expect(response).to have_http_status(:ok)
+              end
+
+              it 'completes the payment' do
+                perform_enqueued_jobs do
+                  expect { subject }.to change { payment.reload.state }.from('processing').to('completed')
+                end
+
+                expect(response).to have_http_status(:ok)
               end
             end
           end
