@@ -97,6 +97,71 @@ RSpec.describe SpreeAdyen::PaymentSession do
         end
       end
     end
+
+    describe 'amount_cannot_be_greater_than_payment_allowed_amount' do
+      subject(:payment_session) { build(:payment_session, order: order, amount: amount) }
+
+      let(:order) { create(:order_with_line_items, store: store) }
+
+      context 'when amount is equal to allowed payment amount' do
+        let(:amount) { order.total_minus_store_credits - order.payment_total }
+
+        it 'is valid' do
+          expect(payment_session).to be_valid
+        end
+      end
+
+      context 'when amount is less than allowed payment amount' do
+        let(:amount) { (order.total_minus_store_credits - order.payment_total) - 10 }
+
+        it 'is valid' do
+          expect(payment_session).to be_valid
+        end
+      end
+
+      context 'when amount is greater than allowed payment amount' do
+        let(:amount) { (order.total_minus_store_credits - order.payment_total) + 10 }
+        let(:allowed_payment_amount) { order.total_minus_store_credits - order.payment_total }
+
+        it 'is invalid' do
+          expect(payment_session).to be_invalid
+        end
+
+        it 'adds an error message' do
+          payment_session.valid?
+          expect(payment_session.errors[:amount]).to include("can't be greater than allowed payment amount of #{allowed_payment_amount}")
+        end
+      end
+
+      context 'when order has existing payments' do
+        let(:order) { create(:order_with_line_items, store: store) }
+        let(:payment) { create(:payment, order: order, amount: 50, state: 'completed') }
+
+        before do
+          payment
+          order.reload
+        end
+
+        context 'when the sum of payment amount and payment session amount is greater than allowed payment amount' do
+          let(:amount) { (order.total_minus_store_credits - order.payment_total) + 10 }
+          let(:allowed_payment_amount) { order.total_minus_store_credits - order.payment_total }
+
+          it 'is invalid' do
+            expect(payment_session).to be_invalid
+            expect(payment_session.errors[:amount]).to include("can't be greater than allowed payment amount of #{allowed_payment_amount}")
+          end
+        end
+
+        context 'when the sum of payment amount and payment session amount is less than allowed payment amount' do
+          let(:amount) { order.total_minus_store_credits - order.payment_total }
+          let(:allowed_payment_amount) { order.total_minus_store_credits - order.payment_total }
+
+          it 'is valid' do
+            expect(payment_session).to be_valid
+          end
+        end
+      end
+    end
   end
 
   describe 'callbacks' do

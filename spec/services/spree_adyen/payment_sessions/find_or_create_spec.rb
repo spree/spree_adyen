@@ -36,6 +36,9 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
     it 'creates a payment session' do
       VCR.use_cassette('payment_sessions/success') do
         expect { service }.to change(SpreeAdyen::PaymentSession, :count).by(1)
+
+        expect(subject).to be_success
+        expect(subject.value).to eq(SpreeAdyen::PaymentSession.last)
       end
     end
   end
@@ -52,7 +55,9 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
 
       it 'returns the existing payment session' do
         expect { subject }.to_not change(SpreeAdyen::PaymentSession, :count)
-        expect(subject).to eq(existing_payment_session)
+
+        expect(subject).to be_success
+        expect(subject.value).to eq(existing_payment_session)
       end
     end
 
@@ -62,6 +67,9 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
       it 'creates a new payment session' do
         VCR.use_cassette('payment_sessions/success') do
           expect { subject }.to change(SpreeAdyen::PaymentSession, :count).by(1)
+
+          expect(subject).to be_success
+          expect(subject.value).to eq(SpreeAdyen::PaymentSession.last)
         end
       end
     end
@@ -74,6 +82,9 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
       it 'creates a new payment session' do
         VCR.use_cassette('payment_sessions/success') do
           expect { subject }.to change(SpreeAdyen::PaymentSession, :count).by(1)
+
+          expect(subject).to be_success
+          expect(subject.value).to eq(SpreeAdyen::PaymentSession.last)
         end
       end
     end
@@ -98,6 +109,9 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
       it 'creates a new payment session' do
         VCR.use_cassette('payment_sessions/success') do
           expect { subject }.to change(SpreeAdyen::PaymentSession, :count).by(1)
+
+          expect(subject).to be_success
+          expect(subject.value).to eq(SpreeAdyen::PaymentSession.last)
         end
       end
     end
@@ -122,6 +136,9 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
       it 'creates a new payment session' do
         VCR.use_cassette('payment_sessions/success') do
           expect { subject }.to change(SpreeAdyen::PaymentSession, :count).by(1)
+
+          expect(subject).to be_success
+          expect(subject.value).to eq(SpreeAdyen::PaymentSession.last)
         end
       end
     end
@@ -132,6 +149,9 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
       it 'creates a new payment session' do
         VCR.use_cassette('payment_sessions/success') do
           expect { subject }.to change(SpreeAdyen::PaymentSession, :count).by(1)
+
+          expect(subject).to be_success
+          expect(subject.value).to eq(SpreeAdyen::PaymentSession.last)
         end
       end
     end
@@ -143,6 +163,9 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
       it 'creates a new payment session' do
         VCR.use_cassette('payment_sessions/success') do
           expect { subject }.to change(SpreeAdyen::PaymentSession, :count).by(1)
+
+          expect(subject).to be_success
+          expect(subject.value).to eq(SpreeAdyen::PaymentSession.last)
         end
       end
     end
@@ -150,8 +173,9 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
     context 'when order is in incorrect state' do
       let(:order_state) { 'address' }
 
-      it 'returns nil' do
-        expect(subject).to be_nil
+      it 'returns failure' do
+        expect(subject).to be_failure
+        expect(subject.error.value).to eq("Cannot create Adyen payment session for the order in the #{order_state} state")
       end
 
       it 'does not create a new payment session' do

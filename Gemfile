@@ -6,6 +6,7 @@ git_source(:github) do |repo_name|
 end
 
 gem 'rails-controller-testing'
+gem 'sprockets-rails'
 
 spree_opts = { github: 'spree/spree', branch: 'main' }
 gem 'spree', spree_opts

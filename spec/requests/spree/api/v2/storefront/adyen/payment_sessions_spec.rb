@@ -119,8 +119,13 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
           VCR.use_cassette('payment_sessions/failure') do
             post_request
 
-            expect(response).to have_http_status(:unprocessable_entity)
-            expect(json_response['errors']).to be_present
+            expect(response).to have_http_status(:unprocessable_content)
+            expect(json_response['errors']).to eq(
+              'adyen_id' => ["can't be blank"],
+              'adyen_data' => ["can't be blank"],
+              'expires_at' => ["can't be blank"],
+              'amount' => ["is not a number"]
+            )
           end
         end
       end
@@ -139,8 +144,48 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
           VCR.use_cassette('payment_sessions/failure') do
             post_request
 
-            expect(response).to have_http_status(:unprocessable_entity)
-            expect(json_response['errors']).to be_present
+            expect(response).to have_http_status(:unprocessable_content)
+            expect(json_response['errors']).to eq(
+              'adyen_id' => ["can't be blank"],
+              'adyen_data' => ["can't be blank"],
+              'expires_at' => ["can't be blank"],
+              'channel' => ["is not included in the list"]
+            )
+          end
+        end
+      end
+
+      context 'when amount is greater than order total' do
+        let(:amount) { order.total + 1 }
+
+        it 'returns unprocessable entity error' do
+          VCR.use_cassette('payment_sessions/failure') do
+            post_request
+          end
+
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(json_response['errors']).to eq(
+            'adyen_id' => ["can't be blank"],
+            'adyen_data' => ["can't be blank"],
+            'expires_at' => ["can't be blank"],
+            'amount' => ["can't be greater than allowed payment amount of #{order.total}"]
+          )
+        end
+
+        context 'when there is already another order payment' do
+          let(:amount) { order.total }
+
+          before do
+            create(:payment, state: 'completed', order: order, amount: order.total - 30)
+            order.update_with_updater!
+          end
+
+          it 'returns unprocessable entity error' do
+            VCR.use_cassette('payment_sessions/success_without_optional_params') do
+              post_request
+            end
+
+            expect(response).to have_http_status(:unprocessable_content)
           end
         end
       end
@@ -162,7 +207,7 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
       it 'returns error when adyen gateway is not present' do
         post_request
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(json_response['error']).to include('Adyen gateway is not present')
       end
     end
