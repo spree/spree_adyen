@@ -30,7 +30,7 @@ module SpreeAdyen
     validates :channel, presence: true, inclusion: { in: AVAILABLE_CHANNELS.values }
     validates :return_url, presence: true
 
-    validate :amount_cannot_be_greater_than_order_total
+    validate :amount_cannot_be_greater_than_payment_allowed_amount
     validate :currency_matches_order_currency
     validate :expiration_date_cannot_be_in_the_past_or_later_than_24_hours, on: :create, unless: :skip_expiration_date_validation
 
@@ -97,8 +97,11 @@ module SpreeAdyen
       errors.add(:currency, 'must match order currency') if currency != order&.currency
     end
 
-    def amount_cannot_be_greater_than_order_total
-      errors.add(:amount, "can't be greater than order total (minus store credits)") if amount > order&.total_minus_store_credits
+    def amount_cannot_be_greater_than_payment_allowed_amount
+      return if order.nil?
+
+      allowed_payment_amount = order.total_minus_store_credits - order.payment_total
+      errors.add(:amount, "can't be greater than allowed payment amount of #{allowed_payment_amount}") if amount > allowed_payment_amount
     end
 
     def create_session_in_adyen

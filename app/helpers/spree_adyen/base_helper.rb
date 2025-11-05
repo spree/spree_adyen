@@ -12,7 +12,7 @@ module SpreeAdyen
         amount: @order.total_minus_store_credits,
         user: @order.user,
         payment_method: current_adyen_gateway
-      ).call
+      ).call&.value
     end
   end
 end

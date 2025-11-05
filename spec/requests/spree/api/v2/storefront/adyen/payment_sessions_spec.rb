@@ -3,9 +3,11 @@ require 'spec_helper'
 RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
   let(:store) { Spree::Store.default }
   let(:user) { create(:user) }
-  let(:order) { create(:order_with_line_items, user: nil, store: store, state: :payment, total: 100) }
-  let!(:adyen_gateway) { create(:adyen_gateway, stores: [store], preferred_client_key: 'test_client_key') }
+  let(:order) { create(:order_with_line_items, user: nil, store: store, state: order_state, total: 100) }
+  let(:order_state) { 'payment' }
   let(:order_token) { order.token }
+
+  let!(:adyen_gateway) { create(:adyen_gateway, stores: [store], preferred_client_key: 'test_client_key') }
 
   let(:headers) {
     {
@@ -119,8 +121,13 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
           VCR.use_cassette('payment_sessions/failure') do
             post_request
 
-            expect(response).to have_http_status(:unprocessable_entity)
-            expect(json_response['errors']).to be_present
+            expect(response).to have_http_status(:unprocessable_content)
+            expect(json_response['errors']).to eq(
+              'adyen_id' => ["can't be blank"],
+              'adyen_data' => ["can't be blank"],
+              'expires_at' => ["can't be blank"],
+              'amount' => ["is not a number"]
+            )
           end
         end
       end
@@ -139,9 +146,65 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
           VCR.use_cassette('payment_sessions/failure') do
             post_request
 
-            expect(response).to have_http_status(:unprocessable_entity)
-            expect(json_response['errors']).to be_present
+            expect(response).to have_http_status(:unprocessable_content)
+            expect(json_response['errors']).to eq(
+              'adyen_id' => ["can't be blank"],
+              'adyen_data' => ["can't be blank"],
+              'expires_at' => ["can't be blank"],
+              'channel' => ["is not included in the list"]
+            )
           end
+        end
+      end
+
+      context 'when amount is greater than order total' do
+        let(:amount) { order.total + 1 }
+
+        it 'returns unprocessable entity error' do
+          VCR.use_cassette('payment_sessions/failure') do
+            post_request
+          end
+
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(json_response['errors']).to eq(
+            'adyen_id' => ["can't be blank"],
+            'adyen_data' => ["can't be blank"],
+            'expires_at' => ["can't be blank"],
+            'amount' => ["can't be greater than allowed payment amount of #{order.total}"]
+          )
+        end
+
+        context 'when there is already another order payment' do
+          let(:amount) { order.total }
+
+          before do
+            create(:payment, state: 'completed', order: order, amount: order.total - 30)
+            order.update_with_updater!
+          end
+
+          it 'returns unprocessable entity error' do
+            VCR.use_cassette('payment_sessions/success_without_optional_params') do
+              post_request
+            end
+
+            expect(response).to have_http_status(:unprocessable_content)
+            expect(json_response['errors']).to eq(
+              'amount' => ["can't be greater than allowed payment amount of 30.0"]
+            )
+          end
+        end
+      end
+
+      context 'when order is not in the payment state' do
+        let(:order_state) { 'address' }
+
+        it 'returns unprocessable entity error' do
+          post_request
+
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(json_response['error']).to eq("Cannot create Adyen payment session for the order in the #{order_state} state")
+          expect(SpreeAdyen::PaymentSession.count).to eq(0)
+          expect(order.reload.state).to eq(order_state)
         end
       end
     end
@@ -162,7 +225,7 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
       it 'returns error when adyen gateway is not present' do
         post_request
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(json_response['error']).to include('Adyen gateway is not present')
       end
     end
@@ -182,6 +245,120 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
         post_request
 
         expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'POST /api/v2/storefront/adyen/payment_sessions/:id/complete' do
+    subject(:post_request) { post url, params: params, headers: headers }
+
+    let(:payment_session) { create(:payment_session, amount: order.total, order: order, user: user, adyen_id: payment_session_id, payment_method: adyen_gateway) }
+    let(:payment_session_id) { 'CS4FBB6F827EC53AC7' }
+    let(:session_result) { 'resultData' }
+
+    let(:url) { "/api/v2/storefront/adyen/payment_sessions/#{payment_session.id}/complete" }
+    let(:params) { { session_result: session_result } }
+
+    before do
+      order.update(email: 'test@example.com')
+    end
+
+    it 'completes the payment session ' do
+      VCR.use_cassette('payment_session_results/success/completed') do
+        post_request
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(payment_session.reload.status).to eq('completed')
+    end
+
+    it 'completes the order' do
+      VCR.use_cassette('payment_session_results/success/completed') do
+        post_request
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(order.reload.state).to eq('complete')
+    end
+
+    context 'when payment session was already completed' do
+      before do
+        VCR.use_cassette('payment_session_results/success/completed') do
+          post url, params: params, headers: headers
+        end
+      end
+
+      it 'keeps the payment session and order as completed' do
+        VCR.use_cassette('payment_session_results/success/completed') do
+          post_request
+        end
+
+        expect(response).to have_http_status(:not_found) # we look in user incomplete orders in this request
+        expect(payment_session.reload.status).to eq('completed')
+        expect(order.reload.state).to eq('complete')
+
+        expect(order.payments.count).to eq(1)
+        expect(order.payments.first.state).to eq('completed')
+      end
+    end
+
+    context 'when payment session is pending' do
+      it 'creates a payment with processing status' do
+        VCR.use_cassette('payment_session_results/success/payment_pending') do
+          post_request
+        end
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json_response['error']).to eq("Can't complete the order for the payment session in the pending state")
+
+        expect(payment_session.reload.status).to eq('pending')
+        expect(order.reload.state).to eq('payment')
+        expect(order.payments.first.state).to eq('processing')
+      end
+    end
+
+    context 'when payment session is canceled' do
+      it 'voids the payment' do
+        VCR.use_cassette('payment_session_results/success/canceled') do
+          post_request
+        end
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json_response['error']).to eq("Can't complete the order for the payment session in the canceled state")
+
+        expect(payment_session.reload.status).to eq('canceled')
+        expect(order.reload.state).to eq('payment')
+        expect(order.payments.first.state).to eq('void')
+      end
+    end
+
+    context 'when payment session is expired' do
+      it 'fails the payment' do
+        VCR.use_cassette('payment_session_results/success/expired') do
+          post_request
+        end
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json_response['error']).to eq("Can't complete the order for the payment session in the refused state")
+
+        expect(payment_session.reload.status).to eq('refused')
+        expect(order.reload.state).to eq('payment')
+        expect(order.payments.first.state).to eq('failed')
+      end
+    end
+
+    context 'when payment session is refused' do
+      it 'fails the payment' do
+        VCR.use_cassette('payment_session_results/success/refused') do
+          post_request
+        end
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json_response['error']).to eq("Can't complete the order for the payment session in the refused state")
+
+        expect(payment_session.reload.status).to eq('refused')
+        expect(order.reload.state).to eq('payment')
+        expect(order.payments.first.state).to eq('failed')
       end
     end
   end
