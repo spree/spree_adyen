@@ -35,7 +35,11 @@ module Spree
 
               SpreeAdyen::PaymentSessions::ProcessWithResult.new(payment_session: @payment_session, session_result: params[:session_result]).call
 
-              render_serialized_payload { serialize_resource(@payment_session) }
+              if @payment_session.completed?
+                render_serialized_payload { serialize_resource(@payment_session) }
+              else
+                render_error_payload("Can't complete the order for the payment session in the #{@payment_session.status} state")
+              end
             rescue Spree::Core::GatewayError => e
               render_error_payload(e.message, :unprocessable_entity)
             end

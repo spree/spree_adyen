@@ -308,7 +308,9 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
           post_request
         end
 
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json_response['error']).to eq("Can't complete the order for the payment session in the pending state")
+
         expect(payment_session.reload.status).to eq('pending')
         expect(order.reload.state).to eq('payment')
         expect(order.payments.first.state).to eq('processing')
@@ -321,7 +323,9 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
           post_request
         end
 
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json_response['error']).to eq("Can't complete the order for the payment session in the canceled state")
+
         expect(payment_session.reload.status).to eq('canceled')
         expect(order.reload.state).to eq('payment')
         expect(order.payments.first.state).to eq('void')
@@ -334,7 +338,9 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
           post_request
         end
 
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json_response['error']).to eq("Can't complete the order for the payment session in the refused state")
+
         expect(payment_session.reload.status).to eq('refused')
         expect(order.reload.state).to eq('payment')
         expect(order.payments.first.state).to eq('failed')
@@ -347,7 +353,9 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
           post_request
         end
 
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(json_response['error']).to eq("Can't complete the order for the payment session in the refused state")
+
         expect(payment_session.reload.status).to eq('refused')
         expect(order.reload.state).to eq('payment')
         expect(order.payments.first.state).to eq('failed')
