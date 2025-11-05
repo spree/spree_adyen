@@ -21,7 +21,11 @@ Spree::Core::Engine.add_routes do
     namespace :v2 do
       namespace :storefront do
         namespace :adyen do
-          resources :payment_sessions, only: %i[show create]
+          resources :payment_sessions, only: %i[show create] do
+            member do
+              post :complete
+            end
+          end
         end
       end
     end

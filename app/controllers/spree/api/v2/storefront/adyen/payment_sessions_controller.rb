@@ -6,7 +6,7 @@ module Spree
           class PaymentSessionsController < BaseController
             include Spree::Api::V2::Storefront::OrderConcern
             before_action :ensure_order
-            before_action :load_payment_session, only: %i[show]
+            before_action :load_payment_session, only: %i[show complete]
 
             # POST /api/v2/storefront/adyen/payment_sessions
             def create
@@ -26,6 +26,17 @@ module Spree
               else
                 render_error_payload(payment_session_result.value.errors)
               end
+            end
+
+            # POST /api/v2/storefront/adyen/payment_sessions/:id/complete
+            def complete
+              spree_authorize! :update, spree_current_order, order_token
+
+              SpreeAdyen::PaymentSessions::ProcessWithResult.new(payment_session: @payment_session, session_result: params[:session_result]).call
+
+              render_serialized_payload { serialize_resource(@payment_session) }
+            rescue Spree::Core::GatewayError => e
+              render_error_payload(e.message, :unprocessable_entity)
             end
 
             # GET /api/v2/storefront/adyen/payment_sessions/:id

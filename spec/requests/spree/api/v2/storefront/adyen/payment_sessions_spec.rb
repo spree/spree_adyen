@@ -231,6 +231,112 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
     end
   end
 
+  describe 'POST /api/v2/storefront/adyen/payment_sessions/:id/complete' do
+    subject(:post_request) { post url, params: params, headers: headers }
+
+    let(:payment_session) { create(:payment_session, amount: order.total, order: order, user: user, adyen_id: payment_session_id, payment_method: adyen_gateway) }
+    let(:payment_session_id) { 'CS4FBB6F827EC53AC7' }
+    let(:session_result) { 'resultData' }
+
+    let(:url) { "/api/v2/storefront/adyen/payment_sessions/#{payment_session.id}/complete" }
+    let(:params) { { session_result: session_result } }
+
+    before do
+      order.update(email: 'test@example.com')
+    end
+
+    it 'completes the payment session ' do
+      VCR.use_cassette('payment_session_results/success/completed') do
+        post_request
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(payment_session.reload.status).to eq('completed')
+    end
+
+    it 'completes the order' do
+      VCR.use_cassette('payment_session_results/success/completed') do
+        post_request
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(order.reload.state).to eq('complete')
+    end
+
+    context 'when payment session was already completed' do
+      before do
+        VCR.use_cassette('payment_session_results/success/completed') do
+          post url, params: params, headers: headers
+        end
+      end
+
+      it 'keeps the payment session and order as completed' do
+        VCR.use_cassette('payment_session_results/success/completed') do
+          post_request
+        end
+
+        expect(response).to have_http_status(:not_found) # we look in user incomplete orders in this request
+        expect(payment_session.reload.status).to eq('completed')
+        expect(order.reload.state).to eq('complete')
+
+        expect(order.payments.count).to eq(1)
+        expect(order.payments.first.state).to eq('completed')
+      end
+    end
+
+    context 'when payment session is pending' do
+      it 'creates a payment with processing status' do
+        VCR.use_cassette('payment_session_results/success/payment_pending') do
+          post_request
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(payment_session.reload.status).to eq('pending')
+        expect(order.reload.state).to eq('payment')
+        expect(order.payments.first.state).to eq('processing')
+      end
+    end
+
+    context 'when payment session is canceled' do
+      it 'voids the payment' do
+        VCR.use_cassette('payment_session_results/success/canceled') do
+          post_request
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(payment_session.reload.status).to eq('canceled')
+        expect(order.reload.state).to eq('payment')
+        expect(order.payments.first.state).to eq('void')
+      end
+    end
+
+    context 'when payment session is expired' do
+      it 'fails the payment' do
+        VCR.use_cassette('payment_session_results/success/expired') do
+          post_request
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(payment_session.reload.status).to eq('refused')
+        expect(order.reload.state).to eq('payment')
+        expect(order.payments.first.state).to eq('failed')
+      end
+    end
+
+    context 'when payment session is refused' do
+      it 'fails the payment' do
+        VCR.use_cassette('payment_session_results/success/refused') do
+          post_request
+        end
+
+        expect(response).to have_http_status(:ok)
+        expect(payment_session.reload.status).to eq('refused')
+        expect(order.reload.state).to eq('payment')
+        expect(order.payments.first.state).to eq('failed')
+      end
+    end
+  end
+
   describe 'GET /api/v2/storefront/adyen/payment_sessions/:id' do
     subject(:get_request) { get url, params: params, headers: headers }
 
