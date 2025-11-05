@@ -24,7 +24,8 @@ module Spree
               if payment_session_result.success?
                 render_serialized_payload { serialize_resource(payment_session_result.value) }
               else
-                render_error_payload(payment_session_result.value.errors)
+                error = payment_session_result.value&.errors || payment_session_result.error.value
+                render_error_payload(error)
               end
             end
 

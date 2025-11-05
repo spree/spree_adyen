@@ -3,9 +3,11 @@ require 'spec_helper'
 RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
   let(:store) { Spree::Store.default }
   let(:user) { create(:user) }
-  let(:order) { create(:order_with_line_items, user: nil, store: store, state: :payment, total: 100) }
-  let!(:adyen_gateway) { create(:adyen_gateway, stores: [store], preferred_client_key: 'test_client_key') }
+  let(:order) { create(:order_with_line_items, user: nil, store: store, state: order_state, total: 100) }
+  let(:order_state) { 'payment' }
   let(:order_token) { order.token }
+
+  let!(:adyen_gateway) { create(:adyen_gateway, stores: [store], preferred_client_key: 'test_client_key') }
 
   let(:headers) {
     {
@@ -186,7 +188,23 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
             end
 
             expect(response).to have_http_status(:unprocessable_content)
+            expect(json_response['errors']).to eq(
+              'amount' => ["can't be greater than allowed payment amount of 30.0"]
+            )
           end
+        end
+      end
+
+      context 'when order is not in the payment state' do
+        let(:order_state) { 'address' }
+
+        it 'returns unprocessable entity error' do
+          post_request
+
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(json_response['error']).to eq("Cannot create Adyen payment session for the order in the #{order_state} state")
+          expect(SpreeAdyen::PaymentSession.count).to eq(0)
+          expect(order.reload.state).to eq(order_state)
         end
       end
     end
