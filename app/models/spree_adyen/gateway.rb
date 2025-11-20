@@ -39,9 +39,21 @@ module SpreeAdyen
     # @param payment_source [Spree::CreditCard | Spree::PaymentSource]
     # @param gateway_options [Hash] this is an instance of Spree::Payment::GatewayOptions.to_hash
     def purchase(amount_in_cents, payment_source, gateway_options = {})
+      handle_authorize_or_purchase(amount_in_cents, payment_source, gateway_options)
+    end
+
+    # @param amount_in_cents [Integer] the amount in cents to capture
+    # @param payment_source [Spree::CreditCard | Spree::PaymentSource]
+    # @param gateway_options [Hash] this is an instance of Spree::Payment::GatewayOptions.to_hash
+    def authorize(amount_in_cents, payment_source, gateway_options = {})
+      handle_authorize_or_purchase(amount_in_cents, payment_source, gateway_options)
+    end
+
+    def handle_authorize_or_purchase(amount_in_cents, payment_source, gateway_options = {})
       payload = SpreeAdyen::Payments::RequestPayloadPresenter.new(
         source: payment_source,
         amount_in_cents: amount_in_cents,
+        manual_capture: !auto_capture?,
         gateway_options: gateway_options
       ).to_h
 
@@ -107,12 +119,57 @@ module SpreeAdyen
       end
     end
 
-    def capture(amount_in_cents, payment_session_id, _gateway_options = {})
-      raise NotImplementedError
+    def capture(amount_in_cents, response_code, _gateway_options = {})
+      payment = Spree::Payment.find_by(response_code: response_code)
+
+      return failure("#{response_code} - Payment not found") if payment.blank?
+      return failure("#{response_code} - Payment is already captured") if payment.completed?
+
+      payload = SpreeAdyen::CapturePayloadPresenter.new(
+        amount_in_cents: amount_in_cents,
+        payment: payment,
+        payment_method: self
+      ).to_h
+
+      response = send_request do
+        client.checkout.modifications_api.capture_authorised_payment(
+          payload,
+          payment.response_code,
+          headers: { 'Idempotency-Key' => SecureRandom.uuid }
+        )
+      end
+
+      if response.status.to_i == 201
+        success(response.response['paymentPspReference'], response)
+      else
+        failure(response.response.slice('paymentPspReference', 'message').values.join(' - '))
+      end
     end
 
-    def void(response_code, source, gateway_options)
-      raise NotImplementedError
+    def void(response_code, _source, _gateway_options)
+      payment = Spree::Payment.find_by(response_code: response_code)
+
+      return failure("#{response_code} - Payment not found") if payment.blank?
+      return failure("#{response_code} - Payment is already void") if payment.void?
+
+      payload = SpreeAdyen::CancelPayloadPresenter.new(
+        payment: payment,
+        payment_method: self
+      ).to_h
+
+      response = send_request do
+        client.checkout.modifications_api.cancel_authorised_payment_by_psp_reference(
+          payload,
+          payment.response_code,
+          headers: { 'Idempotency-Key' => SecureRandom.uuid }
+        )
+      end
+
+      if response.status.to_i == 201
+        success(response.response['paymentPspReference'], response)
+      else
+        failure(response.response.slice('paymentPspReference', 'message').values.join(' - '))
+      end
     end
 
     def provider_class

@@ -101,6 +101,20 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
               expect(response).to have_http_status(:ok)
             end
 
+            context 'when payment is not automatically captured' do
+              before do
+                payment_method.update(auto_capture: false)
+              end
+
+              it 'makes the payment pending' do
+                perform_enqueued_jobs do
+                  expect { subject }.to change { payment.reload.state }.from('processing').to('pending')
+                end
+
+                expect(response).to have_http_status(:ok)
+              end
+            end
+
             context 'without payment' do
               let(:payment) { nil }
 
@@ -171,6 +185,20 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
               expect(response).to have_http_status(:ok)
             end
 
+            context 'when payment is not automatically captured' do
+              before do
+                payment_method.update(auto_capture: false)
+              end
+
+              it 'makes the payment pending' do
+                perform_enqueued_jobs do
+                  expect { subject }.to change { payment.reload.state }.from('processing').to('pending')
+                end
+
+                expect(response).to have_http_status(:ok)
+              end
+            end
+
             context 'without payment' do
               let(:payment) { nil }
 
@@ -200,6 +228,36 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
               end
 
               expect(response).to have_http_status(:ok)
+            end
+
+            context 'when payment is not automatically captured' do
+              before do
+                payment_method.update(auto_capture: false)
+              end
+
+              it 'makes the payment pending' do
+                perform_enqueued_jobs do
+                  expect { subject }.to change { payment.reload.state }.from('processing').to('pending')
+                end
+
+                expect(response).to have_http_status(:ok)
+              end
+
+              context 'when payment is already pending' do
+                before do
+                  payment.source = create(:payment_source, payment_method: payment_method)
+                  payment.save!
+                  payment.pend!
+                end
+
+                it 'processes the webhook without errors' do
+                  perform_enqueued_jobs do
+                    expect { subject }.not_to change { payment.reload.state }
+                  end
+
+                  expect(response).to have_http_status(:ok)
+                end
+              end
             end
 
             context 'when payment is completed' do

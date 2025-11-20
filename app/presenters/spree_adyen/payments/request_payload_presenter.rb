@@ -6,9 +6,10 @@ module SpreeAdyen
         shopperInteraction: 'ContAuth'
       }.freeze
 
-      def initialize(source:, amount_in_cents:, gateway_options:)
+      def initialize(source:, amount_in_cents:, manual_capture:, gateway_options:)
         @source = source
         @amount_in_cents = amount_in_cents
+        @manual_capture = manual_capture
         @gateway_options = gateway_options.with_indifferent_access
       end
 
@@ -29,12 +30,12 @@ module SpreeAdyen
           reference: reference,
           shopperReference: shopper_reference,
           merchantAccount: source.payment_method.preferred_merchant_account
-        }.merge!(DEFAULT_PARAMS, SpreeAdyen::ApplicationInfoPresenter.new.to_h)
+        }.merge!(DEFAULT_PARAMS, additional_data_params, SpreeAdyen::ApplicationInfoPresenter.new.to_h)
       end
 
       private
 
-      attr_reader :source, :amount_in_cents, :gateway_options
+      attr_reader :source, :amount_in_cents, :manual_capture, :gateway_options
 
       delegate :currency, to: :order
       delegate :user, to: :order, allow_nil: true
@@ -68,6 +69,16 @@ module SpreeAdyen
 
       def order
         @order ||= Spree::Order.find_by!(number: order_number)
+      end
+
+      def additional_data_params
+        return {} unless manual_capture
+
+        {
+          additionalData: {
+            manualCapture: true
+          }
+        }
       end
     end
   end

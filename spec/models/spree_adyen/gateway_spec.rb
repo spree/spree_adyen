@@ -4,8 +4,8 @@ RSpec.describe SpreeAdyen::Gateway do
   subject(:gateway) do
     create(:adyen_gateway,
       stores: [store],
-      preferred_api_key: 'secret',
-      preferred_merchant_account: 'SpreeCommerceECOM',
+      preferred_api_key: ENV.fetch('ADYEN_TEST_API_KEY', 'secret'),
+      preferred_merchant_account: ENV.fetch('ADYEN_TEST_MERCHANT_ACCOUNT', 'SpreeCommerceECOM'),
       preferred_test_mode: test_mode,
       preferred_webhook_id: webhook_id,
       preferred_hmac_key: hmac_key
@@ -414,6 +414,95 @@ RSpec.describe SpreeAdyen::Gateway do
       it 'should return failure response' do
         expect(subject.success?).to eq(false)
         expect(subject.message).to eq("foobar - Payment not found")
+      end
+    end
+  end
+
+  describe '#capture' do
+    subject { gateway.capture(amount_in_cents, response_code) }
+
+    let(:amount_in_cents) { 100_00 }
+    let(:response_code) { 'ADYEN_PAYMENT_PSP_REFERENCE' }
+
+    let!(:payment) { create(:payment, state: payment_state, order: order, payment_method: gateway, amount: 100.0, response_code: 'ADYEN_PAYMENT_PSP_REFERENCE') }
+    let(:payment_state) { 'pending' }
+    let(:order) { create(:order, total: 100) }
+
+    it 'captures the payment' do
+      VCR.use_cassette("payment_api/captures/success") do
+        expect(subject.success?).to eq(true)
+        expect(subject.authorization).to eq(response_code)
+      end
+    end
+
+    context 'when payment is not found' do
+      let(:response_code) { 'foobar' }
+
+      it 'fails to capture the payment' do
+        expect(subject.success?).to eq(false)
+        expect(subject.message).to eq("#{response_code} - Payment not found")
+      end
+    end
+
+    context 'when payment is not pending' do
+      let(:payment_state) { 'completed' }
+
+      it 'fails to capture the payment' do
+        expect(subject.success?).to eq(false)
+        expect(subject.message).to eq("#{response_code} - Payment is already captured")
+      end
+    end
+
+    context 'when the response is not successful' do
+      it 'fails to capture the payment' do
+        VCR.use_cassette("payment_api/captures/failure") do
+          expect(subject.success?).to eq(false)
+          expect(subject.message).to eq('Original pspReference required for this operation')
+        end
+      end
+    end
+  end
+
+  describe '#void' do
+    subject { gateway.void(response_code, nil, {}) }
+
+    let(:response_code) { 'ADYEN_PAYMENT_PSP_REFERENCE' }
+
+    let!(:payment) { create(:payment, state: payment_state, order: order, payment_method: gateway, amount: 100.0, response_code: 'ADYEN_PAYMENT_PSP_REFERENCE') }
+    let(:payment_state) { 'pending' }
+    let(:order) { create(:order, total: 100) }
+
+    it 'voids the payment' do
+      VCR.use_cassette("payment_api/voids/success") do
+        expect(subject.success?).to eq(true)
+        expect(subject.authorization).to eq(response_code)
+      end
+    end
+
+    context 'when payment is not found' do
+      let(:response_code) { 'foobar' }
+
+      it 'fails to void the payment' do
+        expect(subject.success?).to eq(false)
+        expect(subject.message).to eq("#{response_code} - Payment not found")
+      end
+    end
+
+    context 'when payment is already voided' do
+      let(:payment_state) { 'void' }
+
+      it 'fails to void the payment' do
+        expect(subject.success?).to eq(false)
+        expect(subject.message).to eq("#{response_code} - Payment is already void")
+      end
+    end
+
+    context 'when the response is not successful' do
+      it 'fails to void the payment' do
+        VCR.use_cassette("payment_api/voids/failure") do
+          expect(subject.success?).to eq(false)
+          expect(subject.message).to eq('Original pspReference required for this operation')
+        end
       end
     end
   end

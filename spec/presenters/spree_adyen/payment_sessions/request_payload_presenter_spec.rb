@@ -26,8 +26,11 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
   let(:bill_address) { create(:address, firstname: 'John', lastname: 'Doe') }
   let(:channel) { 'Web' }
   let(:return_url) { 'http://www.example.com/adyen/payment_sessions/redirect' }
+  let(:auto_capture) { true }
 
   before do
+    payment_method.update(auto_capture: auto_capture)
+
     allow(Spree).to receive(:version).and_return('42.0.0')
     allow(SpreeAdyen).to receive(:version).and_return('0.0.1')
   end
@@ -90,6 +93,22 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
 
       it 'returns a valid payload' do
         expect(payload).to eq(expected_payload)
+      end
+
+      context 'with manual capture' do
+        let(:auto_capture) { false }
+
+        let(:expected_payload_with_manual_capture) do
+          expected_payload.merge(
+            additionalData: {
+              manualCapture: true
+            }
+          )
+        end
+
+        it 'returns a valid payload' do
+          expect(payload).to eq(expected_payload_with_manual_capture)
+        end
       end
 
       context 'without channel' do
