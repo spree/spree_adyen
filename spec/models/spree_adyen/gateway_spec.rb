@@ -418,8 +418,8 @@ RSpec.describe SpreeAdyen::Gateway do
     end
   end
 
-  describe '#capture' do
-    subject { gateway.capture(amount_in_cents, response_code) }
+  describe '#request_capture' do
+    subject { gateway.request_capture(amount_in_cents, response_code) }
 
     let(:amount_in_cents) { 100_00 }
     let(:response_code) { 'ADYEN_PAYMENT_PSP_REFERENCE' }
@@ -463,8 +463,55 @@ RSpec.describe SpreeAdyen::Gateway do
     end
   end
 
-  describe '#void' do
-    subject { gateway.void(response_code, nil, {}) }
+  describe '#capture' do
+    subject { gateway.capture(amount_in_cents, response_code) }
+
+    let(:amount_in_cents) { 100_00 }
+    let(:response_code) { 'ADYEN_PAYMENT_PSP_REFERENCE' }
+
+    let!(:payment) { create(:payment, state: payment_state, order: order, payment_method: gateway, amount: 100.0, response_code: 'ADYEN_PAYMENT_PSP_REFERENCE') }
+    let(:payment_state) { 'pending' }
+    let(:order) { create(:order, total: 100) }
+
+    context 'when the capture request was successful' do
+      before do
+        payment.set_metafield(SpreeAdyen::Gateway::CAPTURE_PSP_REFERENCE_METAFIELD_KEY, 'ADYEN_CAPTURE_PSP_REFERENCE')
+      end
+
+      it 'returns success' do
+        expect(subject.success?).to eq(true)
+        expect(subject.authorization).to eq(response_code)
+      end
+
+      context 'when the payment is not found' do
+        let(:response_code) { 'foobar' }
+
+        it 'returns failure' do
+          expect(subject.success?).to eq(false)
+          expect(subject.message).to eq("#{response_code} - Payment not found")
+        end
+      end
+
+      context 'when the payment is already captured' do
+        let(:payment_state) { 'completed' }
+
+        it 'returns failure' do
+          expect(subject.success?).to eq(false)
+          expect(subject.message).to eq("#{response_code} - Payment is already captured")
+        end
+      end
+    end
+
+    context 'when the capture request was not successful' do
+      it 'returns failure' do
+        expect(subject.success?).to eq(false)
+        expect(subject.message).to eq("#{response_code} - Capture PSP reference not found")
+      end
+    end
+  end
+
+  describe '#request_void' do
+    subject { gateway.request_void(response_code, nil, {}) }
 
     let(:response_code) { 'ADYEN_PAYMENT_PSP_REFERENCE' }
 
@@ -503,6 +550,52 @@ RSpec.describe SpreeAdyen::Gateway do
           expect(subject.success?).to eq(false)
           expect(subject.message).to eq('Original pspReference required for this operation')
         end
+      end
+    end
+  end
+
+  describe '#void' do
+    subject { gateway.void(response_code, nil, {}) }
+
+    let(:response_code) { 'ADYEN_PAYMENT_PSP_REFERENCE' }
+
+    let!(:payment) { create(:payment, state: payment_state, order: order, payment_method: gateway, amount: 100.0, response_code: 'ADYEN_PAYMENT_PSP_REFERENCE') }
+    let(:payment_state) { 'void_pending' }
+    let(:order) { create(:order, total: 100) }
+
+    context 'when the void request was successful' do
+      before do
+        payment.set_metafield(SpreeAdyen::Gateway::CANCELLATION_PSP_REFERENCE_METAFIELD_KEY, 'ADYEN_CANCELLATION_PSP_REFERENCE')
+      end
+
+      it 'returns success' do
+        expect(subject.success?).to eq(true)
+        expect(subject.authorization).to eq(response_code)
+      end
+
+      context 'when the payment is not found' do
+        let(:response_code) { 'foobar' }
+
+        it 'returns failure' do
+          expect(subject.success?).to eq(false)
+          expect(subject.message).to eq("#{response_code} - Payment not found")
+        end
+      end
+
+      context 'when the payment is already voided' do
+        let(:payment_state) { 'void' }
+
+        it 'returns failure' do
+          expect(subject.success?).to eq(false)
+          expect(subject.message).to eq("#{response_code} - Payment is already void")
+        end
+      end
+    end
+
+    context 'when the void request was not successful' do
+      it 'returns failure' do
+        expect(subject.success?).to eq(false)
+        expect(subject.message).to eq("#{response_code} - Cancellation PSP reference not found")
       end
     end
   end

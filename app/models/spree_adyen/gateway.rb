@@ -1,5 +1,11 @@
 module SpreeAdyen
   class Gateway < ::Spree::Gateway
+    CAPTURE_PSP_REFERENCE_METAFIELD_KEY = 'adyen.capture_psp_reference'.freeze
+    CAPTURE_ERROR_REASON_METAFIELD_KEY = 'adyen.capture_error_reason'.freeze
+
+    CANCELLATION_PSP_REFERENCE_METAFIELD_KEY = 'adyen.cancellation_psp_reference'.freeze
+    CANCELLATION_ERROR_REASON_METAFIELD_KEY = 'adyen.cancellation_error_reason'.freeze
+
     #
     # Attributes
     #
@@ -119,7 +125,7 @@ module SpreeAdyen
       end
     end
 
-    def capture(amount_in_cents, response_code, _gateway_options = {})
+    def request_capture(amount_in_cents, response_code, _gateway_options = {})
       payment = Spree::Payment.find_by(response_code: response_code)
 
       return failure("#{response_code} - Payment not found") if payment.blank?
@@ -146,7 +152,19 @@ module SpreeAdyen
       end
     end
 
-    def void(response_code, _source, _gateway_options)
+    # This only checks if the capture was successful by checking the presence of the capture PSP reference
+    # The actual capture is requested in #request_capture and handled in the SpreeAdyen::Webhooks::EventProcessors::CaptureEventProcessor
+    def capture(amount_in_cents, response_code, _gateway_options = {})
+      payment = Spree::Payment.find_by(response_code: response_code)
+
+      return failure("#{response_code} - Payment not found") if payment.blank?
+      return failure("#{response_code} - Payment is already captured") if payment.completed?
+      return failure("#{response_code} - Capture PSP reference not found") unless payment.has_metafield?(CAPTURE_PSP_REFERENCE_METAFIELD_KEY)
+
+      success(payment.response_code, {})
+    end
+
+    def request_void(response_code, _source, _gateway_options)
       payment = Spree::Payment.find_by(response_code: response_code)
 
       return failure("#{response_code} - Payment not found") if payment.blank?
@@ -170,6 +188,18 @@ module SpreeAdyen
       else
         failure(response.response.slice('paymentPspReference', 'message').values.join(' - '))
       end
+    end
+
+    # This only checks if the void was successful by checking the presence of the cancellation PSP reference
+    # The actual void is requested in #request_void and handled in the SpreeAdyen::Webhooks::EventProcessors::CancellationEventProcessor
+    def void(response_code, _source, _gateway_options)
+      payment = Spree::Payment.find_by(response_code: response_code)
+
+      return failure("#{response_code} - Payment not found") if payment.blank?
+      return failure("#{response_code} - Payment is already void") if payment.void?
+      return failure("#{response_code} - Cancellation PSP reference not found") unless payment.has_metafield?(CANCELLATION_PSP_REFERENCE_METAFIELD_KEY)
+
+      success(payment.response_code, {})
     end
 
     def provider_class
@@ -230,6 +260,14 @@ module SpreeAdyen
     # @return [Boolean] whether payment profiles are supported
     # this is used by spree to determine whenever payment source must be passed to gateway methods
     def payment_profiles_supported?
+      true
+    end
+
+    def async_capture?
+      true
+    end
+
+    def async_void?
       true
     end
 

@@ -82,6 +82,10 @@ module SpreeAdyen
         @psp_reference ||= body['pspReference']
       end
 
+      def fetch(attribute)
+        body[attribute]
+      end
+
       private
 
       attr_reader :event_data

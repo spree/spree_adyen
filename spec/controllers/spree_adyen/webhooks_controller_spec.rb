@@ -334,6 +334,101 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
           end
         end
       end
+
+      describe 'capture event' do
+        let(:params) { JSON.parse(file_fixture('webhooks/capture/success.json').read) }
+
+        let!(:payment) { create(:payment, state: 'capture_pending', order: order, payment_method: payment_method, amount: 100.0, response_code: response_code) }
+        let(:response_code) { 'ABC123' }
+
+        it 'schedules a job' do
+          expect { subject }.to have_enqueued_job(SpreeAdyen::Webhooks::ProcessCaptureEventJob)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'captures the payment' do
+          perform_enqueued_jobs do
+            expect { subject }.to change { payment.reload.state }.from('capture_pending').to('completed')
+          end
+
+          expect(response).to have_http_status(:ok)
+          expect(payment.reload.get_metafield(SpreeAdyen::Gateway::CAPTURE_PSP_REFERENCE_METAFIELD_KEY).value).to eq('capture_psp_reference')
+        end
+
+        context 'when capturing failed' do
+          let(:params) { JSON.parse(file_fixture('webhooks/capture/failure.json').read) }
+
+          before do
+            allow(Rails.error).to receive(:report)
+          end
+
+          it 'fails the payment' do
+            perform_enqueued_jobs do
+              expect { subject }.to change { payment.reload.state }.from('capture_pending').to('failed')
+            end
+
+            expect(response).to have_http_status(:ok)
+            expect(payment.reload.get_metafield(SpreeAdyen::Gateway::CAPTURE_ERROR_REASON_METAFIELD_KEY).value).to eq('Insufficient balance on payment')
+          end
+
+          it 'reports an error' do
+            perform_enqueued_jobs { subject }
+
+            expect(Rails.error).to have_received(:report).with(
+              SpreeAdyen::CaptureError.new('Insufficient balance on payment'),
+              context: { order_id: order.id, event: anything },
+              source: 'spree_adyen'
+            )
+          end
+        end
+      end
+
+      describe 'cancellation event' do
+        let!(:payment) { create(:payment, state: 'void_pending', order: order, payment_method: payment_method, amount: 100.0, response_code: response_code) }
+        let(:response_code) { 'ABC123' }
+
+        let(:params) { JSON.parse(file_fixture('webhooks/cancellation/success.json').read) }
+
+        it 'creates a job' do
+          expect { subject }.to have_enqueued_job(SpreeAdyen::Webhooks::ProcessCancellationEventJob)
+        end
+
+        it 'voids the payment' do
+          perform_enqueued_jobs do
+            expect { subject }.to change { payment.reload.state }.from('void_pending').to('void')
+          end
+
+          expect(response).to have_http_status(:ok)
+          expect(payment.reload.get_metafield(SpreeAdyen::Gateway::CANCELLATION_PSP_REFERENCE_METAFIELD_KEY).value).to eq('cancellation_psp_reference')
+        end
+
+        context 'when voiding failed' do
+          let(:params) { JSON.parse(file_fixture('webhooks/cancellation/failure.json').read) }
+
+          before do
+            allow(Rails.error).to receive(:report)
+          end
+
+          it 'makes the payment pending' do
+            perform_enqueued_jobs do
+              expect { subject }.to change { payment.reload.state }.from('void_pending').to('pending')
+            end
+
+            expect(response).to have_http_status(:ok)
+            expect(payment.reload.get_metafield(SpreeAdyen::Gateway::CANCELLATION_ERROR_REASON_METAFIELD_KEY).value).to eq('Transaction not found')
+          end
+
+          it 'reports an error' do
+            perform_enqueued_jobs { subject }
+
+            expect(Rails.error).to have_received(:report).with(
+              SpreeAdyen::CancellationError.new('Transaction not found'),
+              context: { order_id: order.id, event: anything },
+              source: 'spree_adyen'
+            )
+          end
+        end
+      end
     end
   end
 end
