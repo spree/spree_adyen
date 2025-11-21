@@ -1,0 +1,58 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/payments/ADYEN_PAYMENT_PSP_REFERENCE/captures
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"value":10000,"currency":"USD"},"reference":"R580292733_1_ADYEN_PAYMENT_PSP_REFERENCE_capture","merchantAccount":"ADYEN_TEST_MERCHANT_ACCOUNT","applicationInfo":{"externalPlatform":{"name":"Spree
+        Commerce","version":"42.0.0","integrator":"Vendo Sp. z o.o."},"merchantApplication":{"name":"Community
+        Edition","version":"0.0.3"}}}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/10.4.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Idempotency-Key:
+      - 0b41dbbf-7c97-4732-9d71-8f4d2144d3f7
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 10.4.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 422
+      message: Unprocessable Content
+    headers:
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      Idempotency-Key:
+      - 0b41dbbf-7c97-4732-9d71-8f4d2144d3f7
+      Content-Type:
+      - application/json;charset=UTF-8
+      Content-Length:
+      - '153'
+      Date:
+      - Wed, 19 Nov 2025 09:44:16 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"status":422,"errorCode":"167","message":"Original pspReference required
+        for this operation","errorType":"validation","pspReference":"ADYEN_PSP_REFERENCE"}'
+  recorded_at: Wed, 19 Nov 2025 09:44:16 GMT
+recorded_with: VCR 6.3.1

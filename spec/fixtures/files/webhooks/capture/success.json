@@ -1,0 +1,22 @@
+{
+  "live":"false",
+  "notificationItems":[
+     {
+        "NotificationRequestItem":{
+           "amount":{
+              "currency":"EUR",
+              "value":1000
+           },
+           "eventCode":"CAPTURE",
+           "eventDate":"2025-11-21T08:00:00+02:00",
+           "merchantAccountCode":"SpreeCommerceECOM",
+           "merchantReference":"1234567890_1_ABC123_capture",
+           "originalReference":"ABC123",
+           "paymentMethod":"mc",
+           "pspReference":"capture_psp_reference",
+           "reason":"",
+           "success":"true"
+        }
+     }
+  ]
+}

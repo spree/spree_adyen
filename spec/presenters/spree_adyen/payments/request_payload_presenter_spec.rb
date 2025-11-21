@@ -1,11 +1,12 @@
 require 'spec_helper'
 
 RSpec.describe SpreeAdyen::Payments::RequestPayloadPresenter do
-  subject(:serializer) { described_class.new(source: source, amount_in_cents: amount, gateway_options: gateway_options) }
+  subject(:serializer) { described_class.new(source: source, amount_in_cents: amount, manual_capture: manual_capture, gateway_options: gateway_options) }
 
   let(:source) { create(:credit_card, gateway_payment_profile_id: '12345', payment_method: payment_method) }
   let(:gateway_options) { { order_id: 'R123456789-PX6H2G23' } }
   let(:amount) { 100 * 100 }
+  let(:manual_capture) { false }
 
   before do
     create(:payment,
@@ -67,6 +68,22 @@ RSpec.describe SpreeAdyen::Payments::RequestPayloadPresenter do
 
       it 'returns a valid payload' do
         expect(payload).to eq(expected_payload)
+      end
+
+      context 'with manual capture' do
+        let(:manual_capture) { true }
+
+        let(:expected_payload_with_manual_capture) do
+          expected_payload.merge(
+            additionalData: {
+              manualCapture: true
+            }
+          )
+        end
+
+        it 'returns a valid payload' do
+          expect(payload).to eq(expected_payload_with_manual_capture)
+        end
       end
     end
   end

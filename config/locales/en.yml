@@ -6,3 +6,6 @@ en:
         canceled: Payment canceled
         expired: Payment has been expired. Try again.
         refused: Payment refused
+    payment_states:
+      capture_pending: Capture Pending
+      void_pending: Void Pending

@@ -19,7 +19,7 @@ RSpec.describe SpreeAdyen::PaymentSessions::ProcessWithResult do
       it 'creates a new payment with completed status' do
         VCR.use_cassette('payment_session_results/success/completed') do
           expect { service }.to change(Spree::Payment, :count).by(1)
-  
+
           expect(payment_session.order.payments).to be_present
           expect(payment_session.order.payments.last.state).to eq('completed')
         end
@@ -32,6 +32,27 @@ RSpec.describe SpreeAdyen::PaymentSessions::ProcessWithResult do
 
         expect(payment_session.order.payments).to be_present
         expect(payment_session.order.payments.last.state).to eq('completed')
+      end
+    end
+  end
+
+  context 'when payment is not automatically captured' do
+    before do
+      payment_session.payment_method.update(auto_capture: false)
+    end
+
+    it 'completed the payment session' do
+      VCR.use_cassette('payment_session_results/success/completed') do
+        expect { service }.to change(payment_session.reload, :status).to('completed')
+      end
+    end
+
+    it 'creates a payment with pending status' do
+      VCR.use_cassette('payment_session_results/success/completed') do
+        expect { service }.to change(Spree::Payment, :count).by(1)
+
+        expect(payment_session.order.payments).to be_present
+        expect(payment_session.order.payments.last.state).to eq('pending')
       end
     end
   end
