@@ -23,7 +23,7 @@ module SpreeAdyen
               payment.started_processing!
               payment.void!
             else
-              payment.set_metafield(SpreeAdyen::Gateway::CANCELLATION_ERROR_REASON_METAFIELD_KEY, event.fetch('reason'))
+              payment.add_gateway_processing_error("Cancellation failed: #{event.fetch('reason')}")
               payment.started_processing! if payment.can_started_processing?
               payment.pend! if payment.can_pend?
 

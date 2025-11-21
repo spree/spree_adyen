@@ -50,7 +50,7 @@ module SpreeAdyen
 
       started_processing!
       protect_from_connection_error do
-        response = payment_method.request_void(response_code, gateway_options)
+        response = payment_method.request_void(response_code, source, gateway_options)
         handle_response(response, :pend_void, :failure)
       end
     end

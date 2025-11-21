@@ -22,7 +22,7 @@ module SpreeAdyen
               payment.set_metafield(SpreeAdyen::Gateway::CAPTURE_PSP_REFERENCE_METAFIELD_KEY, event.psp_reference)
               payment.capture!
             else
-              payment.set_metafield(SpreeAdyen::Gateway::CAPTURE_ERROR_REASON_METAFIELD_KEY, event.fetch('reason'))
+              payment.add_gateway_processing_error("Capture failed: #{event.fetch('reason')}")
               payment.started_processing! if payment.can_started_processing?
               payment.failure! if payment.can_failure?
 

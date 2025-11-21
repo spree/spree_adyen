@@ -1,10 +1,7 @@
 module SpreeAdyen
   class Gateway < ::Spree::Gateway
     CAPTURE_PSP_REFERENCE_METAFIELD_KEY = 'adyen.capture_psp_reference'.freeze
-    CAPTURE_ERROR_REASON_METAFIELD_KEY = 'adyen.capture_error_reason'.freeze
-
     CANCELLATION_PSP_REFERENCE_METAFIELD_KEY = 'adyen.cancellation_psp_reference'.freeze
-    CANCELLATION_ERROR_REASON_METAFIELD_KEY = 'adyen.cancellation_error_reason'.freeze
 
     #
     # Attributes
@@ -260,14 +257,6 @@ module SpreeAdyen
     # @return [Boolean] whether payment profiles are supported
     # this is used by spree to determine whenever payment source must be passed to gateway methods
     def payment_profiles_supported?
-      true
-    end
-
-    def async_capture?
-      true
-    end
-
-    def async_void?
       true
     end
 

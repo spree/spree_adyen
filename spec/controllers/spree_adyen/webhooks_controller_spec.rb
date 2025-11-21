@@ -368,7 +368,7 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
             end
 
             expect(response).to have_http_status(:ok)
-            expect(payment.reload.get_metafield(SpreeAdyen::Gateway::CAPTURE_ERROR_REASON_METAFIELD_KEY).value).to eq('Insufficient balance on payment')
+            expect(payment.reload.gateway_processing_error_messages).to eq(['Capture failed: Insufficient balance on payment'])
           end
 
           it 'reports an error' do
@@ -415,7 +415,7 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
             end
 
             expect(response).to have_http_status(:ok)
-            expect(payment.reload.get_metafield(SpreeAdyen::Gateway::CANCELLATION_ERROR_REASON_METAFIELD_KEY).value).to eq('Transaction not found')
+            expect(payment.reload.gateway_processing_error_messages).to eq(['Cancellation failed: Transaction not found'])
           end
 
           it 'reports an error' do
