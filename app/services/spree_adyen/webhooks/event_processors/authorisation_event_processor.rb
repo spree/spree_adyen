@@ -23,18 +23,18 @@ module SpreeAdyen
 
             payment = find_or_initialize_payment(payment_method)
             payment.assign_attributes(
-              skip_source_requirement: true,
               response_code: event.psp_reference,
               amount: event.amount.to_d,
               order: order,
-              source: source,
-              state: 'processing'
+              source: source
             )
             payment.save!
 
+            payment.started_processing! if payment.checkout?
+
             if event.success?
-              payment.complete! if payment.processing?
               payment_session&.complete
+              payment.confirm!
               Spree::Dependencies.checkout_complete_service.constantize.call(order: order) unless order.completed?
             else
               payment.failure!

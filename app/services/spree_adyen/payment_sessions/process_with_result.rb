@@ -16,13 +16,13 @@ module SpreeAdyen
             response_code: payment_session.adyen_id
           ).first_or_initialize
 
-          payment.state = 'processing' if payment.checkout? # it can be already changed by webhook
           payment.update!(amount: payment_session.amount, skip_source_requirement: true)
+          payment.started_processing! if payment.checkout? # it can be already changed by webhook
 
           case status
           when 'completed'
             payment_session.complete! if payment_session.can_complete?
-            payment.complete! unless payment.completed?
+            payment.confirm!
             Spree::Dependencies.checkout_complete_service.constantize.call(order: order) unless order.completed?
           when 'canceled'
             payment.void! if payment.can_void?

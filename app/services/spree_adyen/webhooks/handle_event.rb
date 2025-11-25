@@ -2,7 +2,9 @@ module SpreeAdyen
   module Webhooks
     class HandleEvent
       EVENT_HANDLERS = {
-        'AUTHORISATION' => SpreeAdyen::Webhooks::ProcessAuthorisationEventJob
+        'AUTHORISATION' => SpreeAdyen::Webhooks::ProcessAuthorisationEventJob,
+        'CAPTURE' => SpreeAdyen::Webhooks::ProcessCaptureEventJob,
+        'CANCELLATION' => SpreeAdyen::Webhooks::ProcessCancellationEventJob
       }.freeze
 
       def initialize(event_payload:)

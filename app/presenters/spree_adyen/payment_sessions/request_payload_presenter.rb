@@ -34,7 +34,7 @@ module SpreeAdyen
           merchantAccount: merchant_account,
           merchantOrderReference: order_number,
           expiresAt: expires_at
-        }.merge!(shopper_details, DEFAULT_PARAMS, channel_params, SpreeAdyen::ApplicationInfoPresenter.new.to_h)
+        }.merge!(shopper_details, DEFAULT_PARAMS, channel_params, additional_data_params, SpreeAdyen::ApplicationInfoPresenter.new.to_h)
       end
 
       private
@@ -65,6 +65,16 @@ module SpreeAdyen
         else
           {}
         end
+      end
+
+      def additional_data_params
+        return {} if payment_method.auto_capture?
+
+        {
+          additionalData: {
+            manualCapture: true
+          }
+        }
       end
 
       def shopper_details
