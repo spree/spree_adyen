@@ -20,8 +20,8 @@ module SpreeAdyen
 
             if event.success?
               payment.set_metafield(SpreeAdyen::Gateway::CANCELLATION_PSP_REFERENCE_METAFIELD_KEY, event.psp_reference)
-              payment.started_processing!
-              payment.void!
+              payment.started_processing! if payment.can_started_processing?
+              payment.void! unless payment.void?
             else
               payment.add_gateway_processing_error("Cancellation failed: #{event.fetch('reason')}")
               payment.started_processing! if payment.can_started_processing?
