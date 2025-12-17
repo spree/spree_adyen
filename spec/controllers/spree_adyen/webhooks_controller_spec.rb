@@ -338,7 +338,8 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
       describe 'capture event' do
         let(:params) { JSON.parse(file_fixture('webhooks/capture/success.json').read) }
 
-        let!(:payment) { create(:payment, state: 'capture_pending', order: order, payment_method: payment_method, amount: 100.0, response_code: response_code) }
+        let!(:payment) { create(:payment, state: payment_state, order: order, payment_method: payment_method, amount: 100.0, response_code: response_code) }
+        let(:payment_state) { 'capture_pending' }
         let(:response_code) { 'ABC123' }
 
         it 'schedules a job' do
@@ -353,6 +354,21 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
 
           expect(response).to have_http_status(:ok)
           expect(payment.reload.get_metafield(SpreeAdyen::Gateway::CAPTURE_PSP_REFERENCE_METAFIELD_KEY).value).to eq('capture_psp_reference')
+        end
+
+        context 'when payment is already captured' do
+          let(:payment_state) { 'completed' }
+
+          it 'keeps the payment completed' do
+            perform_enqueued_jobs do
+              expect { subject }.to_not change { payment.reload.state }
+            end
+
+            expect(response).to have_http_status(:ok)
+
+            expect(payment.reload.state).to eq('completed')
+            expect(payment.get_metafield(SpreeAdyen::Gateway::CAPTURE_PSP_REFERENCE_METAFIELD_KEY).value).to eq('capture_psp_reference')
+          end
         end
 
         context 'when capturing failed' do
@@ -384,7 +400,8 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
       end
 
       describe 'cancellation event' do
-        let!(:payment) { create(:payment, state: 'void_pending', order: order, payment_method: payment_method, amount: 100.0, response_code: response_code) }
+        let!(:payment) { create(:payment, state: payment_state, order: order, payment_method: payment_method, amount: 100.0, response_code: response_code) }
+        let(:payment_state) { 'void_pending' }
         let(:response_code) { 'ABC123' }
 
         let(:params) { JSON.parse(file_fixture('webhooks/cancellation/success.json').read) }
@@ -400,6 +417,21 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
 
           expect(response).to have_http_status(:ok)
           expect(payment.reload.get_metafield(SpreeAdyen::Gateway::CANCELLATION_PSP_REFERENCE_METAFIELD_KEY).value).to eq('cancellation_psp_reference')
+        end
+
+        context 'when payment is already voided' do
+          let(:payment_state) { 'void' }
+
+          it 'does nothing' do
+            perform_enqueued_jobs do
+              expect { subject }.to_not change { payment.reload.state }
+            end
+
+            expect(response).to have_http_status(:ok)
+
+            expect(payment.reload.state).to eq('void')
+            expect(payment.get_metafield(SpreeAdyen::Gateway::CANCELLATION_PSP_REFERENCE_METAFIELD_KEY).value).to eq('cancellation_psp_reference')
+          end
         end
 
         context 'when voiding failed' do
