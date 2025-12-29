@@ -1,8 +1,9 @@
 # this is the endpoint that Adyen JS SDK will redirect customer to after payment
 # it will handle the payment session status and process the payment
+
 module SpreeAdyen
-  class PaymentSessionsController < Spree::StoreController
-    include Spree::CheckoutAnalyticsHelper
+  class PaymentSessionsController < defined?(Spree::StoreController) ? Spree::StoreController : Spree::BaseController
+    include Spree::CheckoutAnalyticsHelper if defined?(Spree::CheckoutAnalyticsHelper)
 
     # GET /adyen/payment_sessions/redirect
     def redirect
@@ -47,7 +48,7 @@ module SpreeAdyen
       # update the payment session status
 
       # set the session flag to indicate that the order was placed now
-      track_checkout_completed if @order.completed?
+      track_checkout_completed if @order.completed? && defined?(track_checkout_completed)
 
       redirect_to spree.checkout_complete_path(@order.token), status: :see_other
     end
