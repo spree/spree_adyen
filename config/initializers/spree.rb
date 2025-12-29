@@ -28,5 +28,7 @@ Rails.application.config.after_initialize do
   # Rails.application.config.spree.page_blocks << Spree::PageBlocks::BigRedButtonToCallSales
 
   # Storefront partials
-  Rails.application.config.spree_storefront.head_partials << 'spree_adyen/head'
+  if Rails.application.config.respond_to?(:spree_storefront)
+    Rails.application.config.spree_storefront.head_partials << 'spree_adyen/head'
+  end
 end
