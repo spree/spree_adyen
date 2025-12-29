@@ -1,8 +1,8 @@
 # this is the endpoint that Adyen JS SDK will redirect customer to after payment
 # it will handle the payment session status and process the payment
 module SpreeAdyen
-  class PaymentSessionsController < Spree::StoreController
-    include Spree::CheckoutAnalyticsHelper
+  class PaymentSessionsController < Spree::BaseController
+    include Spree::CheckoutAnalyticsHelper if defined?(Spree::CheckoutAnalyticsHelper)
 
     # GET /adyen/payment_sessions/redirect
     def redirect

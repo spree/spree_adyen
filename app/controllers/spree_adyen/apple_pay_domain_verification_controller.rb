@@ -1,5 +1,5 @@
 module SpreeAdyen
-  class ApplePayDomainVerificationController < ::Spree::StoreController
+  class ApplePayDomainVerificationController < ::Spree::BaseController
     def show
       gateway = current_store.adyen_gateway
 

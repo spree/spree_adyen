@@ -11,7 +11,7 @@ gem 'sprockets-rails'
 spree_opts = { github: 'spree/spree', branch: 'main' }
 gem 'spree', spree_opts
 gem 'spree_admin', spree_opts
-gem 'spree_emails', spree_opts
+gem 'spree_page_builder', spree_opts.merge(glob: 'packages/page_builder/*.gemspec')
 gem 'spree_storefront', spree_opts
 
 gem 'mysql2' if ENV['DB'] == 'mysql' || ENV['CI']
