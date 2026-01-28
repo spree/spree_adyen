@@ -15,6 +15,7 @@ module SpreeAdyen
     preference :hmac_key, :password
     preference :test_mode, :boolean, default: true
     preference :webhook_id, :string
+    preference :live_url_prefix, :string
 
     has_one_attached :apple_developer_merchantid_domain_association, service: Spree.private_storage_service_name
 
@@ -23,6 +24,7 @@ module SpreeAdyen
     # Validations
     #
     validates :preferred_api_key, presence: true
+    validates :preferred_live_url_prefix, presence: true, unless: :preferred_test_mode
     validate :validate_api_key, if: -> { preferred_api_key_changed? }, unless: :skip_api_key_validation
 
     #
@@ -390,6 +392,7 @@ module SpreeAdyen
       @client ||= Adyen::Client.new.tap do |client|
         client.api_key = preferred_api_key
         client.env = environment
+        client.live_url_prefix = preferred_live_url_prefix if environment == :live
       end
     end
 

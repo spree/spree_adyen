@@ -7,8 +7,7 @@ end
 
 gem 'rails-controller-testing'
 
-spree_opts = { github: 'spree/spree', branch: 'main' }
-gem 'spree', spree_opts
+gem 'spree', github: 'spree/spree', branch: 'main'
 
 gem 'mysql2' if ENV['DB'] == 'mysql' || ENV['CI']
 gem 'pg' if ENV['DB'] == 'postgres' || ENV['CI']
