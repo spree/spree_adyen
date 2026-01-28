@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
 
   spree_version = '>= 5.1.4'
   s.add_dependency 'spree', spree_version
-  s.add_dependency 'spree_admin', spree_version
   s.add_dependency 'spree_extension'
 
   s.add_dependency 'adyen-ruby-api-library', '~> 10.3'

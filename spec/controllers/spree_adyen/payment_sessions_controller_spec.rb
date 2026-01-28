@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe SpreeAdyen::PaymentSessionsController, type: :controller do
+  routes { Spree::Core::Engine.routes }
   render_views
 
   let(:store) { Spree::Store.default }
@@ -9,11 +10,18 @@ RSpec.describe SpreeAdyen::PaymentSessionsController, type: :controller do
   let(:payment_session_id) { 'CS4FBB6F827EC53AC7' }
   let(:payment_session) { create(:payment_session, order: order, amount: order.total, adyen_id: payment_session_id, payment_method: adyen_gateway) }
   let(:session_result) { 'resultData' }
-  
+
+  before do
+    spree_routes = controller.spree
+    allow(spree_routes).to receive(:checkout_complete_path) { |token| "/checkout/#{token}/complete" }
+    allow(spree_routes).to receive(:cart_path).and_return('/cart')
+    allow(spree_routes).to receive(:checkout_path) { |token| "/checkout/#{token}" }
+  end
+
   describe 'GET #show' do
     context 'when payment session succeeds' do
       let(:complete_order_service) { instance_double(SpreeAdyen::Orders::Complete) }
-      
+
       let(:send_request) do
         VCR.use_cassette('payment_session_results/success/completed') do
           get :show, params: { sessionId: payment_session.adyen_id, sessionResult: session_result }
@@ -46,7 +54,7 @@ RSpec.describe SpreeAdyen::PaymentSessionsController, type: :controller do
       it 'redirects to cart' do
         get :show, params: { sessionId: payment_session.adyen_id, sessionResult: session_result }
 
-        expect(response).to redirect_to(spree.cart_path)
+        expect(response).to redirect_to('/cart')
       end
     end
 
