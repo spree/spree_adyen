@@ -1,6 +1,7 @@
 module SpreeAdyen
-  class WebhooksController < Spree::BaseController
-    skip_before_action :verify_authenticity_token
+  class WebhooksController < ActionController::API
+    include Spree::Core::ControllerHelpers::Store
+
     before_action :validate_hmac!
 
     def create

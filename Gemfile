@@ -6,17 +6,15 @@ git_source(:github) do |repo_name|
 end
 
 gem 'rails-controller-testing'
-gem 'sprockets-rails'
 
 spree_opts = { github: 'spree/spree', branch: 'main' }
 gem 'spree', spree_opts
-gem 'spree_admin', spree_opts
-gem 'spree_page_builder', spree_opts.merge(glob: 'packages/page_builder/*.gemspec')
-gem 'spree_storefront', spree_opts
 
 gem 'mysql2' if ENV['DB'] == 'mysql' || ENV['CI']
 gem 'pg' if ENV['DB'] == 'postgres' || ENV['CI']
 
 gem 'sqlite3', '>= 2.0'
+
+gem 'propshaft'
 
 gemspec
