@@ -8,7 +8,8 @@ RSpec.describe SpreeAdyen::Gateway do
       preferred_merchant_account: ENV.fetch('ADYEN_TEST_MERCHANT_ACCOUNT', 'SpreeCommerceECOM'),
       preferred_test_mode: test_mode,
       preferred_webhook_id: webhook_id,
-      preferred_hmac_key: hmac_key
+      preferred_hmac_key: hmac_key,
+      preferred_live_url_prefix: live_url_prefix
     )
   end
   let(:store) { Spree::Store.default }
@@ -16,8 +17,40 @@ RSpec.describe SpreeAdyen::Gateway do
   let(:test_mode) { true }
   let(:webhook_id) { '1234567890' }
   let(:hmac_key) { '1234567890' }
+  let(:live_url_prefix) { '1797a841fbb37ca7-TestCompany' }
 
   describe 'validations' do
+    describe 'live URL prefix validation' do
+      context 'when test_mode is true' do
+        let(:test_mode) { true }
+
+        it 'does not require live URL prefix' do
+          gateway.preferred_live_url_prefix = nil
+          expect(gateway).to be_valid
+        end
+      end
+
+      context 'when in live mode' do
+        let(:test_mode) { false }
+
+        context 'when live URL prefix is blank' do
+          let(:live_url_prefix) { nil }
+
+          it 'is invalid' do
+            expect { gateway }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Preferred live url prefix can't be blank")
+          end
+        end
+
+        context 'when live URL prefix is present' do
+          let(:live_url_prefix) { '1797a841fbb37ca7-TestCompany' }
+
+          it 'is valid' do
+            expect(gateway).to be_valid
+          end
+        end
+      end
+    end
+
     describe 'api key validation' do
       before do
         gateway.preferred_api_key = 'new_api_key'
@@ -241,7 +274,7 @@ RSpec.describe SpreeAdyen::Gateway do
     end
 
     context 'when test_mode is false' do
-      let(:gateway) { create(:adyen_gateway, preferred_test_mode: false) }
+      let(:gateway) { create(:adyen_gateway, preferred_test_mode: false, preferred_live_url_prefix: live_url_prefix) }
 
       it { is_expected.to eq(:live) }
     end
