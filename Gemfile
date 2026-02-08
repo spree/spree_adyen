@@ -7,12 +7,27 @@ end
 
 gem 'rails-controller-testing'
 
-gem 'spree', github: 'spree/spree', branch: 'main'
+spree_opts = if ENV['SPREE_PATH']
+                { 'path': ENV['SPREE_PATH'] }
+             else
+                { 'github': 'spree/spree', 'branch': 'main' }
+             end
+gem 'spree', spree_opts
+gem 'spree_admin', spree_opts
 
-gem 'mysql2' if ENV['DB'] == 'mysql' || ENV['CI']
-gem 'pg' if ENV['DB'] == 'postgres' || ENV['CI']
+gem 'spree_storefront'
+gem 'spree_page_builder'
 
-gem 'sqlite3', '>= 2.0'
+gem 'spree_legacy_api_v2'
+gem 'spree_dev_tools', '>= 0.6.0.rc1'
+
+if ENV['DB'] == 'mysql'
+  gem 'mysql2'
+elsif ENV['DB'] == 'postgres'
+  gem 'pg'
+else
+  gem 'sqlite3'
+end
 
 gem 'propshaft'
 
