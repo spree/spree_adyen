@@ -14,14 +14,22 @@ Gem::Specification.new do |s|
   s.author    = 'Vendo Connect Inc., Vendo Sp. z o.o.'
   s.email     = 'hello@spreecommerce.org'
   s.homepage  = 'https://github.com/spree/spree_adyen'
-  s.license = 'AGPL-3.0-or-later'
+  s.license   = 'MIT'
 
-  s.files        = Dir["{app,config,db,lib,vendor}/**/*", "LICENSE.md", "Rakefile", "README.md"].reject { |f| f.match(/^spec/) && !f.match(/^spec\/fixtures/) }
+  s.metadata = {
+    'bug_tracker_uri' => 'https://github.com/spree/spree_adyen/issues',
+    'changelog_uri' => "https://github.com/spree/spree_adyen/releases/tag/v#{s.version}",
+    'documentation_uri' => 'https://docs.spreecommerce.org/',
+    'source_code_uri' => "https://github.com/spree/spree_adyen/tree/v#{s.version}"
+  }
+
+  s.files        = Dir["{app,config,db,lib,vendor}/**/*", "LICENSE", "Rakefile", "README.md"].reject { |f| f.match(/^spec/) && !f.match(/^spec\/fixtures/) }
   s.require_path = 'lib'
   s.requirements << 'none'
 
   spree_version = '>= 5.1.4'
   s.add_dependency 'spree', spree_version
+  s.add_dependency 'spree_admin', spree_version
   s.add_dependency 'spree_extension'
 
   s.add_dependency 'adyen-ruby-api-library', '~> 10.3'
