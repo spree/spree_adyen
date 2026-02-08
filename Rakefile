@@ -17,5 +17,9 @@ end
 desc 'Generates a dummy app for testing'
 task :test_app do
   ENV['LIB_NAME'] = 'spree_adyen'
-  Rake::Task['extension:test_app'].invoke
+  Rake::Task['extension:test_app'].execute(
+    install_storefront: true,
+    install_admin: true
+  )
+  system({ 'BUNDLE_GEMFILE' => File.expand_path('Gemfile', __dir__) }, 'rails g spree_legacy_api_v2:install')
 end
