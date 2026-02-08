@@ -1,5 +1,4 @@
 require 'spree_core'
-require 'spree_extension'
 require 'spree_adyen/engine'
 require 'spree_adyen/version'
 require 'spree_adyen/configuration'
