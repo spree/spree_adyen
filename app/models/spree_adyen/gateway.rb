@@ -310,6 +310,10 @@ module SpreeAdyen
       else
         failure(response.response.message)
       end
+    rescue Adyen::AuthenticationError, Adyen::PermissionError
+      raise
+    rescue Adyen::AdyenError => e
+      failure(parse_adyen_error_response(e)['message'])
     end
 
     def add_allowed_origin(domain)
@@ -320,6 +324,8 @@ module SpreeAdyen
       else
         failure(response.response)
       end
+    rescue Adyen::AdyenError => e
+      failure(parse_adyen_error_response(e))
     end
 
     def set_up_webhook(url)
@@ -331,6 +337,8 @@ module SpreeAdyen
       else
         failure(response.response)
       end
+    rescue Adyen::AdyenError => e
+      failure(parse_adyen_error_response(e)['message'])
     end
 
     def test_webhook
@@ -342,6 +350,8 @@ module SpreeAdyen
       else
         failure(response.response)
       end
+    rescue Adyen::AdyenError => e
+      failure(parse_adyen_error_response(e)['message'])
     end
 
     def generate_hmac_key
@@ -352,6 +362,8 @@ module SpreeAdyen
       else
         failure(response.response)
       end
+    rescue Adyen::AdyenError => e
+      failure(parse_adyen_error_response(e)['message'])
     end
 
     def generate_client_key
@@ -362,6 +374,8 @@ module SpreeAdyen
       else
         failure(response.response.message)
       end
+    rescue Adyen::AdyenError => e
+      failure(parse_adyen_error_response(e)['message'])
     end
 
     def apple_domain_association_file_content
@@ -375,11 +389,11 @@ module SpreeAdyen
 
       get_api_credential_details
     rescue Adyen::AuthenticationError => e
-      errors.add(:preferred_api_key, "is invalid. Response: #{e.message}")
+      errors.add(:preferred_api_key, "is invalid. Response: #{e.msg}")
     rescue Adyen::PermissionError => e
-      errors.add(:preferred_api_key, "has insufficient permissions. Add missing roles to API credential. Response: #{e.message}")
+      errors.add(:preferred_api_key, "has insufficient permissions. Add missing roles to API credential. Response: #{e.msg}")
     rescue Adyen::AdyenError => e
-      errors.add(:preferred_api_key, "An error occurred. Response: #{e.message}")
+      errors.add(:preferred_api_key, "An error occurred. Response: #{e.msg}")
     end
 
     def configure
@@ -399,7 +413,13 @@ module SpreeAdyen
     def send_request
       yield
     rescue Adyen::AdyenError => e
-      raise Spree::Core::GatewayError, e.message
+      raise Spree::Core::GatewayError, e.msg
+    end
+
+    def parse_adyen_error_response(error)
+      JSON.parse(error.response)
+    rescue JSON::ParserError, TypeError
+      { 'message' => error.msg }
     end
 
     def success(authorization, full_response)

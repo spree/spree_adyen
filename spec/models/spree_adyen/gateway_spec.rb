@@ -73,7 +73,7 @@ RSpec.describe SpreeAdyen::Gateway do
           it 'is invalid' do
             VCR.use_cassette('management_api/get_api_credential_details/failure_401') do
               expect(gateway).to be_invalid
-              expect(gateway.errors.full_messages).to include(a_string_matching(/Preferred api key is invalid. Response: Adyen::AuthenticationError code:401/))
+              expect(gateway.errors.full_messages).to include(a_string_matching(/Preferred api key is invalid. Response:.*ErrorCode: 00_401/))
             end
           end
         end
@@ -108,7 +108,7 @@ RSpec.describe SpreeAdyen::Gateway do
           it 'is invalid' do
             VCR.use_cassette('management_api/get_api_credential_details/failure_403') do
               expect(gateway).to be_invalid
-              expect(gateway.errors.full_messages).to include(a_string_matching(/Preferred api key has insufficient permissions. Add missing roles to API credential. Response: Adyen::PermissionError code:403/))
+              expect(gateway.errors.full_messages).to include(a_string_matching(/Preferred api key has insufficient permissions. Add missing roles to API credential. Response: Not allowed ErrorCode: 00_403/))
             end
           end
         end
@@ -176,11 +176,9 @@ RSpec.describe SpreeAdyen::Gateway do
     context 'with invalid params' do
       let(:session_result) { 'invalid' }
 
-      it 'returns proper (unsuccessful) ActiveMerchant::Billing::Response instance' do
+      it 'raises Spree::Core::GatewayError' do
         VCR.use_cassette('payment_session_results/failure') do
-          expect(subject).to be_a(ActiveMerchant::Billing::Response)
-          expect(subject.success?).to be_falsey
-          expect(subject.message).to eq('ADYEN_PSP_REFERENCE - server could not process request')
+          expect { subject }.to raise_error(Spree::Core::GatewayError, 'server could not process request ErrorCode: 701')
         end
       end
     end
@@ -245,11 +243,9 @@ RSpec.describe SpreeAdyen::Gateway do
         allow(bill_address).to receive(:country_iso).and_return('INVALID')
       end
 
-      it 'returns proper (unsuccessful) ActiveMerchant::Billing::Response instance' do
+      it 'raises Spree::Core::GatewayError' do
         VCR.use_cassette('payment_sessions/failure') do
-          expect(subject).to be_a(ActiveMerchant::Billing::Response)
-          expect(subject.success?).to be_falsey
-          expect(subject.message).to eq("ADYEN_PSP_REFERENCE - Field 'countryCode' is not valid.")
+          expect { subject }.to raise_error(Spree::Core::GatewayError, "Field 'countryCode' is not valid. ErrorCode: 200")
         end
       end
     end
@@ -393,7 +389,7 @@ RSpec.describe SpreeAdyen::Gateway do
 
       it 'should raises Spree::Core::GatewayError with the error message' do
         VCR.use_cassette("payment_api/create_refund/failure/invalid_payment_id") do
-          expect { subject }.to raise_error(Spree::Core::GatewayError, 'ADYEN_PSP_REFERENCE - Original pspReference required for this operation')
+          expect { subject }.to raise_error(Spree::Core::GatewayError, 'Original pspReference required for this operation ErrorCode: 167')
         end
       end
     end
@@ -421,10 +417,9 @@ RSpec.describe SpreeAdyen::Gateway do
       let(:order) { create(:order, total: 10, number: 'R142767632') }
       let(:amount_in_cents) { 0 }
 
-      it 'should return failure response' do
+      it 'raises Spree::Core::GatewayError' do
         VCR.use_cassette("payment_api/create_refund/failure/invalid_amount") do
-          expect(subject.success?).to eq(false)
-          expect(subject.message).to eq("ADYEN_PSP_REFERENCE - Field 'amount' is not valid.")
+          expect { subject }.to raise_error(Spree::Core::GatewayError, "Field 'amount' is not valid. ErrorCode: 137")
         end
       end
     end
@@ -487,10 +482,9 @@ RSpec.describe SpreeAdyen::Gateway do
     end
 
     context 'when the response is not successful' do
-      it 'fails to capture the payment' do
+      it 'raises Spree::Core::GatewayError' do
         VCR.use_cassette("payment_api/captures/failure") do
-          expect(subject.success?).to eq(false)
-          expect(subject.message).to eq('Original pspReference required for this operation')
+          expect { subject }.to raise_error(Spree::Core::GatewayError, 'Original pspReference required for this operation ErrorCode: 167')
         end
       end
     end
@@ -578,10 +572,9 @@ RSpec.describe SpreeAdyen::Gateway do
     end
 
     context 'when the response is not successful' do
-      it 'fails to void the payment' do
+      it 'raises Spree::Core::GatewayError' do
         VCR.use_cassette("payment_api/voids/failure") do
-          expect(subject.success?).to eq(false)
-          expect(subject.message).to eq('Original pspReference required for this operation')
+          expect { subject }.to raise_error(Spree::Core::GatewayError, 'Original pspReference required for this operation ErrorCode: 167')
         end
       end
     end
