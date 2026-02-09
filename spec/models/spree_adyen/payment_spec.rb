@@ -25,7 +25,7 @@ RSpec.describe Spree::Payment do
       context 'when the capture request was not successful' do
         it 'fails the payment' do
           VCR.use_cassette("payment_api/captures/failure") do
-            expect { subject }.to raise_error(Spree::Core::GatewayError, 'Original pspReference required for this operation')
+            expect { subject }.to raise_error(Spree::Core::GatewayError, 'Original pspReference required for this operation ErrorCode: 167')
           end
 
           expect(payment.reload.state).to eq('failed')

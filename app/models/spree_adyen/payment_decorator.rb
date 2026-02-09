@@ -41,6 +41,9 @@ module SpreeAdyen
         response = payment_method.request_capture(amount, response_code, gateway_options)
         handle_response(response, :pend_capture, :failure)
       end
+    rescue Spree::Core::GatewayError
+      failure!
+      raise
     end
 
     # Sends a request to void the payment.
@@ -53,6 +56,9 @@ module SpreeAdyen
         response = payment_method.request_void(response_code, source, gateway_options)
         handle_response(response, :pend_void, :failure)
       end
+    rescue Spree::Core::GatewayError
+      failure!
+      raise
     end
   end
 end

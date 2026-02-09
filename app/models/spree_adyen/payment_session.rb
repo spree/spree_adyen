@@ -113,6 +113,9 @@ module SpreeAdyen
       self.adyen_id = response.params['id']
       self.adyen_data = response.params['sessionData']
       self.expires_at = response.params['expiresAt']
+    rescue Spree::Core::GatewayError
+      # Let validations handle missing adyen_id, adyen_data, expires_at
+      nil
     end
   end
 end
