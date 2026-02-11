@@ -55,6 +55,40 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
       end
     end
 
+    context 'for an unsupported event' do
+      let(:params) do
+        {
+          'notificationItems' => [
+            {
+              'NotificationRequestItem' => {
+                'eventCode' => 'UNSUPPORTED_EVENT_TYPE',
+                'pspReference' => 'unsupported_psp_reference',
+                'merchantAccountCode' => 'TestMerchant',
+                'merchantReference' => order.number
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns ok' do
+        subject
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'logs the unsupported event' do
+        allow(Rails.logger).to receive(:info).and_call_original
+        expect(Rails.logger).to receive(:info).with('[SpreeAdyen][UNSUPPORTED_EVENT_TYPE]: Event not supported')
+
+        subject
+      end
+
+      it 'does not enqueue any job' do
+        expect { subject }.not_to have_enqueued_job
+      end
+    end
+
     describe 'full webhook flow' do
       describe 'authorisation event' do
         let(:payment) { create(:payment, state: 'processing', skip_source_requirement: true, payment_method: payment_method, source: nil, order: order, amount: order.total_minus_store_credits, response_code: response_code) }
