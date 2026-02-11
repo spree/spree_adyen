@@ -15,6 +15,7 @@ module SpreeAdyen
     def validate_hmac!
       if hmac_validator_class.nil?
         Rails.logger.error("[SpreeAdyen]: No HMAC validator for #{event_code}")
+        head :unauthorized
         return
       end
 
