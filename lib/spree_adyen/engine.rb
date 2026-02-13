@@ -20,23 +20,23 @@ module SpreeAdyen
     end
 
     config.after_initialize do
-      Rails.application.config.spree_adyen.event_handlers = {
+      Rails.application.config.spree_adyen.event_handlers.merge!(
         'AUTHORISATION' => SpreeAdyen::Webhooks::ProcessAuthorisationEventJob,
         'CAPTURE' => SpreeAdyen::Webhooks::ProcessCaptureEventJob,
         'CANCELLATION' => SpreeAdyen::Webhooks::ProcessCancellationEventJob
-      }
+      )
 
-      Rails.application.config.spree_adyen.events = {
+      Rails.application.config.spree_adyen.events.merge!(
         'AUTHORISATION' => SpreeAdyen::Webhooks::Event,
         'CAPTURE' => SpreeAdyen::Webhooks::Event,
         'CANCELLATION' => SpreeAdyen::Webhooks::Event
-      }
+      )
 
-      Rails.application.config.spree_adyen.hmac_validators = {
+      Rails.application.config.spree_adyen.hmac_validators.merge!(
         'AUTHORISATION' => SpreeAdyen::Webhooks::StandardHmacValidator,
         'CAPTURE' => SpreeAdyen::Webhooks::StandardHmacValidator,
         'CANCELLATION' => SpreeAdyen::Webhooks::StandardHmacValidator
-      }
+      )
     end
 
     initializer 'spree_adyen.assets' do |app|

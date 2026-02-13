@@ -8,7 +8,7 @@ module SpreeAdyen
       def call
         # event not supported - skip
         if event_class.nil?
-          Rails.logger.info("[SpreeAdyen][#{event_code}]: Event not supported")
+          Rails.logger.info("[SpreeAdyen][#{event_code}]: Skipping not supported event")
           return
         end
 
