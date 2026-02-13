@@ -71,10 +71,17 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
         }
       end
 
-      it 'returns unauthorized' do
+      it 'returns ok' do
         subject
 
-        expect(response).to have_http_status(:unauthorized)
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'logs the unsupported event' do
+        allow(Rails.logger).to receive(:info).and_call_original
+        expect(Rails.logger).to receive(:info).with('[SpreeAdyen][UNSUPPORTED_EVENT_TYPE]: Skipping not supported event')
+
+        subject
       end
 
       it 'does not enqueue any job' do
