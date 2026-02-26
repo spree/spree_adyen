@@ -40,7 +40,7 @@ module SpreeAdyen
     end
 
     def webhook_params
-      @webhook_params ||= params.require(:webhook).permit!
+      @webhook_params ||= JSON.parse(request.raw_post).with_indifferent_access
     end
   end
 end
