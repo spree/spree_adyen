@@ -53,6 +53,18 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
           subject
         end
       end
+
+      context 'when gateway is not configured' do
+        before do
+          payment_method.update!(active: false)
+        end
+
+        it 'returns unauthorized' do
+          subject
+
+          expect(response).to have_http_status(:unauthorized)
+        end
+      end
     end
 
     context 'for an unsupported event' do

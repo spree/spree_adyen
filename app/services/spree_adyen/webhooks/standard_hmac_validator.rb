@@ -8,6 +8,8 @@ module SpreeAdyen
       end
 
       def call
+        return false if gateway.nil?
+
         hmac_keys.any? do |hmac_key|
           Adyen::Utils::HmacValidator.new.valid_webhook_hmac?(
             webhook_request_item,
