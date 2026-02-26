@@ -53,6 +53,52 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
           subject
         end
       end
+
+      context 'when gateway is not configured' do
+        before do
+          payment_method.update!(active: false)
+        end
+
+        it 'returns unauthorized' do
+          subject
+
+          expect(response).to have_http_status(:unauthorized)
+        end
+      end
+    end
+
+    context 'for an unsupported event' do
+      let(:params) do
+        {
+          'notificationItems' => [
+            {
+              'NotificationRequestItem' => {
+                'eventCode' => 'UNSUPPORTED_EVENT_TYPE',
+                'pspReference' => 'unsupported_psp_reference',
+                'merchantAccountCode' => 'TestMerchant',
+                'merchantReference' => order.number
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns ok' do
+        subject
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'logs the unsupported event' do
+        allow(Rails.logger).to receive(:info).and_call_original
+        expect(Rails.logger).to receive(:info).with('[SpreeAdyen][UNSUPPORTED_EVENT_TYPE]: Skipping not supported event')
+
+        subject
+      end
+
+      it 'does not enqueue any job' do
+        expect { subject }.not_to have_enqueued_job
+      end
     end
 
     describe 'full webhook flow' do

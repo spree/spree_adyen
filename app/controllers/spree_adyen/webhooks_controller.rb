@@ -13,31 +13,34 @@ module SpreeAdyen
     private
 
     def validate_hmac!
-      event = SpreeAdyen::Webhooks::Event.new(event_data: webhook_params)
-      return if hmac_keys.any? do |hmac_key|
-        Adyen::Utils::HmacValidator.new.valid_webhook_hmac?(
-          webhook_params.dig('notificationItems', 0, 'NotificationRequestItem'),
-          hmac_key
-        )
+      if hmac_validator_class.nil?
+        Rails.logger.info("[SpreeAdyen][#{event_code}]: Skipping not supported event")
+        head :ok
+        return
       end
 
-      Rails.logger.error("[SpreeAdyen][#{event.id}]: Failed to validate hmac")
+      validator = hmac_validator_class.new(
+        request: request,
+        params: webhook_params,
+        gateway: current_store.adyen_gateway
+      )
 
+      return if validator.call
+
+      Rails.logger.error("[SpreeAdyen]: Failed to validate hmac for #{event_code}")
       head :unauthorized
     end
 
-    def hmac_keys
-      @hmac_keys ||= [
-        current_store.adyen_gateway.preferred_hmac_key,
-        current_store.adyen_gateway.previous_hmac_key
-      ].compact
+    def hmac_validator_class
+      SpreeAdyen.hmac_validators[event_code]
+    end
+
+    def event_code
+      webhook_params.dig('notificationItems', 0, 'NotificationRequestItem', 'eventCode') || webhook_params['type']
     end
 
     def webhook_params
-      params.require(:webhook).permit(
-        :live,
-        notificationItems: [{ NotificationRequestItem: {} }]
-      )
+      @webhook_params ||= JSON.parse(request.raw_post).with_indifferent_access
     end
   end
 end
