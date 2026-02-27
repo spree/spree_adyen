@@ -8,7 +8,7 @@ RSpec.describe SpreeAdyen::PaymentSessionsController, type: :controller do
   let(:order) { create(:order_with_line_items, store: store, state: :payment) }
   let(:adyen_gateway) { create(:adyen_gateway, stores: [store]) }
   let(:payment_session_id) { 'CS4FBB6F827EC53AC7' }
-  let(:payment_session) { create(:payment_session, order: order, amount: order.total, adyen_id: payment_session_id, payment_method: adyen_gateway) }
+  let(:payment_session) { create(:adyen_payment_session, order: order, amount: order.total, adyen_id: payment_session_id, payment_method: adyen_gateway) }
   let(:session_result) { 'resultData' }
 
   before do

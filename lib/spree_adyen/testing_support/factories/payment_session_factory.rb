@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :payment_session, class: SpreeAdyen::PaymentSession do
+  factory :adyen_payment_session, class: SpreeAdyen::PaymentSession do
     sequence(:adyen_id) { |n| "pi_#{n}" }
     adyen_data { 'a very long string' }
     amount { order.total_minus_store_credits }

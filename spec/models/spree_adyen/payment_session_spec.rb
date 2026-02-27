@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe SpreeAdyen::PaymentSession do
-  subject(:payment_session) { build(:payment_session, order: order, return_url: nil, channel: nil) }
+  subject(:payment_session) { build(:adyen_payment_session, order: order, return_url: nil, channel: nil) }
 
   let(:order) { create(:order_with_line_items, store: store) }
   let(:store) { create(:store, url: 'www.example.com') }
@@ -47,13 +47,13 @@ RSpec.describe SpreeAdyen::PaymentSession do
   end
 
   describe 'scopes' do
-    subject(:payment_session) { create(:payment_session, order: order, return_url: nil, channel: nil) }
+    subject(:payment_session) { create(:adyen_payment_session, order: order, return_url: nil, channel: nil) }
 
     describe 'not_expired' do
       subject(:not_expired_scope) { described_class.not_expired }
 
       before do
-        Timecop.freeze(Time.current - 1.day) { create(:payment_session, expires_at: Time.current + 1.minute) }
+        Timecop.freeze(Time.current - 1.day) { create(:adyen_payment_session, expires_at: Time.current + 1.minute) }
         payment_session
       end
 
@@ -68,7 +68,7 @@ RSpec.describe SpreeAdyen::PaymentSession do
       subject(:validation) { payment_session.valid? }
 
       context 'on update' do
-        subject(:payment_session) { create(:payment_session, expires_at: Time.current + 1.minute) }
+        subject(:payment_session) { create(:adyen_payment_session, expires_at: Time.current + 1.minute) }
 
         context 'when expires_at is in the past' do
           before { Timecop.freeze(1.day.ago) { payment_session } }
@@ -82,7 +82,7 @@ RSpec.describe SpreeAdyen::PaymentSession do
       end
 
       context 'on create' do
-        subject(:payment_session) { build(:payment_session, expires_at: expires_at, order: order) }
+        subject(:payment_session) { build(:adyen_payment_session, expires_at: expires_at, order: order) }
 
         context 'when expires_at is in the past' do
           let(:expires_at) { 1.day.ago }
@@ -99,7 +99,7 @@ RSpec.describe SpreeAdyen::PaymentSession do
     end
 
     describe 'amount_cannot_be_greater_than_payment_allowed_amount' do
-      subject(:payment_session) { build(:payment_session, order: order, amount: amount) }
+      subject(:payment_session) { build(:adyen_payment_session, order: order, amount: amount) }
 
       let(:order) { create(:order_with_line_items, store: store) }
 

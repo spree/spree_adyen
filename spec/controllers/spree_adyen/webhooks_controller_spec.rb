@@ -106,7 +106,7 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
         let(:payment) { create(:payment, state: 'processing', skip_source_requirement: true, payment_method: payment_method, source: nil, order: order, amount: order.total_minus_store_credits, response_code: response_code) }
         let(:response_code) { 'webhooks_authorisation_success_checkout_session_id' }
 
-        let!(:payment_session) { create(:payment_session, amount: order.total_minus_store_credits, currency: order.currency, payment_method: payment_method, order: order, adyen_id: 'webhooks_authorisation_success_checkout_session_id') }
+        let!(:payment_session) { create(:adyen_payment_session, amount: order.total_minus_store_credits, currency: order.currency, payment_method: payment_method, order: order, adyen_id: 'webhooks_authorisation_success_checkout_session_id') }
 
         before do
           payment
@@ -355,7 +355,7 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
           end
 
           context 'with completed order' do
-            let(:order) { create(:order_with_line_items, number: '1234567890', state: 'complete', completed_at: Time.current) }
+            let(:order) { create(:completed_order_with_totals, number: '1234567890') }
             let!(:payment) { create(:payment, state: 'processing', skip_source_requirement: true, payment_method: payment_method, source: nil, order: order, amount: order.total_minus_store_credits, response_code: 'webhooks_authorisation_success_checkout_session_id') }
 
             it 'reports an error' do

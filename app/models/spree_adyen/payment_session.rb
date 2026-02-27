@@ -107,7 +107,7 @@ module SpreeAdyen
     def create_session_in_adyen
       return if adyen_id.present?
 
-      response = payment_method.create_payment_session(amount, order, channel, return_url)
+      response = payment_method.create_adyen_session(amount, order, channel, return_url)
       return unless response.success?
 
       self.adyen_id = response.params['id']
