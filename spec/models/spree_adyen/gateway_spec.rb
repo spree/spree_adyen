@@ -164,9 +164,9 @@ RSpec.describe SpreeAdyen::Gateway do
     let(:session_result) { 'resultData' }
 
     context 'with valid params' do
-      it 'returns proper (successful) ActiveMerchant::Billing::Response instance' do
+      it 'returns proper (successful) Spree::PaymentResponse instance' do
         VCR.use_cassette('payment_session_results/success/completed') do
-          expect(subject).to be_a(ActiveMerchant::Billing::Response)
+          expect(subject).to be_a(Spree::PaymentResponse)
           expect(subject.success?).to be_truthy
           expect(subject.authorization).to eq(payment_session_id)
         end
@@ -218,8 +218,8 @@ RSpec.describe SpreeAdyen::Gateway do
     end
   end
 
-  describe '#create_payment_session' do
-    subject { gateway.create_payment_session(amount, order, channel, return_url) }
+  describe '#create_adyen_session' do
+    subject { gateway.create_adyen_session(amount, order, channel, return_url) }
 
     let(:order) { create(:order_with_line_items) }
     let(:bill_address) { order.bill_address }
@@ -229,9 +229,9 @@ RSpec.describe SpreeAdyen::Gateway do
     let(:payment_session_id) { 'CS2BD6B9B093D32284D8EB223' }
 
     context 'with valid params' do
-      it 'returns proper (successful) ActiveMerchant::Billing::Response instance' do
+      it 'returns proper (successful) Spree::PaymentResponse instance' do
         VCR.use_cassette('payment_sessions/success') do
-          expect(subject).to be_a(ActiveMerchant::Billing::Response)
+          expect(subject).to be_a(Spree::PaymentResponse)
           expect(subject.success?).to be_truthy
           expect(subject.authorization).to eq(payment_session_id)
         end
@@ -254,9 +254,9 @@ RSpec.describe SpreeAdyen::Gateway do
   describe '#generate_client_key' do
     subject { gateway.generate_client_key }
 
-    it 'returns proper (successful) ActiveMerchant::Billing::Response instance' do
+    it 'returns proper (successful) Spree::PaymentResponse instance' do
       VCR.use_cassette('management_api/generate_client_key/success') do
-        expect(subject).to be_a(ActiveMerchant::Billing::Response)
+        expect(subject).to be_a(Spree::PaymentResponse)
         expect(subject.success?).to be_truthy
       end
     end
@@ -333,9 +333,9 @@ RSpec.describe SpreeAdyen::Gateway do
     let(:currency) { 'USD' }
     let(:gateway_options) { { order_id: "#{order.number}-#{payment.id}" } }
 
-    it 'returns proper (successful) ActiveMerchant::Billing::Response instance' do
+    it 'returns proper (successful) Spree::PaymentResponse instance' do
       VCR.use_cassette('payment_api/payments/success') do
-        expect(subject).to be_a(ActiveMerchant::Billing::Response)
+        expect(subject).to be_a(Spree::PaymentResponse)
         expect(subject.success?).to be_truthy
         expect(subject.authorization).to eq('ADYEN_PSP_REFERENCE')
       end

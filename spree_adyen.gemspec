@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.name        = 'spree_adyen'
   s.version     = SpreeAdyen::VERSION
   s.summary     = "Spree Commerce Adyen Extension"
-  s.required_ruby_version = '>= 3.0'
+  s.required_ruby_version = '>= 3.2'
 
   s.author    = 'Vendo Connect Inc., Vendo Sp. z o.o.'
   s.email     = 'hello@spreecommerce.org'
@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  spree_version = '>= 5.1.4'
+  spree_version = '>= 5.4.0.beta'
   s.add_dependency 'spree', spree_version
   s.add_dependency 'spree_admin', spree_version
 

@@ -252,7 +252,7 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
   describe 'POST /api/v2/storefront/adyen/payment_sessions/:id/complete' do
     subject(:post_request) { post url, params: params, headers: headers }
 
-    let(:payment_session) { create(:payment_session, amount: order.total, order: order, user: user, adyen_id: payment_session_id, payment_method: adyen_gateway) }
+    let(:payment_session) { create(:adyen_payment_session, amount: order.total, order: order, user: user, adyen_id: payment_session_id, payment_method: adyen_gateway) }
     let(:payment_session_id) { 'CS4FBB6F827EC53AC7' }
     let(:session_result) { 'resultData' }
 
@@ -366,7 +366,7 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
   describe 'GET /api/v2/storefront/adyen/payment_sessions/:id' do
     subject(:get_request) { get url, params: params, headers: headers }
 
-    let(:payment_session) { create(:payment_session, amount: order.total, order: order, user: user, payment_method: adyen_gateway) }
+    let(:payment_session) { create(:adyen_payment_session, amount: order.total, order: order, user: user, payment_method: adyen_gateway) }
     let(:url) { "/api/v2/storefront/adyen/payment_sessions/#{payment_session.id}" }
     let(:params) { {} }
 
@@ -412,7 +412,7 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
 
       context 'with payment session from different order' do
         let(:other_order) { create(:order_with_line_items) }
-        let(:other_payment_session) { create(:payment_session, order: other_order, user: user, payment_method: adyen_gateway) }
+        let(:other_payment_session) { create(:adyen_payment_session, order: other_order, user: user, payment_method: adyen_gateway) }
         let(:url) { "/api/v2/storefront/adyen/payment_sessions/#{other_payment_session.id}" }
 
         it 'returns not found error' do

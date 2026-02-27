@@ -1,5 +1,7 @@
 module SpreeAdyen
   class Gateway < ::Spree::Gateway
+    include PaymentSessions
+
     CAPTURE_PSP_REFERENCE_METAFIELD_KEY = 'adyen.capture_psp_reference'.freeze
     CANCELLATION_PSP_REFERENCE_METAFIELD_KEY = 'adyen.cancellation_psp_reference'.freeze
 
@@ -228,15 +230,18 @@ module SpreeAdyen
       end
     end
 
-    # Creates a Adyen payment session for the order
+    # Creates an Adyen session via the Adyen Sessions API.
+    # Used internally by the v3 PaymentSessions module and by the legacy SpreeAdyen::PaymentSession model.
     #
-    # @param amount_in_cents [Integer] the amount in cents
-    # @param order [Spree::Order] the order to create a payment session for
-    # @return [ActiveMerchant::Billing::Response] the response from the payment session creation
-    def create_payment_session(amount_in_cents, order, channel, return_url)
+    # @param amount [BigDecimal] the amount
+    # @param order [Spree::Order] the order to create a session for
+    # @param channel [String] the channel (Web, iOS, Android)
+    # @param return_url [String] the return URL after redirect flow
+    # @return [Spree::PaymentResponse] the response from the session creation
+    def create_adyen_session(amount, order, channel, return_url)
       payload = SpreeAdyen::PaymentSessions::RequestPayloadPresenter.new(
         order: order,
-        amount: amount_in_cents,
+        amount: amount,
         user: order.user,
         merchant_account: preferred_merchant_account,
         payment_method: self,
@@ -423,11 +428,11 @@ module SpreeAdyen
     end
 
     def success(authorization, full_response)
-      ActiveMerchant::Billing::Response.new(true, nil, full_response.as_json, authorization: authorization)
+      Spree::PaymentResponse.new(true, nil, full_response.as_json, authorization: authorization)
     end
 
     def failure(error = nil)
-      ActiveMerchant::Billing::Response.new(false, error)
+      Spree::PaymentResponse.new(false, error)
     end
   end
 end
