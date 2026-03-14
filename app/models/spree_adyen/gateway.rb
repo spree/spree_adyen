@@ -203,6 +203,46 @@ module SpreeAdyen
       success(payment.response_code, {})
     end
 
+    def webhook_url
+      store = stores.first
+      return nil unless store
+
+      if SpreeAdyen::Config[:use_legacy_webhook_handlers]
+        "#{store.formatted_url}/adyen/webhooks"
+      else
+        "#{store.formatted_url}/api/v3/webhooks/payments/#{prefixed_id}"
+      end
+    end
+
+    def parse_webhook_event(raw_body, headers)
+      payload = JSON.parse(raw_body).with_indifferent_access
+      event = SpreeAdyen::Webhooks::Event.new(event_data: payload)
+
+      # Verify HMAC signature
+      webhook_request_item = payload.dig('notificationItems', 0, 'NotificationRequestItem') || {}
+      unless valid_hmac?(webhook_request_item)
+        raise Spree::PaymentMethod::WebhookSignatureError, 'Invalid HMAC signature'
+      end
+
+      # Find payment session — scoped to this gateway
+      payment_session = event.session_id.present? ?
+        Spree::PaymentSessions::Adyen.find_by(payment_method: self, external_id: event.session_id) : nil
+
+      return nil unless payment_session
+
+      case event.code
+      when 'AUTHORISATION'
+        action = event.success? ? :authorized : :failed
+        { action: action, payment_session: payment_session, metadata: { adyen_event: event } }
+      when 'CAPTURE'
+        { action: :captured, payment_session: payment_session, metadata: { adyen_event: event } }
+      when 'CANCELLATION'
+        { action: :canceled, payment_session: payment_session, metadata: { adyen_event: event } }
+      else
+        nil
+      end
+    end
+
     def provider_class
       self.class
     end
@@ -425,6 +465,15 @@ module SpreeAdyen
       JSON.parse(error.response)
     rescue JSON::ParserError, TypeError
       { 'message' => error.msg }
+    end
+
+    def valid_hmac?(webhook_request_item)
+      hmac_keys = [preferred_hmac_key, previous_hmac_key].compact
+      return false if hmac_keys.empty?
+
+      hmac_keys.any? do |key|
+        Adyen::Utils::HmacValidator.new.valid_webhook_hmac?(webhook_request_item, key)
+      end
     end
 
     def success(authorization, full_response)

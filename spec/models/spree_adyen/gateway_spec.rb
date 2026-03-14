@@ -640,4 +640,134 @@ RSpec.describe SpreeAdyen::Gateway do
       end
     end
   end
+
+  describe '#webhook_url' do
+    it 'returns the core webhook url by default' do
+      expect(gateway.webhook_url).to eq("#{store.formatted_url}/api/v3/webhooks/payments/#{gateway.prefixed_id}")
+    end
+
+    context 'with legacy webhook handlers enabled' do
+      before do
+        allow(SpreeAdyen::Config).to receive(:[]).and_call_original
+        allow(SpreeAdyen::Config).to receive(:[]).with(:use_legacy_webhook_handlers).and_return(true)
+      end
+
+      it 'returns the legacy webhook url' do
+        expect(gateway.webhook_url).to eq("#{store.formatted_url}/adyen/webhooks")
+      end
+    end
+  end
+
+  describe '#parse_webhook_event' do
+    let(:order) { create(:order_with_line_items, store: store) }
+    let!(:payment_session) do
+      Spree::PaymentSessions::Adyen.create!(
+        order: order,
+        payment_method: gateway,
+        amount: order.total,
+        currency: order.currency,
+        status: 'pending',
+        external_id: 'CS_test_session_123',
+        external_data: { 'session_data' => 'test', 'channel' => 'Web' }
+      )
+    end
+
+    let(:authorisation_payload) do
+      {
+        'notificationItems' => [{
+          'NotificationRequestItem' => {
+            'eventCode' => 'AUTHORISATION',
+            'success' => 'true',
+            'pspReference' => 'psp_test_123',
+            'merchantReference' => "#{order.number}_#{gateway.id}",
+            'amount' => { 'value' => 1000, 'currency' => 'USD' },
+            'paymentMethod' => 'visa',
+            'additionalData' => { 'checkoutSessionId' => 'CS_test_session_123' }
+          }
+        }]
+      }
+    end
+
+    before do
+      allow(gateway).to receive(:valid_hmac?).and_return(true)
+    end
+
+    context 'with AUTHORISATION success event' do
+      it 'returns authorized action with payment session' do
+        result = gateway.parse_webhook_event(authorisation_payload.to_json, {})
+
+        expect(result[:action]).to eq(:authorized)
+        expect(result[:payment_session]).to eq(payment_session)
+      end
+    end
+
+    context 'with AUTHORISATION failure event' do
+      before do
+        authorisation_payload['notificationItems'][0]['NotificationRequestItem']['success'] = 'false'
+      end
+
+      it 'returns failed action' do
+        result = gateway.parse_webhook_event(authorisation_payload.to_json, {})
+
+        expect(result[:action]).to eq(:failed)
+        expect(result[:payment_session]).to eq(payment_session)
+      end
+    end
+
+    context 'with CAPTURE event' do
+      before do
+        authorisation_payload['notificationItems'][0]['NotificationRequestItem']['eventCode'] = 'CAPTURE'
+      end
+
+      it 'returns captured action' do
+        result = gateway.parse_webhook_event(authorisation_payload.to_json, {})
+
+        expect(result[:action]).to eq(:captured)
+      end
+    end
+
+    context 'with CANCELLATION event' do
+      before do
+        authorisation_payload['notificationItems'][0]['NotificationRequestItem']['eventCode'] = 'CANCELLATION'
+      end
+
+      it 'returns canceled action' do
+        result = gateway.parse_webhook_event(authorisation_payload.to_json, {})
+
+        expect(result[:action]).to eq(:canceled)
+      end
+    end
+
+    context 'with unsupported event' do
+      before do
+        authorisation_payload['notificationItems'][0]['NotificationRequestItem']['eventCode'] = 'REFUND'
+      end
+
+      it 'returns nil' do
+        expect(gateway.parse_webhook_event(authorisation_payload.to_json, {})).to be_nil
+      end
+    end
+
+    context 'when payment session is not found' do
+      before do
+        authorisation_payload['notificationItems'][0]['NotificationRequestItem']['additionalData']['checkoutSessionId'] = 'unknown'
+      end
+
+      it 'returns nil' do
+        expect(gateway.parse_webhook_event(authorisation_payload.to_json, {})).to be_nil
+      end
+    end
+
+    context 'with invalid HMAC signature' do
+      before do
+        allow(gateway).to receive(:valid_hmac?).and_return(false)
+      end
+
+      it 'raises WebhookSignatureError' do
+        expect {
+          gateway.parse_webhook_event(authorisation_payload.to_json, {})
+        }.to raise_error(Spree::PaymentMethod::WebhookSignatureError)
+      end
+    end
+  end
 end

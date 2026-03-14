@@ -58,8 +58,11 @@ module SpreeAdyen
         payment_session.update!(attrs) if attrs.any?
       end
 
-      # Completes a payment session by checking the session result with Adyen
-      # and transitioning the session + order accordingly.
+      # Completes a payment session by checking the session result with Adyen,
+      # creating the Payment record, and transitioning the session accordingly.
+      #
+      # Does NOT complete the order — that is handled by Carts::Complete
+      # (called by the storefront or by the webhook handler).
       #
       # @param payment_session [Spree::PaymentSessions::Adyen] the session to complete
       # @param params [Hash] must include :session_result
@@ -82,7 +85,6 @@ module SpreeAdyen
           when 'completed'
             payment_session.complete if payment_session.can_complete?
             payment.confirm!
-            Spree::Dependencies.checkout_complete_service.constantize.call(order: payment_session.order) unless payment_session.order.completed?
           when 'canceled'
             payment.void! if payment.can_void?
             payment_session.cancel if payment_session.can_cancel?

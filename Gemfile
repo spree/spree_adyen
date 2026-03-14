@@ -15,10 +15,7 @@ spree_opts = if ENV['SPREE_PATH']
 gem 'spree', spree_opts
 gem 'spree_admin', spree_opts
 
-spree_storefront_opts = { 'github': 'spree/spree-rails-storefront', 'branch': 'main' }
-gem 'spree_page_builder', spree_storefront_opts
-gem 'spree_storefront', spree_storefront_opts
-
+gem 'spree_multi_store', github: 'spree/spree-multi-store'
 gem 'spree_legacy_api_v2'
 gem 'spree_dev_tools', '>= 0.6.0.rc1'
 
