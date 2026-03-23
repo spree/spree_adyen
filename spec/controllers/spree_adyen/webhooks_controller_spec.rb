@@ -190,6 +190,43 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
             end
           end
 
+          context 'with other source (ideal)' do
+            let(:params) { JSON.parse(file_fixture('webhooks/authorised/success_other_source.json').read) }
+
+            it 'creates a job' do
+              expect { subject }.to have_enqueued_job(SpreeAdyen::Webhooks::ProcessAuthorisationEventJob)
+
+              expect(response).to have_http_status(:ok)
+            end
+
+            it 'completes the order' do
+              perform_enqueued_jobs do
+                expect { subject }.to change { order.reload.completed? }.from(false).to(true)
+              end
+
+              expect(response).to have_http_status(:ok)
+            end
+
+            it 'completes the payment' do
+              perform_enqueued_jobs do
+                expect { subject }.to change { payment.reload.state }.from('processing').to('completed')
+              end
+
+              expect(response).to have_http_status(:ok)
+            end
+
+            it 'creates an ideal payment source with gateway_payment_profile_id' do
+              perform_enqueued_jobs do
+                subject
+              end
+
+              source = payment.reload.source
+              expect(source).to be_a(SpreeAdyen::PaymentSources::Ideal)
+              expect(source.gateway_payment_profile_id).to eq('CWPPBJZ7VV7257X3')
+              expect(response).to have_http_status(:ok)
+            end
+          end
+
           context 'with card details' do
             let(:params) { JSON.parse(file_fixture('webhooks/authorised/success_with_cc_details.json').read) }
 
