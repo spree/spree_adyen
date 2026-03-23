@@ -1,0 +1,32 @@
+{
+  "live": "true",
+  "notificationItems": [
+    {
+      "NotificationRequestItem": {
+        "additionalData": {
+          "recurringProcessingModel": "UnscheduledCardOnFile",
+          "merchantOrderReference": "R123456789",
+          "recurring.shopperReference": "customer_123",
+          "recurring.recurringDetailReference": "CWPPBJZ7VV7257X3",
+          "hmacSignature": "nPYmxMEqaFIlZMMay0ZgIyXXXV0on0T7S8eSAXTn13s=",
+          "checkoutSessionId": "webhooks_authorisation_success_checkout_session_id"
+        },
+        "amount": {
+          "currency": "EUR",
+          "value": 3935
+        },
+        "eventCode": "AUTHORISATION",
+        "eventDate": "2026-03-20T15:21:57+01:00",
+        "merchantAccountCode": "SpreeCommerceECOM",
+        "merchantReference": "1234567890_1_1",
+        "operations": [
+          "REFUND"
+        ],
+        "paymentMethod": "ideal",
+        "pspReference": "RTSWTKG9MPM4L3G3",
+        "reason": "null",
+        "success": "true"
+      }
+    }
+  ]
+}

@@ -62,4 +62,73 @@ RSpec.describe SpreeAdyen::Webhooks::Event do
       expect(event.amount.cents).to eq(100_00)
     end
   end
+
+  describe '#stored_payment_method_id' do
+    context 'when tokenization.storedPaymentMethodId is present' do
+      it 'returns the stored payment method id' do
+        expect(event.stored_payment_method_id).to eq('HF7Z59JSZZSBJWT5')
+      end
+    end
+
+    context 'when only recurring.recurringDetailReference is present' do
+      let(:event_data) do
+        {
+          "live": "false",
+          "notificationItems": [
+            {
+              "NotificationRequestItem": {
+                "additionalData": {
+                  "recurring.recurringDetailReference": "CWPPBJZ7VV7257X3",
+                  "hmacSignature": "ZmFrZV9zaWduYXR1cmU="
+                },
+                "amount": { "currency": "EUR", "value": 3935 },
+                "eventCode": "AUTHORISATION",
+                "eventDate": "2025-07-04T12:59:19+02:00",
+                "merchantAccountCode": "SpreeCommerceECOM",
+                "merchantReference": "R123456789_12345_PX6H2G23",
+                "paymentMethod": "ideal",
+                "pspReference": "RTSWTKG9MPM4L3G3",
+                "reason": "null",
+                "success": "true"
+              }
+            }
+          ]
+        }
+      end
+
+      it 'falls back to recurring.recurringDetailReference' do
+        expect(event.stored_payment_method_id).to eq('CWPPBJZ7VV7257X3')
+      end
+    end
+
+    context 'when no stored payment method fields are present' do
+      let(:event_data) do
+        {
+          "live": "false",
+          "notificationItems": [
+            {
+              "NotificationRequestItem": {
+                "additionalData": {
+                  "hmacSignature": "ZmFrZV9zaWduYXR1cmU="
+                },
+                "amount": { "currency": "EUR", "value": 1000 },
+                "eventCode": "AUTHORISATION",
+                "eventDate": "2025-07-04T12:59:19+02:00",
+                "merchantAccountCode": "SpreeCommerceECOM",
+                "merchantReference": "R123456789_12345_PX6H2G23",
+                "paymentMethod": "ideal",
+                "pspReference": "123432123",
+                "reason": "null",
+                "success": "true"
+              }
+            }
+          ]
+        }
+      end
+
+      it 'returns nil' do
+        expect(event.stored_payment_method_id).to be_nil
+      end
+    end
+  end
 end

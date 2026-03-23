@@ -81,7 +81,12 @@ module SpreeAdyen
         end
 
         def find_or_create_source
-          source_klass_factory.find_or_create_by(payment_method: payment_method, user: user)
+          source_klass_factory.find_or_create_by(
+            gateway_payment_profile_id: event.stored_payment_method_id.presence || event.psp_reference,
+            payment_method: payment_method
+          ) do |source|
+            source.user = user
+          end
         end
 
         def find_or_create_credit_card

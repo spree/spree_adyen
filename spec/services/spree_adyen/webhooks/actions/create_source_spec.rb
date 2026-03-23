@@ -89,6 +89,7 @@ RSpec.describe SpreeAdyen::Webhooks::Actions::CreateSource do
         "notificationItems": [
           {
             "NotificationRequestItem": {
+              "additionalData": additional_data,
               "amount": {
                 "currency": "EUR",
                 "value": 1000
@@ -111,12 +112,31 @@ RSpec.describe SpreeAdyen::Webhooks::Actions::CreateSource do
         ]
       }
     end
+    let(:additional_data) do
+      {
+        "recurring.recurringDetailReference": "CWPPBJZ7VV7257X3",
+        "hmacSignature": "ZmFrZV9zaWduYXR1cmU="
+      }
+    end
 
     context 'for a known payment method' do
       let(:payment_method_reference) { 'klarna' }
 
       it 'creates a custom payment source' do
         expect { service }.to change(SpreeAdyen::PaymentSources::Klarna, :count).by(1)
+      end
+
+      it 'sets gateway_payment_profile_id from recurring.recurringDetailReference' do
+        service
+        expect(SpreeAdyen::PaymentSources::Klarna.last.gateway_payment_profile_id).to eq('CWPPBJZ7VV7257X3')
+      end
+
+      context 'when a source with the same token already exists' do
+        before { described_class.new(event: event, payment_method: payment_method, user: user).call }
+
+        it 'reuses the existing source' do
+          expect { described_class.new(event: event, payment_method: payment_method, user: user).call }.not_to change(SpreeAdyen::PaymentSources::Klarna, :count)
+        end
       end
     end
 
@@ -125,6 +145,31 @@ RSpec.describe SpreeAdyen::Webhooks::Actions::CreateSource do
 
       it 'creates a custom payment source' do
         expect { service }.to change(SpreeAdyen::PaymentSources::Unknown, :count).by(1)
+      end
+    end
+
+    context 'when no stored payment method id is present' do
+      let(:payment_method_reference) { 'ideal' }
+      let(:additional_data) { { "hmacSignature": "ZmFrZV9zaWduYXR1cmU=" } }
+
+      it 'falls back to pspReference as gateway_payment_profile_id' do
+        service
+        expect(SpreeAdyen::PaymentSources::Ideal.last.gateway_payment_profile_id).to eq('123432123')
+      end
+    end
+
+    context 'when stored payment method id is a blank string' do
+      let(:payment_method_reference) { 'ideal' }
+      let(:additional_data) do
+        {
+          "recurring.recurringDetailReference": "",
+          "hmacSignature": "ZmFrZV9zaWduYXR1cmU="
+        }
+      end
+
+      it 'falls back to pspReference as gateway_payment_profile_id' do
+        service
+        expect(SpreeAdyen::PaymentSources::Ideal.last.gateway_payment_profile_id).to eq('123432123')
       end
     end
   end

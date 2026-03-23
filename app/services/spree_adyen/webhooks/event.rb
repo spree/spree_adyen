@@ -50,7 +50,9 @@ module SpreeAdyen
       end
 
       def stored_payment_method_id
-        @stored_payment_method_id ||= additional_data['tokenization.storedPaymentMethodId'] || additional_data['storedPaymentMethodId']
+        @stored_payment_method_id ||= additional_data['tokenization.storedPaymentMethodId'] ||
+                                       additional_data['storedPaymentMethodId'] ||
+                                       additional_data['recurring.recurringDetailReference']
       end
 
       def card_details
