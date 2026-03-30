@@ -72,7 +72,7 @@ RSpec.describe SpreeAdyen::PaymentSessionsController, type: :controller do
         VCR.use_cassette('payment_session_results/success/canceled') do
           get :show, params: { sessionId: payment_session.adyen_id, sessionResult: session_result }
         end
-        expect(order.payments.first.state).to eq('void')
+        expect(order.reload.payments.first.state).to eq('void')
       end
     end
 
@@ -90,7 +90,7 @@ RSpec.describe SpreeAdyen::PaymentSessionsController, type: :controller do
         VCR.use_cassette('payment_session_results/success/expired') do
           get :show, params: { sessionId: payment_session.adyen_id, sessionResult: session_result }
         end
-        expect(order.payments.first.state).to eq('failed')
+        expect(order.reload.payments.first.state).to eq('failed')
       end
     end
 
