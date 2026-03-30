@@ -12,4 +12,6 @@ module SpreeAdyen
   end
 end
 
-Spree::CustomDomain.prepend(SpreeAdyen::CustomDomainDecorator) if defined?(Spree::CustomDomain)
+if defined?(Spree::CustomDomain)
+  Spree::CustomDomain.prepend(SpreeAdyen::CustomDomainDecorator)
+end
