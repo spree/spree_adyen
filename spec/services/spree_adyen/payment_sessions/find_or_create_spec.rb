@@ -11,7 +11,7 @@ RSpec.describe SpreeAdyen::PaymentSessions::FindOrCreate do
   let(:payment_currency) { order.currency }
 
   let(:existing_payment_session) do
-    create(:payment_session,
+    create(:adyen_payment_session,
       order: payment_order,
       status: payment_status,
       expires_at: 1.hour.from_now,

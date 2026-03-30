@@ -1,5 +1,7 @@
 module SpreeAdyen
   class Gateway < ::Spree::Gateway
+    include PaymentSessions
+
     CAPTURE_PSP_REFERENCE_METAFIELD_KEY = 'adyen.capture_psp_reference'.freeze
     CANCELLATION_PSP_REFERENCE_METAFIELD_KEY = 'adyen.cancellation_psp_reference'.freeze
 
@@ -201,6 +203,46 @@ module SpreeAdyen
       success(payment.response_code, {})
     end
 
+    def webhook_url
+      store = stores.first
+      return nil unless store
+
+      if SpreeAdyen::Config[:use_legacy_webhook_handlers]
+        "#{store.formatted_url}/adyen/webhooks"
+      else
+        "#{store.formatted_url}/api/v3/webhooks/payments/#{prefixed_id}"
+      end
+    end
+
+    def parse_webhook_event(raw_body, headers)
+      payload = JSON.parse(raw_body).with_indifferent_access
+      event = SpreeAdyen::Webhooks::Event.new(event_data: payload)
+
+      # Verify HMAC signature
+      webhook_request_item = payload.dig('notificationItems', 0, 'NotificationRequestItem') || {}
+      unless valid_hmac?(webhook_request_item)
+        raise Spree::PaymentMethod::WebhookSignatureError, 'Invalid HMAC signature'
+      end
+
+      # Find payment session — scoped to this gateway
+      payment_session = event.session_id.present? ?
+        Spree::PaymentSessions::Adyen.find_by(payment_method: self, external_id: event.session_id) : nil
+
+      return nil unless payment_session
+
+      case event.code
+      when 'AUTHORISATION'
+        action = event.success? ? :authorized : :failed
+        { action: action, payment_session: payment_session, metadata: { adyen_event: event } }
+      when 'CAPTURE'
+        { action: :captured, payment_session: payment_session, metadata: { adyen_event: event } }
+      when 'CANCELLATION'
+        { action: :canceled, payment_session: payment_session, metadata: { adyen_event: event } }
+      else
+        nil
+      end
+    end
+
     def provider_class
       self.class
     end
@@ -228,15 +270,18 @@ module SpreeAdyen
       end
     end
 
-    # Creates a Adyen payment session for the order
+    # Creates an Adyen session via the Adyen Sessions API.
+    # Used internally by the v3 PaymentSessions module and by the legacy SpreeAdyen::PaymentSession model.
     #
-    # @param amount_in_cents [Integer] the amount in cents
-    # @param order [Spree::Order] the order to create a payment session for
-    # @return [ActiveMerchant::Billing::Response] the response from the payment session creation
-    def create_payment_session(amount_in_cents, order, channel, return_url)
+    # @param amount [BigDecimal] the amount
+    # @param order [Spree::Order] the order to create a session for
+    # @param channel [String] the channel (Web, iOS, Android)
+    # @param return_url [String] the return URL after redirect flow
+    # @return [Spree::PaymentResponse] the response from the session creation
+    def create_adyen_session(amount, order, channel, return_url)
       payload = SpreeAdyen::PaymentSessions::RequestPayloadPresenter.new(
         order: order,
-        amount: amount_in_cents,
+        amount: amount,
         user: order.user,
         merchant_account: preferred_merchant_account,
         payment_method: self,
@@ -422,12 +467,21 @@ module SpreeAdyen
       { 'message' => error.msg }
     end
 
+    def valid_hmac?(webhook_request_item)
+      hmac_keys = [preferred_hmac_key, previous_hmac_key].compact
+      return false if hmac_keys.empty?
+
+      hmac_keys.any? do |key|
+        Adyen::Utils::HmacValidator.new.valid_webhook_hmac?(webhook_request_item, key)
+      end
+    end
+
     def success(authorization, full_response)
-      ActiveMerchant::Billing::Response.new(true, nil, full_response.as_json, authorization: authorization)
+      Spree::PaymentResponse.new(true, nil, full_response.as_json, authorization: authorization)
     end
 
     def failure(error = nil)
-      ActiveMerchant::Billing::Response.new(false, error)
+      Spree::PaymentResponse.new(false, error)
     end
   end
 end

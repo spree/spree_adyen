@@ -16,14 +16,16 @@ Spree::Core::Engine.add_routes do
 
   post '/adyen/webhooks', to: '/spree_adyen/webhooks#create', controller: '/spree_adyen/webhooks'
 
-  # Storefront API
-  namespace :api, defaults: { format: 'json' } do
-    namespace :v2 do
-      namespace :storefront do
-        namespace :adyen do
-          resources :payment_sessions, only: %i[show create] do
-            member do
-              post :complete
+  # Storefront API v2 (only available when spree_legacy_api_v2 gem is installed)
+  if defined?(SpreeLegacyApiV2::Engine)
+    namespace :api, defaults: { format: 'json' } do
+      namespace :v2 do
+        namespace :storefront do
+          namespace :adyen do
+            resources :payment_sessions, only: %i[show create] do
+              member do
+                post :complete
+              end
             end
           end
         end

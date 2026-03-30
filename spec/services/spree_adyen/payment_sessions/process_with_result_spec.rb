@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe SpreeAdyen::PaymentSessions::ProcessWithResult do
   subject(:service) { described_class.new(payment_session: payment_session, session_result: session_result).call }
 
-  let(:payment_session) { create(:payment_session, adyen_id: 'CS4FBB6F827EC53AC7', status: 'initial') }
+  let(:payment_session) { create(:adyen_payment_session, adyen_id: 'CS4FBB6F827EC53AC7', status: 'initial') }
   let(:session_result) { 'resultData' }
 
   context 'when payment is completed' do

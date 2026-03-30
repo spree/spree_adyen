@@ -7,6 +7,13 @@ module SpreeAdyen
     Environment = Struct.new(:event_handlers, :events, :hmac_validators)
 
     config.eager_load_paths += %W(#{config.root}/app/services)
+
+    # Only load API v2 controllers and serializers when spree_legacy_api_v2 gem is available
+    if defined?(SpreeLegacyApiV2::Engine)
+      config.autoload_paths << root.join('lib', 'spree_api_v2')
+      config.eager_load_paths << root.join('lib', 'spree_api_v2')
+    end
+
     config.generators do |g| # use rspec for tests
       g.test_framework :rspec
     end
@@ -57,8 +64,13 @@ module SpreeAdyen
     end
 
     def self.activate
-      Dir.glob(File.join(File.dirname(__FILE__), '../../app/**/*_decorator*.rb')) do |c|
-        Rails.configuration.cache_classes ? require(c) : load(c)
+      glob_paths = [File.join(File.dirname(__FILE__), '../../app/**/*_decorator*.rb')]
+      glob_paths << File.join(File.dirname(__FILE__), '../../lib/spree_api_v2/**/*_decorator*.rb') if defined?(SpreeLegacyApiV2::Engine)
+
+      glob_paths.each do |glob_path|
+        Dir.glob(glob_path) do |c|
+          Rails.configuration.cache_classes ? require(c) : load(c)
+        end
       end
     end
 

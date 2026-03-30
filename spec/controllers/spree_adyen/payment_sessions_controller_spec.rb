@@ -8,7 +8,7 @@ RSpec.describe SpreeAdyen::PaymentSessionsController, type: :controller do
   let(:order) { create(:order_with_line_items, store: store, state: :payment) }
   let(:adyen_gateway) { create(:adyen_gateway, stores: [store]) }
   let(:payment_session_id) { 'CS4FBB6F827EC53AC7' }
-  let(:payment_session) { create(:payment_session, order: order, amount: order.total, adyen_id: payment_session_id, payment_method: adyen_gateway) }
+  let(:payment_session) { create(:adyen_payment_session, order: order, amount: order.total, adyen_id: payment_session_id, payment_method: adyen_gateway) }
   let(:session_result) { 'resultData' }
 
   before do
@@ -72,7 +72,7 @@ RSpec.describe SpreeAdyen::PaymentSessionsController, type: :controller do
         VCR.use_cassette('payment_session_results/success/canceled') do
           get :show, params: { sessionId: payment_session.adyen_id, sessionResult: session_result }
         end
-        expect(order.payments.first.state).to eq('void')
+        expect(order.reload.payments.first.state).to eq('void')
       end
     end
 
@@ -90,7 +90,7 @@ RSpec.describe SpreeAdyen::PaymentSessionsController, type: :controller do
         VCR.use_cassette('payment_session_results/success/expired') do
           get :show, params: { sessionId: payment_session.adyen_id, sessionResult: session_result }
         end
-        expect(order.payments.first.state).to eq('failed')
+        expect(order.reload.payments.first.state).to eq('failed')
       end
     end
 

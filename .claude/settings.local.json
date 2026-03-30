@@ -1,7 +1,37 @@
 {
   "permissions": {
     "allow": [
-      "Bash(bundle exec rspec:*)"
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch",
+      "Task",
+      "mcp__*"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~/*)",
+      "Bash(chmod 777 *)",
+      "Read(~/.ssh/*)",
+      "Read(~/.gnupg/*)",
+      "Read(~/.aws/*)",
+      "Read(~/.config/gcloud/*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/secrets/*)",
+      "Read(**/*credential*)",
+      "Read(**/*password*)",
+      "Edit(~/.ssh/*)",
+      "Edit(~/.gnupg/*)",
+      "Edit(~/.aws/*)",
+      "Write(~/.ssh/*)",
+      "Write(~/.gnupg/*)",
+      "Write(~/.aws/*)"
     ]
   }
 }

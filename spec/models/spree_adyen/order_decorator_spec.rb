@@ -5,21 +5,21 @@ RSpec.describe SpreeAdyen::OrderDecorator do
 
   let(:invalid_price_sessions) do
     [
-      create(:payment_session, :initial, :expired, order: order),
-      create(:payment_session, :initial, order: order)
+      create(:adyen_payment_session, :initial, :expired, order: order),
+      create(:adyen_payment_session, :initial, order: order)
     ]
   end
   let(:invalid_currency_sessions) do
     [
-      create(:payment_session, :initial, :expired, order: order),
-      create(:payment_session, :initial, order: order)
+      create(:adyen_payment_session, :initial, :expired, order: order),
+      create(:adyen_payment_session, :initial, order: order)
     ]
   end
 
   before do
-    create(:payment_session, :initial, order: order, amount: order.total_minus_store_credits, currency: order.currency)
-    create(:payment_session, :pending, order: order, amount: order.total_minus_store_credits, currency: order.currency)
-    create(:payment_session, :completed, order: order, amount: order.total_minus_store_credits, currency: order.currency)
+    create(:adyen_payment_session, :initial, order: order, amount: order.total_minus_store_credits, currency: order.currency)
+    create(:adyen_payment_session, :pending, order: order, amount: order.total_minus_store_credits, currency: order.currency)
+    create(:adyen_payment_session, :completed, order: order, amount: order.total_minus_store_credits, currency: order.currency)
 
     # to be soft deleted
     invalid_price_sessions.each do |session|

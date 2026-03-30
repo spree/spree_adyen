@@ -10,15 +10,15 @@ gem 'rails-controller-testing'
 spree_opts = if ENV['SPREE_PATH']
                 { 'path': ENV['SPREE_PATH'] }
              else
-                { 'github': 'spree/spree', 'branch': '5-3-stable' }
+                { 'github': 'spree/spree', 'branch': 'main', 'glob': 'spree/**/*.gemspec' }
              end
 gem 'spree', spree_opts
 gem 'spree_admin', spree_opts
 
-gem 'spree_storefront'
-gem 'spree_page_builder'
-
-gem 'spree_dev_tools'
+gem 'spree_multi_store', github: 'spree/spree-multi-store'
+gem 'spree_legacy_product_properties', github: 'spree/spree_legacy_product_properties'
+gem 'spree_legacy_api_v2'
+gem 'spree_dev_tools', '>= 0.6.0.rc1'
 
 if ENV['DB'] == 'mysql'
   gem 'mysql2'
