@@ -30,4 +30,16 @@ Spree::Core::Engine.add_routes do
       end
     end
   end
+
+  namespace :admin, path: Spree.admin_path do
+    resources :orders, only: [] do
+      resources :payments, only: [] do
+        resources :refunds, only: [] do
+          member do
+            put :retry
+          end
+        end
+      end
+    end
+  end
 end
