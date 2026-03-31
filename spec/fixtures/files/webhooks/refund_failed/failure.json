@@ -1,0 +1,22 @@
+{
+  "live":"false",
+  "notificationItems":[
+     {
+        "NotificationRequestItem":{
+           "amount":{
+              "currency":"EUR",
+              "value":1000
+           },
+           "eventCode":"REFUND_FAILED",
+           "eventDate":"2025-11-21T08:00:00+02:00",
+           "merchantAccountCode":"SpreeCommerceECOM",
+           "merchantReference":"1234567890_1_ABC123_refund_42",
+           "originalReference":"ABC123",
+           "paymentMethod":"mc",
+           "pspReference":"refund_psp_reference",
+           "reason":"Issuer declined the refund",
+           "success":"true"
+        }
+     }
+  ]
+}
