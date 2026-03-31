@@ -21,6 +21,7 @@ module SpreeAdyen
 
             if event.success? && event.code != 'REFUND_FAILED'
               refund.set_metafield(SpreeAdyen::RefundDecorator::ADYEN_REFUND_STATUS_METAFIELD_KEY, SpreeAdyen::RefundDecorator::ADYEN_REFUND_STATUS_SUBMITTED)
+              refund.get_metafield(SpreeAdyen::RefundDecorator::ADYEN_REFUND_ERROR_MESSAGE_METAFIELD_KEY)&.destroy
             else
               refund.set_metafield(SpreeAdyen::RefundDecorator::ADYEN_REFUND_STATUS_METAFIELD_KEY, SpreeAdyen::RefundDecorator::ADYEN_REFUND_STATUS_REJECTED)
               refund.set_metafield(SpreeAdyen::RefundDecorator::ADYEN_REFUND_ERROR_MESSAGE_METAFIELD_KEY, event.fetch('reason'))

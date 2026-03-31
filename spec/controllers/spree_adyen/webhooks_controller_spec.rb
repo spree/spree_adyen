@@ -564,6 +564,21 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
             expect(response).to have_http_status(:ok)
             expect(refund.reload.adyen_refund_status).to eq('submitted')
           end
+
+          context 'when refund was previously rejected' do
+            before do
+              refund.set_metafield(SpreeAdyen::RefundDecorator::ADYEN_REFUND_STATUS_METAFIELD_KEY, SpreeAdyen::RefundDecorator::ADYEN_REFUND_STATUS_REJECTED)
+              refund.set_metafield(SpreeAdyen::RefundDecorator::ADYEN_REFUND_ERROR_MESSAGE_METAFIELD_KEY, 'Insufficient in-process funds on account')
+            end
+
+            it 'clears the error message' do
+              perform_enqueued_jobs { subject }
+
+              refund.reload
+              expect(refund.adyen_refund_status).to eq('submitted')
+              expect(refund.adyen_refund_error_message).to be_nil
+            end
+          end
         end
 
         context 'when refund failed' do
