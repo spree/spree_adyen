@@ -738,9 +738,45 @@ RSpec.describe SpreeAdyen::Gateway do
       end
     end
 
-    context 'with unsupported event' do
+    context 'with REFUND event' do
+      include ActiveJob::TestHelper
+
       before do
         authorisation_payload['notificationItems'][0]['NotificationRequestItem']['eventCode'] = 'REFUND'
+      end
+
+      it 'returns nil' do
+        expect(gateway.parse_webhook_event(authorisation_payload.to_json, {})).to be_nil
+      end
+
+      it 'enqueues the refund event job' do
+        expect {
+          gateway.parse_webhook_event(authorisation_payload.to_json, {})
+        }.to have_enqueued_job(SpreeAdyen::Webhooks::ProcessRefundEventJob)
+      end
+    end
+
+    context 'with REFUND_FAILED event' do
+      include ActiveJob::TestHelper
+
+      before do
+        authorisation_payload['notificationItems'][0]['NotificationRequestItem']['eventCode'] = 'REFUND_FAILED'
+      end
+
+      it 'returns nil' do
+        expect(gateway.parse_webhook_event(authorisation_payload.to_json, {})).to be_nil
+      end
+
+      it 'enqueues the refund failed event job' do
+        expect {
+          gateway.parse_webhook_event(authorisation_payload.to_json, {})
+        }.to have_enqueued_job(SpreeAdyen::Webhooks::ProcessRefundFailedEventJob)
+      end
+    end
+
+    context 'with unsupported event' do
+      before do
+        authorisation_payload['notificationItems'][0]['NotificationRequestItem']['eventCode'] = 'CHARGEBACK'
       end
 
       it 'returns nil' do
