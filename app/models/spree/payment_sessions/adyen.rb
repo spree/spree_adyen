@@ -35,7 +35,7 @@ module Spree
       status == 'completed'
     end
 
-    def find_or_create_payment!
+    def find_or_create_payment!(metadata = {})
       return unless persisted?
       return payment if payment.present?
 
