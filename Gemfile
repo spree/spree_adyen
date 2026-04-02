@@ -16,6 +16,7 @@ gem 'spree', spree_opts
 gem 'spree_admin', spree_opts
 
 gem 'spree_multi_store', github: 'spree/spree-multi-store'
+gem 'spree_legacy_product_properties', github: 'spree/spree_legacy_product_properties'
 gem 'spree_legacy_api_v2'
 gem 'spree_dev_tools', '>= 0.6.0.rc1'
 
