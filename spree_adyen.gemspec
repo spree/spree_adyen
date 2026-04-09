@@ -27,13 +27,13 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  spree_version = '>= 5.4.0.beta'
+  spree_version = '>= 5.4.0'
   s.add_dependency 'spree', spree_version
   s.add_dependency 'spree_admin', spree_version
 
   s.add_dependency 'adyen-ruby-api-library', '>= 10.3', '< 12.0'
 
-  s.add_development_dependency 'spree_dev_tools'
+  s.add_development_dependency 'spree_dev_tools', '>= 0.6.0'
   s.add_development_dependency 'vcr'
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'pry-rails'
