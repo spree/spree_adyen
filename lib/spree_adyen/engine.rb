@@ -30,19 +30,25 @@ module SpreeAdyen
       Rails.application.config.spree_adyen.event_handlers.merge!(
         'AUTHORISATION' => SpreeAdyen::Webhooks::ProcessAuthorisationEventJob,
         'CAPTURE' => SpreeAdyen::Webhooks::ProcessCaptureEventJob,
-        'CANCELLATION' => SpreeAdyen::Webhooks::ProcessCancellationEventJob
+        'CANCELLATION' => SpreeAdyen::Webhooks::ProcessCancellationEventJob,
+        'REFUND' => SpreeAdyen::Webhooks::ProcessRefundEventJob,
+        'REFUND_FAILED' => SpreeAdyen::Webhooks::ProcessRefundFailedEventJob
       )
 
       Rails.application.config.spree_adyen.events.merge!(
         'AUTHORISATION' => SpreeAdyen::Webhooks::Event,
         'CAPTURE' => SpreeAdyen::Webhooks::Event,
-        'CANCELLATION' => SpreeAdyen::Webhooks::Event
+        'CANCELLATION' => SpreeAdyen::Webhooks::Event,
+        'REFUND' => SpreeAdyen::Webhooks::Event,
+        'REFUND_FAILED' => SpreeAdyen::Webhooks::Event
       )
 
       Rails.application.config.spree_adyen.hmac_validators.merge!(
         'AUTHORISATION' => SpreeAdyen::Webhooks::StandardHmacValidator,
         'CAPTURE' => SpreeAdyen::Webhooks::StandardHmacValidator,
-        'CANCELLATION' => SpreeAdyen::Webhooks::StandardHmacValidator
+        'CANCELLATION' => SpreeAdyen::Webhooks::StandardHmacValidator,
+        'REFUND' => SpreeAdyen::Webhooks::StandardHmacValidator,
+        'REFUND_FAILED' => SpreeAdyen::Webhooks::StandardHmacValidator
       )
     end
 

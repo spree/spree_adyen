@@ -224,6 +224,12 @@ module SpreeAdyen
         raise Spree::PaymentMethod::WebhookSignatureError, 'Invalid HMAC signature'
       end
 
+      # Handle refund events directly — they don't use payment sessions
+      if event.code.in?(%w[REFUND REFUND_FAILED])
+        handle_refund_webhook(event)
+        return nil
+      end
+
       # Find payment session — scoped to this gateway
       payment_session = event.session_id.present? ?
         Spree::PaymentSessions::Adyen.find_by(payment_method: self, external_id: event.session_id) : nil
@@ -465,6 +471,15 @@ module SpreeAdyen
       JSON.parse(error.response)
     rescue JSON::ParserError, TypeError
       { 'message' => error.msg }
+    end
+
+    def handle_refund_webhook(event)
+      handler = SpreeAdyen.event_handlers[event.code]
+      return unless handler
+
+      handler
+        .set(wait: SpreeAdyen::Config.webhook_delay_in_seconds.seconds)
+        .perform_later(event.payload)
     end
 
     def valid_hmac?(webhook_request_item)

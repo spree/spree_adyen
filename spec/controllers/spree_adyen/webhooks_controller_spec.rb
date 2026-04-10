@@ -544,6 +544,104 @@ RSpec.describe SpreeAdyen::WebhooksController, type: :controller do
           end
         end
       end
+
+      describe 'refund event' do
+        let!(:payment) { create(:payment, state: 'completed', order: order, payment_method: payment_method, amount: 100.0, response_code: response_code) }
+        let(:response_code) { 'ABC123' }
+        let!(:refund) { create(:refund, payment: payment, amount: 10.0, transaction_id: 'refund_psp_reference') }
+
+        context 'when refund is confirmed' do
+          let(:params) { JSON.parse(file_fixture('webhooks/refund/success.json').read) }
+
+          it 'schedules a job' do
+            expect { subject }.to have_enqueued_job(SpreeAdyen::Webhooks::ProcessRefundEventJob)
+            expect(response).to have_http_status(:ok)
+          end
+
+          it 'marks the refund as submitted' do
+            perform_enqueued_jobs { subject }
+
+            expect(response).to have_http_status(:ok)
+            expect(refund.reload.adyen_refund_status).to eq('submitted')
+          end
+
+          context 'when refund was previously rejected' do
+            before do
+              refund.set_metafield(SpreeAdyen::RefundDecorator::ADYEN_REFUND_STATUS_METAFIELD_KEY, SpreeAdyen::RefundDecorator::ADYEN_REFUND_STATUS_REJECTED)
+              refund.set_metafield(SpreeAdyen::RefundDecorator::ADYEN_REFUND_ERROR_MESSAGE_METAFIELD_KEY, 'Insufficient in-process funds on account')
+            end
+
+            it 'clears the error message' do
+              perform_enqueued_jobs { subject }
+
+              refund.reload
+              expect(refund.adyen_refund_status).to eq('submitted')
+              expect(refund.adyen_refund_error_message).to be_nil
+            end
+          end
+        end
+
+        context 'when refund failed' do
+          let(:params) { JSON.parse(file_fixture('webhooks/refund/failure.json').read) }
+
+          before do
+            allow(Rails.error).to receive(:report)
+          end
+
+          it 'marks the refund as rejected' do
+            perform_enqueued_jobs { subject }
+
+            expect(response).to have_http_status(:ok)
+            expect(refund.reload.adyen_refund_status).to eq('rejected')
+            expect(refund.adyen_refund_error_message).to eq('Insufficient in-process funds on account')
+          end
+
+          it 'reports an error' do
+            perform_enqueued_jobs { subject }
+
+            expect(Rails.error).to have_received(:report).with(
+              SpreeAdyen::RefundError.new('Insufficient in-process funds on account'),
+              context: { order_id: order.id, refund_id: refund.id, event: anything },
+              source: 'spree_adyen'
+            )
+          end
+        end
+      end
+
+      describe 'refund_failed event' do
+        let!(:payment) { create(:payment, state: 'completed', order: order, payment_method: payment_method, amount: 100.0, response_code: response_code) }
+        let(:response_code) { 'ABC123' }
+        let!(:refund) { create(:refund, payment: payment, amount: 10.0, transaction_id: 'refund_psp_reference') }
+
+        let(:params) { JSON.parse(file_fixture('webhooks/refund_failed/failure.json').read) }
+
+        before do
+          allow(Rails.error).to receive(:report)
+        end
+
+        it 'schedules a job' do
+          expect { subject }.to have_enqueued_job(SpreeAdyen::Webhooks::ProcessRefundFailedEventJob)
+          expect(response).to have_http_status(:ok)
+        end
+
+        it 'marks the refund as rejected' do
+          perform_enqueued_jobs { subject }
+
+          expect(response).to have_http_status(:ok)
+          expect(refund.reload.adyen_refund_status).to eq('rejected')
+          expect(refund.adyen_refund_error_message).to eq('Issuer declined the refund')
+        end
+
+        it 'reports an error' do
+          perform_enqueued_jobs { subject }
+
+          expect(Rails.error).to have_received(:report).with(
+            SpreeAdyen::RefundError.new('Issuer declined the refund'),
+            context: { order_id: order.id, refund_id: refund.id, event: anything },
+            source: 'spree_adyen'
+          )
+        end
+      end
     end
   end
 end
