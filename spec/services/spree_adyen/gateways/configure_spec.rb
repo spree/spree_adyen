@@ -57,5 +57,20 @@ RSpec.describe SpreeAdyen::Gateways::Configure do
                           .and change(gateway, :updated_at)
       end
     end
+
+    it 'enqueues AddAllowedOriginJob for the store' do
+      VCR.use_cassette('gateways/configure/success/webhook_set_up') do
+        expect { service }.to have_enqueued_job(SpreeAdyen::AddAllowedOriginJob).with(store.id, gateway.id)
+      end
+    end
+
+    it 'enqueues AddAllowedOriginJob for each custom domain' do
+      VCR.use_cassette('gateways/configure/success/webhook_set_up') do
+        custom_domains = store.custom_domains
+
+        expect { service }.to have_enqueued_job(SpreeAdyen::AddAllowedOriginJob).with(custom_domains.first.id, gateway.id, 'custom_domain')
+                          .and have_enqueued_job(SpreeAdyen::AddAllowedOriginJob).with(custom_domains.last.id, gateway.id, 'custom_domain')
+      end
+    end
   end
 end

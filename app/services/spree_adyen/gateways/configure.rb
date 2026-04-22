@@ -23,9 +23,11 @@ module SpreeAdyen
 
       def set_up_allowed_origins
         gateway.stores.each do |store|
-          SpreeAdyen::Gateways::AddAllowedOrigin.new(store, gateway).call
+          SpreeAdyen::AddAllowedOriginJob.perform_later(store.id, gateway.id)
+          next unless store.respond_to?(:custom_domains)
+
           store.custom_domains.each do |custom_domain|
-            SpreeAdyen::Gateways::AddAllowedOrigin.new(custom_domain, gateway).call
+            SpreeAdyen::AddAllowedOriginJob.perform_later(custom_domain.id, gateway.id, 'custom_domain')
           end
         end
       end
