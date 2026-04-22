@@ -20,6 +20,7 @@ task :test_app do
   Rake::Task['extension:test_app'].execute(
     install_admin: true
   )
-  system({ 'BUNDLE_GEMFILE' => File.expand_path('Gemfile', __dir__) }, 'rails g spree_legacy_api_v2:install')
+  system({ 'BUNDLE_GEMFILE' => File.expand_path('Gemfile', __dir__) }, 'rails g spree_posts:install')
   system({ 'BUNDLE_GEMFILE' => File.expand_path('Gemfile', __dir__) }, 'rails g spree_legacy_product_properties:install')
+  system({ 'BUNDLE_GEMFILE' => File.expand_path('Gemfile', __dir__) }, 'rails g spree_legacy_api_v2:install')
 end

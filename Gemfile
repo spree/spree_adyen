@@ -16,6 +16,7 @@ gem 'spree', spree_opts
 gem 'spree_admin', spree_opts
 
 gem 'spree_multi_store'
+gem 'spree_posts'
 gem 'spree_legacy_product_properties'
 gem 'spree_legacy_api_v2'
 
