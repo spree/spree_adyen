@@ -100,7 +100,7 @@ module SpreeAdyen
       # Returns the address for the order
       # @return [Spree::Address, nil]
       def address
-        @address ||= order.bill_address || user&.bill_address || order.ship_address || user&.ship_address
+        @address ||= order.bill_address || order.ship_address || user&.bill_address || user&.ship_address
       end
 
       # Returns the country ISO code for the order

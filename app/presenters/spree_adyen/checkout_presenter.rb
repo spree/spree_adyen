@@ -45,7 +45,7 @@ module SpreeAdyen
     end
 
     def address
-      @address ||= order.bill_address || user&.bill_address || order.ship_address
+      @address ||= order.bill_address || order.ship_address || user&.bill_address || user&.ship_address
     end
   end
 end
