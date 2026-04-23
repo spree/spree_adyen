@@ -90,7 +90,7 @@ module SpreeAdyen
 
       # we need to send reference even for guest users, otherwise we can't tokenize the card
       def shopper_reference
-        if user.id.present?
+        if user.present?
           "customer_#{user.id}"
         else
           "guest_#{order.number}"

@@ -34,6 +34,7 @@ module SpreeAdyen
     attr_reader :payment_session
 
     delegate :currency, :order, to: :payment_session
+    delegate :store, :user, to: :order
 
     def locale
       order.try(:locale) || 'en-US'
