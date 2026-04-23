@@ -15,15 +15,15 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
     }
   end
 
-  let(:order) { create(:order, bill_address: bill_address, number: 'R123456789', total: 100, user: user, currency: 'USD', line_items: [line_item]) }
+  let(:order) { create(:order, bill_address: address, ship_address: address, number: 'R123456789', total: 100, user: user, currency: 'USD', line_items: [line_item]) }
   let(:user) { create(:user, email: 'test@example.com', first_name: 'John', last_name: 'Doe') }
   let(:amount) { 100 }
   let(:payment_method) { create(:adyen_gateway) }
   let(:merchant_account) { 'SpreeCommerceECOM' }
   let(:line_items) { [line_item] }
   let(:line_item) { build(:line_item, price: 100, variant: variant) }
-  let(:variant) { create(:variant, sku: 'variant_sku', name: 'variant_name') }
-  let(:bill_address) { create(:address, firstname: 'John', lastname: 'Doe') }
+  let(:variant) { create(:variant) }
+  let(:address) { create(:address, firstname: 'John', lastname: 'Doe') }
   let(:channel) { 'Web' }
   let(:return_url) { 'http://www.example.com/adyen/payment_sessions/redirect' }
   let(:auto_capture) { true }
@@ -51,7 +51,7 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
         shopperInteraction: "Ecommerce",
         storePaymentMethodMode: "enabled",
         reference: expected_reference,
-        countryCode: bill_address.country_iso,
+        countryCode: address.country_iso,
         lineItems: [
           {
             id: line_item.id,
@@ -144,6 +144,14 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
 
         it 'returns a valid payload' do
           expect(payload).to eq(expected_payload)
+        end
+      end
+
+      context 'without address' do
+        let(:address) { nil }
+
+        it 'does not raise an error' do
+          expect { payload }.not_to raise_error
         end
       end
     end
