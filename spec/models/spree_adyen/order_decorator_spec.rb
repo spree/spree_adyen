@@ -33,8 +33,20 @@ RSpec.describe SpreeAdyen::OrderDecorator do
   describe '#outdate_payment_sessions' do
     subject(:outdate_payment_sessions) { order.outdate_payment_sessions }
 
-    it 'removes outdated (with wrong amount or currency) payment sessions' do
-      expect { outdate_payment_sessions }.to change { SpreeAdyen::PaymentSession.count }.by(-4)
+    context 'when use_legacy_adyen_payment_sessions is enabled' do
+      before { SpreeAdyen::Config[:use_legacy_adyen_payment_sessions] = true }
+
+      after { SpreeAdyen::Config[:use_legacy_adyen_payment_sessions] = false }
+
+      it 'removes outdated (with wrong amount or currency) payment sessions' do
+        expect { outdate_payment_sessions }.to change { SpreeAdyen::PaymentSession.count }.by(-4)
+      end
+    end
+
+    context 'when use_legacy_adyen_payment_sessions is disabled' do
+      it 'does not remove any payment sessions' do
+        expect { outdate_payment_sessions }.not_to change { SpreeAdyen::PaymentSession.count }
+      end
     end
   end
 

@@ -50,8 +50,16 @@ module SpreeAdyen
         [
           order.number,
           payment_method.id,
-          order.adyen_payment_sessions.with_deleted.count + 1
+          payment_sessions_count + 1
         ].join('_')
+      end
+
+      def payment_sessions_count
+        if SpreeAdyen::Config[:use_legacy_adyen_payment_sessions]
+          order.adyen_payment_sessions.with_deleted.count
+        else
+          order.payment_sessions.with_deleted.where(payment_method: payment_method).count
+        end
       end
 
       def channel_params

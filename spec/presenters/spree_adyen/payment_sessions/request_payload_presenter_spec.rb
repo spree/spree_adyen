@@ -139,8 +139,31 @@ RSpec.describe SpreeAdyen::PaymentSessions::RequestPayloadPresenter do
         let(:expected_reference) { "R123456789_#{payment_method.id}_2" }
 
         before do
+          Spree::PaymentSessions::Adyen.create!(
+            order: order,
+            payment_method: payment_method,
+            amount: order.total_minus_store_credits,
+            currency: order.currency,
+            status: 'pending',
+            external_id: 'CS4FBB6F827EC53AC7',
+            deleted_at: 1.day.ago
+          )
+        end
+
+        it 'returns a valid payload' do
+          expect(payload).to eq(expected_payload)
+        end
+      end
+
+      context 'when payment session already exists (legacy)' do
+        let(:expected_reference) { "R123456789_#{payment_method.id}_2" }
+
+        before do
+          SpreeAdyen::Config[:use_legacy_adyen_payment_sessions] = true
           create(:adyen_payment_session, deleted_at: 1.day.ago, amount: order.total_minus_store_credits, order: order, adyen_id: 'CS4FBB6F827EC53AC7')
         end
+
+        after { SpreeAdyen::Config[:use_legacy_adyen_payment_sessions] = false }
 
         it 'returns a valid payload' do
           expect(payload).to eq(expected_payload)

@@ -12,6 +12,7 @@ module SpreeAdyen
     preference :payment_session_expiration_in_minutes, :integer, default: 60
     preference :webhook_delay_in_seconds, :integer, default: 5
     preference :use_legacy_webhook_handlers, :boolean, default: false
+    preference :use_legacy_adyen_payment_sessions, :boolean, default: false
 
     preference :credit_card_sources, :array, default: %i[
       accel
