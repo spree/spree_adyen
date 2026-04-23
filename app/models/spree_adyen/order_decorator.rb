@@ -5,6 +5,8 @@ module SpreeAdyen
     end
 
     def outdate_payment_sessions
+      return unless SpreeAdyen::Config[:use_legacy_adyen_payment_sessions]
+
       adyen_payment_sessions
         .where.not(currency: currency).or(adyen_payment_sessions.where.not(amount: total_minus_store_credits))
         .with_status(:initial)
