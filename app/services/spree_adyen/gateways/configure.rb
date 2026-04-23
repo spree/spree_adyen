@@ -45,9 +45,7 @@ module SpreeAdyen
       end
 
       def set_up_webhook_with_hmac_key
-        webhook_url = URI.parse(Spree::Core::Engine.routes.url_helpers.adyen_webhooks_url(host: gateway.stores.first.url))
-        webhook_url.scheme = 'https'
-        set_up_webhook_request = gateway.set_up_webhook(webhook_url.to_s)
+        set_up_webhook_request = gateway.set_up_webhook(gateway.webhook_url)
         return unless set_up_webhook_request.success?
 
         gateway.preferred_webhook_id = set_up_webhook_request.authorization

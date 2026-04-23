@@ -39,6 +39,27 @@ RSpec.describe SpreeAdyen::Gateways::Configure do
                           .and change(gateway, :updated_at)
       end
     end
+
+    it 'registers the webhook using the v3 webhook url' do
+      VCR.use_cassette('gateways/configure/success/webhook_not_set_up') do
+        expect(gateway).to receive(:set_up_webhook).with(gateway.webhook_url).and_call_original
+        service
+      end
+    end
+
+    context 'with legacy webhook handlers enabled' do
+      before do
+        allow(SpreeAdyen::Config).to receive(:[]).and_call_original
+        allow(SpreeAdyen::Config).to receive(:[]).with(:use_legacy_webhook_handlers).and_return(true)
+      end
+
+      it 'registers the webhook using the legacy webhook url' do
+        VCR.use_cassette('gateways/configure/success/webhook_not_set_up') do
+          expect(gateway).to receive(:set_up_webhook).with("#{store.formatted_url}/adyen/webhooks").and_call_original
+          service
+        end
+      end
+    end
   end
 
   context 'when webhook is set up' do
