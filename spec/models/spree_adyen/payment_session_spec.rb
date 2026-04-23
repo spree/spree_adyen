@@ -172,12 +172,8 @@ RSpec.describe SpreeAdyen::PaymentSession do
     end
 
     describe 'set_return_url' do
-      before do
-        allow(store).to receive(:url_or_custom_domain).and_return('url-or-custom-domain.com')
-      end
-
-      it 'sets the redirect url' do
-        expect { payment_session.validate }.to change(payment_session, :return_url).to('http://url-or-custom-domain.com/adyen/payment_sessions/redirect')
+      it 'sets the redirect url using store storefront_url' do
+        expect { payment_session.validate }.to change(payment_session, :return_url).to("#{store.storefront_url}/adyen/payment_sessions/redirect")
       end
     end
   end

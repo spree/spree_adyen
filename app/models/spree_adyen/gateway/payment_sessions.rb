@@ -65,9 +65,15 @@ module SpreeAdyen
       # (called by the storefront or by the webhook handler).
       #
       # @param payment_session [Spree::PaymentSessions::Adyen] the session to complete
-      # @param params [Hash] must include :session_result
+      # @param params [Hash] must include :session_result or external_data with :redirect_result
       def complete_payment_session(payment_session:, params: {})
         session_result = params[:session_result] || params['session_result']
+
+        if session_result.blank?
+          external_data = params[:external_data] || params['external_data'] || {}
+          redirect_result = external_data[:redirect_result] || external_data['redirect_result']
+          session_result = resolve_session_result_from_redirect(payment_session, redirect_result) if redirect_result.present?
+        end
 
         response = payment_session_result(payment_session.external_id, session_result)
         status = response.params.fetch('status')
@@ -102,8 +108,24 @@ module SpreeAdyen
 
       private
 
+      # Resolves a sessionResult from a redirectResult by calling Adyen's /payments/details endpoint.
+      # In the sessions flow, Adyen processes the redirect server-side. We call /payments/details
+      # with the redirectResult to finalize the payment and get the sessionResult.
+      def resolve_session_result_from_redirect(payment_session, redirect_result)
+        response = send_request do
+          client.checkout.payments_api.payments_details({
+            details: { redirectResult: redirect_result }
+          })
+        end
+        response.response&.dig('sessionResult')
+      end
+
       def default_return_url(order)
-        Spree::Core::Engine.routes.url_helpers.redirect_adyen_payment_session_url(host: order.store.url_or_custom_domain)
+        if SpreeAdyen::Config[:use_legacy_adyen_payment_sessions]
+          Spree::Core::Engine.routes.url_helpers.redirect_adyen_payment_session_url(host: order.store.url_or_custom_domain)
+        else
+          "#{order.store.storefront_url}/adyen/payment_sessions/redirect"
+        end
       end
     end
   end
