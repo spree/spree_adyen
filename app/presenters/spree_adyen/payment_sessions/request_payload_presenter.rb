@@ -29,7 +29,7 @@ module SpreeAdyen
           },
           returnUrl: return_url,
           reference: reference,
-          countryCode: address.country_iso,
+          countryCode: country_iso,
           lineItems: line_items,
           merchantAccount: merchant_account,
           merchantOrderReference: order_number,
@@ -42,7 +42,7 @@ module SpreeAdyen
       attr_reader :order, :amount, :user, :merchant_account, :payment_method, :channel, :return_url
 
       delegate :number, to: :order, prefix: true
-      delegate :currency, to: :order
+      delegate :currency, :store, to: :order
 
       # since we cannot count on metadata reference is the simplest way to store data for webhooks
       # so let's keep its format as ORDERNUMBER_PAYMENTMETHODID_UNIQGUARANTER
@@ -80,29 +80,39 @@ module SpreeAdyen
       def shopper_details
         {
           shopperName: {
-            firstName: address.firstname,
-            lastName: address.lastname
+            firstName: address&.firstname || user&.first_name,
+            lastName: address&.lastname || user&.last_name
           },
-          shopperEmail: order.email,
+          shopperEmail: order.email || user&.email,
           shopperReference: shopper_reference
         }
       end
 
       # we need to send reference even for guest users, otherwise we can't tokenize the card
       def shopper_reference
-        if user.present?
+        if user.id.present?
           "customer_#{user.id}"
         else
           "guest_#{order.number}"
         end
       end
 
+      # Returns the address for the order
+      # @return [Spree::Address, nil]
       def address
-        @address ||= order.bill_address || order.ship_address
+        @address ||= order.bill_address || user&.bill_address || order.ship_address || user&.ship_address
       end
 
+      # Returns the country ISO code for the order
+      # @return [String]
+      def country_iso
+        address&.country_iso || store.try(:default_country_iso) || 'US'
+      end
+
+      # Returns Order Line Items
+      # @return [Array<Hash>]
       def line_items
-        order.line_items.map do |line_item|
+        order.line_items.includes(variant: :product).map do |line_item|
           {
             amountExcludingTax: Spree::Money.new(line_item.price - line_item.included_tax_total, currency: currency).cents,
             amountIncludingTax: Spree::Money.new(line_item.price + line_item.additional_tax_total, currency: currency).cents,
