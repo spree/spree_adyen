@@ -66,14 +66,17 @@ module SpreeAdyen
       #
       # @param payment_session [Spree::PaymentSessions::Adyen] the session to complete
       # @param params [Hash] must include :session_result or external_data with :redirect_result
+      # @raise [Spree::Core::GatewayError] if neither session_result nor redirect_result can be resolved
       def complete_payment_session(payment_session:, params: {})
         session_result = params[:session_result] || params['session_result']
 
         if session_result.blank?
           external_data = params[:external_data] || params['external_data'] || {}
           redirect_result = external_data[:redirect_result] || external_data['redirect_result']
-          session_result = resolve_session_result_from_redirect(payment_session, redirect_result) if redirect_result.present?
+          session_result = resolve_session_result_from_redirect(redirect_result) if redirect_result.present?
         end
+
+        raise Spree::Core::GatewayError, 'session_result or redirect_result is required' if session_result.blank?
 
         response = payment_session_result(payment_session.external_id, session_result)
         status = response.params.fetch('status')
@@ -111,11 +114,11 @@ module SpreeAdyen
       # Resolves a sessionResult from a redirectResult by calling Adyen's /payments/details endpoint.
       # In the sessions flow, Adyen processes the redirect server-side. We call /payments/details
       # with the redirectResult to finalize the payment and get the sessionResult.
-      def resolve_session_result_from_redirect(payment_session, redirect_result)
+      def resolve_session_result_from_redirect(redirect_result)
         response = send_request do
-          client.checkout.payments_api.payments_details({
+          client.checkout.payments_api.payments_details(
             details: { redirectResult: redirect_result }
-          })
+          )
         end
         response.response&.dig('sessionResult')
       end
