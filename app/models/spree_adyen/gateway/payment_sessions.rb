@@ -116,9 +116,7 @@ module SpreeAdyen
       # with the redirectResult to finalize the payment and get the sessionResult.
       def resolve_session_result_from_redirect(redirect_result)
         response = send_request do
-          client.checkout.payments_api.payments_details(
-            details: { redirectResult: redirect_result }
-          )
+          client.checkout.payments_api.payments_details({ details: { redirectResult: redirect_result } })
         end
         response.response&.dig('sessionResult')
       end
