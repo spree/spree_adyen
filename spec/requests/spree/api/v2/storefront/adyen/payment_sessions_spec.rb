@@ -98,7 +98,7 @@ RSpec.describe 'API V2 Storefront Adyen Payment Sessions', type: :request do
               expect(json_data['attributes']['client_key']).to eq('test_client_key')
               expect(json_data['attributes']['adyen_data']).to be_present
               expect(json_data['attributes']['channel']).to eq('Web') # default channel
-              expect(json_data['attributes']['return_url']).to eq('http://www.example.com/adyen/payment_sessions/redirect') # default channel
+              expect(json_data['attributes']['return_url']).to eq("#{store.storefront_url}/adyen/payment_sessions/redirect")
 
               # Verify relationships
               expect(json_data['relationships']['order']['data']['id']).to eq(order.id.to_s)
