@@ -682,20 +682,21 @@ RSpec.describe SpreeAdyen::Gateway do
     end
 
     context 'with redirect_result in external_data' do
-      before do
-        allow(gateway).to receive(:resolve_session_result_from_redirect)
-          .with('redirectResultToken')
-          .and_return('resultData')
+      let(:payments_details_response) do
+        double(response: { 'resultCode' => 'Authorised', 'pspReference' => 'psp_123' })
       end
 
-      it 'resolves session_result from redirect_result and completes' do
-        VCR.use_cassette('payment_session_results/success/completed') do
-          gateway.complete_payment_session(
-            payment_session: payment_session,
-            params: { external_data: { redirect_result: 'redirectResultToken' } }
-          )
-          expect(payment_session.reload.status).to eq('completed')
-        end
+      before do
+        allow(gateway).to receive(:send_request).and_yield.and_return(payments_details_response)
+        allow(gateway.send(:client).checkout.payments_api).to receive(:payments_details).and_return(double(status: 200, response: payments_details_response.response))
+      end
+
+      it 'calls /payments/details and completes the payment session' do
+        gateway.complete_payment_session(
+          payment_session: payment_session,
+          params: { external_data: { redirect_result: 'redirectResultToken' } }
+        )
+        expect(payment_session.reload.status).to eq('completed')
       end
     end
 
@@ -703,21 +704,6 @@ RSpec.describe SpreeAdyen::Gateway do
       it 'raises a gateway error' do
         expect {
           gateway.complete_payment_session(payment_session: payment_session, params: {})
-        }.to raise_error(Spree::Core::GatewayError, 'session_result or redirect_result is required')
-      end
-    end
-
-    context 'when redirect_result cannot be resolved' do
-      before do
-        allow(gateway).to receive(:resolve_session_result_from_redirect).and_return(nil)
-      end
-
-      it 'raises a gateway error' do
-        expect {
-          gateway.complete_payment_session(
-            payment_session: payment_session,
-            params: { external_data: { redirect_result: 'bad_token' } }
-          )
         }.to raise_error(Spree::Core::GatewayError, 'session_result or redirect_result is required')
       end
     end
