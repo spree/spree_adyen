@@ -658,6 +658,71 @@ RSpec.describe SpreeAdyen::Gateway do
     end
   end
 
+  describe '#complete_payment_session' do
+    let(:order) { create(:order_with_line_items, store: store) }
+    let!(:payment_session) do
+      Spree::PaymentSessions::Adyen.create!(
+        order: order,
+        payment_method: gateway,
+        amount: order.total,
+        currency: order.currency,
+        status: 'pending',
+        external_id: 'CS4FBB6F827EC53AC7',
+        external_data: { 'session_data' => 'test', 'channel' => 'Web' }
+      )
+    end
+
+    context 'with session_result' do
+      it 'completes the payment session' do
+        VCR.use_cassette('payment_session_results/success/completed') do
+          gateway.complete_payment_session(payment_session: payment_session, params: { session_result: 'resultData' })
+          expect(payment_session.reload.status).to eq('completed')
+        end
+      end
+    end
+
+    context 'with redirect_result in external_data' do
+      before do
+        allow(gateway).to receive(:resolve_session_result_from_redirect)
+          .with('redirectResultToken')
+          .and_return('resultData')
+      end
+
+      it 'resolves session_result from redirect_result and completes' do
+        VCR.use_cassette('payment_session_results/success/completed') do
+          gateway.complete_payment_session(
+            payment_session: payment_session,
+            params: { external_data: { redirect_result: 'redirectResultToken' } }
+          )
+          expect(payment_session.reload.status).to eq('completed')
+        end
+      end
+    end
+
+    context 'with neither session_result nor redirect_result' do
+      it 'raises a gateway error' do
+        expect {
+          gateway.complete_payment_session(payment_session: payment_session, params: {})
+        }.to raise_error(Spree::Core::GatewayError, 'session_result or redirect_result is required')
+      end
+    end
+
+    context 'when redirect_result cannot be resolved' do
+      before do
+        allow(gateway).to receive(:resolve_session_result_from_redirect).and_return(nil)
+      end
+
+      it 'raises a gateway error' do
+        expect {
+          gateway.complete_payment_session(
+            payment_session: payment_session,
+            params: { external_data: { redirect_result: 'bad_token' } }
+          )
+        }.to raise_error(Spree::Core::GatewayError, 'session_result or redirect_result is required')
+      end
+    end
+  end
+
   describe '#parse_webhook_event' do
     let(:order) { create(:order_with_line_items, store: store) }
     let!(:payment_session) do
