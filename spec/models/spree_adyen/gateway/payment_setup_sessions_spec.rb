@@ -70,9 +70,38 @@ RSpec.describe SpreeAdyen::Gateway::PaymentSetupSessions do
       end
     end
 
-    # Note: session_result and redirect_result paths require a real session that the Drop-in
-    # browser flow completed. They are exercised end-to-end in storefront integration tests.
-    # Unit coverage for the source-creation logic lives in
-    # spec/services/spree_adyen/payment_setup_sessions/create_source_from_result_spec.rb.
+    context 'with session_result but a failed gateway response' do
+      it 'raises a gateway error and does not transition the session' do
+        allow(gateway).to receive(:payment_session_result).and_return(
+          Spree::PaymentResponse.new(false, 'unauthorized')
+        )
+
+        expect {
+          gateway.complete_payment_setup_session(setup_session: setup_session, params: { session_result: 'bad' })
+        }.to raise_error(Spree::Core::GatewayError, 'unauthorized')
+
+        expect(setup_session.reload.status).to eq('pending')
+      end
+    end
+
+    context 'with redirect_result and a non-200 response from /payments/details' do
+      it 'raises a gateway error' do
+        allow(gateway.send(:client).checkout.payments_api).to receive(:payments_details)
+          .and_return(double(status: 500, response: { 'message' => 'internal' }))
+
+        expect {
+          gateway.complete_payment_setup_session(
+            setup_session: setup_session,
+            params: { external_data: { redirect_result: 'redirectToken' } }
+          )
+        }.to raise_error(Spree::Core::GatewayError, /returned 500/)
+
+        expect(setup_session.reload.status).to eq('pending')
+      end
+    end
+
+    # Note: end-to-end session_result + redirect_result happy paths require a real
+    # Drop-in browser flow completion. Unit coverage for the source-creation logic
+    # lives in spec/services/spree_adyen/payment_setup_sessions/create_source_from_result_spec.rb.
   end
 end

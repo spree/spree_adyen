@@ -92,7 +92,11 @@ module SpreeAdyen
 
       def complete_setup_session_from_result(setup_session, session_result)
         response = payment_session_result(setup_session.external_id, session_result)
-        status = response.params.fetch('status')
+        raise Spree::Core::GatewayError, response.message.presence || 'Adyen session result failed' unless response.success?
+
+        status = response.params['status']
+        raise Spree::Core::GatewayError, 'Adyen session result missing status' if status.blank?
+
         process_setup_session_status(setup_session, status, response.params)
       end
 
@@ -100,7 +104,12 @@ module SpreeAdyen
         response = send_request do
           client.checkout.payments_api.payments_details({ details: { redirectResult: redirect_result } })
         end
+
+        raise Spree::Core::GatewayError, "Adyen /payments/details returned #{response.status}" if response.status.to_i != 200
+
         result_code = response.response&.dig('resultCode')
+        raise Spree::Core::GatewayError, 'Adyen /payments/details response missing resultCode' if result_code.blank?
+
         status = case result_code
                  when 'Authorised' then 'completed'
                  when 'Pending', 'Received' then 'paymentPending'
