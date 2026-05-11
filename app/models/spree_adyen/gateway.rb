@@ -1,6 +1,7 @@
 module SpreeAdyen
   class Gateway < ::Spree::Gateway
     include PaymentSessions
+    include PaymentSetupSessions
 
     CAPTURE_PSP_REFERENCE_METAFIELD_KEY = 'adyen.capture_psp_reference'.freeze
     CANCELLATION_PSP_REFERENCE_METAFIELD_KEY = 'adyen.cancellation_psp_reference'.freeze
@@ -224,10 +225,17 @@ module SpreeAdyen
         raise Spree::PaymentMethod::WebhookSignatureError, 'Invalid HMAC signature'
       end
 
-      # Find payment session — scoped to this gateway
-      payment_session = event.session_id.present? ?
-        Spree::PaymentSessions::Adyen.find_by(payment_method: self, external_id: event.session_id) : nil
+      return nil if event.session_id.blank?
 
+      # Setup sessions (zero-auth tokenization) are processed inline here — they don't
+      # fit core's payment-session webhook dispatch shape and there is no order to complete.
+      setup_session = Spree::PaymentSetupSessions::Adyen.find_by(payment_method: self, external_id: event.session_id)
+      if setup_session
+        SpreeAdyen::PaymentSetupSessions::HandleAuthorisation.new(setup_session: setup_session, event: event).call if event.code == 'AUTHORISATION'
+        return nil
+      end
+
+      payment_session = Spree::PaymentSessions::Adyen.find_by(payment_method: self, external_id: event.session_id)
       return nil unless payment_session
 
       case event.code
