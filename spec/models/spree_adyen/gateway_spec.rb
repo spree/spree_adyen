@@ -673,10 +673,27 @@ RSpec.describe SpreeAdyen::Gateway do
     end
 
     context 'with session_result' do
-      it 'completes the payment session' do
+      it 'completes the payment session and completes the payment (auto_capture)' do
         VCR.use_cassette('payment_session_results/success/completed') do
           gateway.complete_payment_session(payment_session: payment_session, params: { session_result: 'resultData' })
+
           expect(payment_session.reload.status).to eq('completed')
+          payment = payment_session.order.payments.find_by(response_code: payment_session.external_id)
+          expect(payment.state).to eq('completed')
+        end
+      end
+
+      context 'when gateway has auto_capture disabled (manual capture)' do
+        before { gateway.update!(auto_capture: false) }
+
+        it 'completes the payment session but leaves the payment in pending' do
+          VCR.use_cassette('payment_session_results/success/completed') do
+            gateway.complete_payment_session(payment_session: payment_session, params: { session_result: 'resultData' })
+
+            expect(payment_session.reload.status).to eq('completed')
+            payment = payment_session.order.payments.find_by(response_code: payment_session.external_id)
+            expect(payment.state).to eq('pending')
+          end
         end
       end
     end
@@ -786,6 +803,48 @@ RSpec.describe SpreeAdyen::Gateway do
         result = gateway.parse_webhook_event(authorisation_payload.to_json, {})
 
         expect(result[:action]).to eq(:canceled)
+      end
+    end
+
+    context 'when the session is a PaymentSetupSession (zero-auth tokenization)' do
+      let!(:setup_session) do
+        Spree::PaymentSetupSessions::Adyen.create!(
+          payment_method: gateway,
+          customer: create(:user),
+          status: 'pending',
+          external_id: 'CS_setup_for_webhook'
+        )
+      end
+
+      let(:setup_payload) do
+        {
+          'notificationItems' => [{
+            'NotificationRequestItem' => {
+              'eventCode' => 'AUTHORISATION',
+              'success' => 'true',
+              'pspReference' => 'psp_setup_111',
+              'merchantReference' => "SETUP_#{gateway.id}_abc",
+              'amount' => { 'value' => 0, 'currency' => 'USD' },
+              'paymentMethod' => 'visa',
+              'additionalData' => {
+                'checkoutSessionId' => 'CS_setup_for_webhook',
+                'tokenization.storedPaymentMethodId' => 'TOKEN_VISA_777',
+                'cardSummary' => '1111',
+                'expiryDate' => '06/2031'
+              }
+            }
+          }]
+        }
+      end
+
+      it 'processes the setup session inline and returns nil so core does not dispatch' do
+        expect(SpreeAdyen::PaymentSetupSessions::HandleAuthorisation).to receive(:new).and_call_original
+
+        result = gateway.parse_webhook_event(setup_payload.to_json, {})
+
+        expect(result).to be_nil
+        expect(setup_session.reload.status).to eq('completed')
+        expect(setup_session.payment_source).to be_present
       end
     end
 

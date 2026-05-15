@@ -1,0 +1,67 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://checkout-test.adyen.com/v71/sessions
+    body:
+      encoding: UTF-8
+      string: '{"metadata":{"spree_payment_method_id":1,"spree_setup_session":true},"amount":{"value":0,"currency":"USD"},"returnUrl":"myapp://adyen/return","reference":"SETUP_1_b99811374f5a","merchantAccount":"SpreeCommerceECOM","expiresAt":"2026-05-11T13:58:15Z","shopperName":{"firstName":"Setup","lastName":"Shopper"},"shopperEmail":"setup-shopper@example.com","shopperReference":"customer_1","recurringProcessingModel":"UnscheduledCardOnFile","shopperInteraction":"Ecommerce","storePaymentMethodMode":"enabled","blockedPaymentMethods":["googlepay"],"channel":"iOS","applicationInfo":{"externalPlatform":{"name":"Spree
+        Commerce","version":"5.5.0.beta","integrator":"Vendo Sp. z o.o."},"merchantApplication":{"name":"Community
+        Edition","version":"0.10.0"}}}'
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - adyen-ruby-api-library/11.3.0
+      X-Api-Key:
+      - ADYEN_API_KEY
+      Idempotency-Key:
+      - '0492b3cf-bf55-465f-8502-37b6a72e2ccb'
+      Adyen-Library-Name:
+      - adyen-ruby-api-library
+      Adyen-Library-Version:
+      - 11.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Mon, 11 May 2026 12:58:15 GMT
+      Content-Type:
+      - application/json;charset=UTF-8
+      Content-Length:
+      - '2882'
+      Connection:
+      - keep-alive
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Content-Type-Options:
+      - nosniff
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      Idempotency-Key:
+      - '0492b3cf-bf55-465f-8502-37b6a72e2ccb'
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Cf-Cache-Status:
+      - DYNAMIC
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9fa15aa81a08d241-WAW
+    body:
+      encoding: UTF-8
+      string: '{"amount":{"currency":"USD","value":0},"applicationInfo":{"externalPlatform":{"name":"Spree
+        Commerce","version":"5.5.0.beta","integrator":"Vendo Sp. z o.o."},"merchantApplication":{"name":"Community
+        Edition","version":"0.10.0"}},"blockedPaymentMethods":["googlepay"],"channel":"iOS","expiresAt":"2026-05-11T15:58:15+02:00","id":"CS56F13B1DF3C722CC84022DF","merchantAccount":"SpreeCommerceECOM","metadata":{"spree_payment_method_id":"1","spree_setup_session":"true"},"recurringProcessingModel":"UnscheduledCardOnFile","reference":"SETUP_1_b99811374f5a","returnUrl":"myapp:\/\/adyen\/return","shopperEmail":"setup-shopper@example.com","shopperInteraction":"Ecommerce","shopperLocale":"en-US","shopperName":{"firstName":"Setup","lastName":"Shopper"},"shopperReference":"customer_1","storePaymentMethodMode":"enabled","mode":"embedded","sessionData":"Ab02b4c0!BQABAgCoZj+9J0EW84wWnGKPgOQqRXxJjUAJEfearjx7JtHPEFHeJbt98XwzMfDvKLfREkBPaxoXh8W8WodzVF4Gw+OTeowxvtIrEuzCZ26rezszKsyjdaRK758rm1sLLMnQWOMRlNOf1IUMp\/anZ9ToKPI1X5wXAAKnDxuVfr0mdOlUnFHMLp+UgSoInI0Ui5YpbSUVGo3HJN5uR06\/noBedIWpjysbzh8ZG78h+28A+3oZggjraO7xVQyYIouaU7Y\/BkXwqQUWE+ZESJbud4yHIIT8JUlIGJQaVNBKcvia0pcMwwroaaCgn\/MFDJLK6QInAinLGYFmf1fKOXVah2CFic8YHUfh5Mzx6kMIUWlRlycx38IsuFibWX3QhunDbvFy4n7JCADfaYny\/xEgJXGVFNswwcmHQEMUPLLbXi5JBImaJJLY6uL+dTMssXGHVMq+875Fk8tz76typc9oq3ana82QdPaGqShygSZp0jZeAKUXmpXVTzdRbHLKQ0AUI+dD\/MwG8o49+2hB2Vqrl9LaWbvYUD2Bz5fZ+5ZAbWiKgQhqeYef2SikFyj8rVBhi1XYDzQoXKR\/NiHxnIMReBolIBUVrtfTFkspxDUapNKqw1MznwtEgr\/dXBuG3V6AoQEYGRIZCogkqUBlbLk1o3waV8+\/q8ok+MTF+K57l3+4O4tuigxvXZmA0Vb6ZWh3nsgASnsia2V5IjoiQUYwQUFBMTAzQ0E1MzdFQUVEODdDMjRERDUzOTA5QjgwQTc4QTkyM0UzODIzRDY4REFDQzk0QjlGRjgzMDVEQyJ9b4I93JEHFr\/gXYIp7AJgBxMN6svbf5JmH8EJ+tveFezKEd1UewLckSVxMqG5ch8gbYxzA6c6lHH0e5aGrfQtjetzZPkk54VCq4ihdCvxdT6VhHtQZ30+eu7lqxOZeRGt7j8vZ2CDk8ENvSU4C\/FQKEcYTf93f7BjDgbbMzNJCWitlmf0QJA9y+1GPj41Gqma22aAYI\/qJmF2LL4y+Pq7QoA2b8mTSJ+VEDOVZtthx1HwiYuL4KkSZfqqGILiRh1tiNdye4uQItIC\/GbyIVyqqureFgefup3e6fcfaeH0YT97qWnAy8yLa2IjjCx2D875Hd0elBL9nOhfZtAPQQElZFDt34XXEqnORNfiKhg\/Q7ik7WaADfCksHJxp5+Q7xj03oO53mK6RZho9Fzoup1J7j\/h1BNu6Di8zVnWVOs3w9y+3L2s88opBJz7BJme+wZVJ6z5NPz071CDNXlQMs91jFhUnltV4n4U7t\/TBJAwytd9MmIM0fO1J3s2WE9fGuY\/Kfz5vGHLEYtxt9v6MdH0zU+5cGz6pWDaYGqOlg8ZFlYAX1XoLGUVoa5kLVUpeL7UIRuypDekJytonz7E11q2O+\/p36JpoMcZkBt0+4KPmphGQb\/o7bBBAbdvibASbLJIzm5rNRM5oatKDSo5EHPDSDzikQbpKwZ7glYzMkrc3i6YaeCksz+0m91iJ\/SfDKBN1bhFA8s448Hx7npFRD5sytYQdWl\/ETlzO7yPK+yETpBs7LdSKt3xuAVXfS6z8HEdtB\/M03P34dQMV44cCHMu+cw3MyrDze44T6uGEC+Ak\/pzDCRSqyBIxhLUb1uYts2HfbwcxyDqx7tnG+3IK3l\/a6XtSMUG5WAaD6tbNQWtvPgqOspjuyMMBGYTaXf02hHPiL5UakS\/PRiLT6ah\/HRKm7msQluF3g5+OZerd0ZET3OqS4ZN2ZjZsB1oAcgVJwuxOZW\/yIuPTIAXECQ3tRx+as68rtW\/ZDA\/Rn6PXz\/vqb\/ZngCjcuXtTyDef+ub8V6X9zOiJjyh9DD3oYsaVdm0T9yIx2VFKiRgDkr9WELshLjrRKBPDTHRHRXdmJL96hiPGEPZo+qLSu58HCefxbDyOSu4BdgFB6NyFGjPHdr1cWH\/Qi3OAFN6uEAg+zr8OEpm0Tt4+EahT9WgdJrNpCGnqrXQQXHQmoM="}'
+  recorded_at: Mon, 11 May 2026 12:58:15 GMT
+recorded_with: VCR 6.4.0

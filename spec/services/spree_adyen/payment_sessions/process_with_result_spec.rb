@@ -20,8 +20,8 @@ RSpec.describe SpreeAdyen::PaymentSessions::ProcessWithResult do
         VCR.use_cassette('payment_session_results/success/completed') do
           expect { service }.to change(Spree::Payment, :count).by(1)
 
-          expect(payment_session.order.payments).to be_present
-          expect(payment_session.order.payments.last.state).to eq('completed')
+          new_payment = payment_session.order.payments.find_by(response_code: payment_session.adyen_id)
+          expect(new_payment.state).to eq('completed')
         end
       end
     end
