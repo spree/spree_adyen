@@ -135,7 +135,8 @@ RSpec.describe SpreeAdyen::PaymentSession do
 
       context 'when order has existing payments' do
         let(:order) { create(:order_with_line_items, store: store) }
-        let(:payment) { create(:payment, order: order, amount: 50, state: 'completed') }
+        let(:payment_method) { create(:credit_card_payment_method, stores: [store]) }
+        let(:payment) { create(:payment, order: order, amount: 50, state: 'completed', payment_method: payment_method) }
 
         before do
           payment

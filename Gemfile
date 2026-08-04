@@ -10,12 +10,13 @@ gem 'rails-controller-testing'
 spree_opts = if ENV['SPREE_PATH']
                 { 'path': ENV['SPREE_PATH'] }
              else
-                { 'github': 'spree/spree', 'branch': 'main', 'glob': 'spree/**/*.gemspec' }
+                { 'github': 'spree/spree', 'branch': '5-6-stable', 'glob': 'spree/**/*.gemspec' }
              end
 gem 'spree', spree_opts
 gem 'spree_admin', spree_opts
 
 gem 'spree_multi_store'
+gem 'spree_custom_domains'
 gem 'spree_posts'
 gem 'spree_legacy_product_properties'
 gem 'spree_legacy_api_v2'
